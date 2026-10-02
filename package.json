@@ -10,6 +10,9 @@
     "lint": "eslint",
     "verificar": "node scripts/verificar-logica.mjs"
   },
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "dependencies": {
     "next": "16.3.8",
     "pg": "^8.23.1",
