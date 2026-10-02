@@ -49,17 +49,17 @@ Para gerar o `SESSION_SECRET`:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Para usar o banco que já está no Railway, pegue a URL pública:
+O banco do Railway **não tem porta pública** — é o comportamento desejado, ele só
+conversa com a aplicação pela rede interna. Por isso a sua máquina não alcança
+esse banco direto. Para desenvolver localmente, use um Postgres instalado na sua
+máquina e aponte o `DATABASE_URL` para ele. Se um dia precisar mesmo acessar o
+banco de produção de fora, habilite o _TCP Proxy_ no painel do serviço Postgres
+e desabilite depois.
 
 ```bash
-railway variables --service Postgres
-```
-
-Depois:
-
-```bash
-npm run migrar   # cria as tabelas, se ainda não existirem
-npm run dev      # abre em http://localhost:3000
+npm run migrar     # cria as tabelas, se ainda não existirem
+npm run verificar  # confere o cálculo do 4º sábado e os links
+npm run dev        # abre em http://localhost:3000
 ```
 
 ---
@@ -75,6 +75,11 @@ git push
 O Railway detecta o push, constrói e publica sozinho. As migrações do banco
 rodam automaticamente no início de cada deploy — não é preciso mexer no banco
 pela mão.
+
+> **Passo único, se ainda não foi feito:** no painel do Railway, serviço `web` →
+> _Settings_ → _Source_ → conectar o repositório `NathaliaFin/ceb`. Sem isso o
+> push vai só para o GitHub e não dispara deploy; nesse caso dá para publicar
+> manualmente com `railway up --service web`.
 
 ---
 
