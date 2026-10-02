@@ -16,7 +16,7 @@ Há duas senhas, definidas em variáveis de ambiente:
 
 | Senha | Quem usa | O que pode fazer |
 |---|---|---|
-| `SENHA_VOLUNTARIO` | voluntários | ver os cartões e registrar a visita |
+| `SENHA_VOLUNTARIO` | voluntários | ver os cartões |
 | `SENHA_ADMIN` | administradora | tudo, incluindo cadastrar e editar famílias |
 
 Quem entra com a senha de admin vê o botão **Gerenciar**. A sessão dura 30 dias,
@@ -130,14 +130,17 @@ db/
 
 ## 7. Detalhes que valem saber
 
-**A contagem de visitas não é um contador.** Cada visita vira uma linha na tabela
-`visitas`, e o número no cartão é a contagem dessas linhas. Por isso ele nunca
-sai do lugar, e dá para ver o histórico de cada família. Se alguém registrar uma
-visita por engano, a administradora apaga no cadastro da assistida e o número se
-corrige.
+**A contagem de visitas sai do calendário, não de confirmação.** Cada família tem
+uma **data de triagem**, que conta como a 1ª visita. A partir dela, cada 4º sábado
+do mês é a visita seguinte: 2ª, 3ª e assim por diante. Ninguém precisa marcar
+nada — o número do cartão se atualiza sozinho a cada mês que passa.
 
-**Duas pessoas não conseguem registrar a mesma visita em duplicidade** — o banco
-aceita só um registro por família por dia.
+Como consequência, se num mês a família não for visitada, o número avança do
+mesmo jeito. Era o preço de não depender de confirmação.
+
+**Enquanto a data da triagem não é preenchida**, o cartão mostra um traço no
+lugar do número, e aparece um filtro "Sem triagem" na tela principal para
+localizar quem ainda falta.
 
 **As coordenadas.** Sem elas, o Waze e o Google Maps abrem pelo texto do
 endereço, o que costuma cair no meio da rua. Com elas, abre no ponto certo. Para

@@ -104,6 +104,20 @@ export default function FormularioAssistida({ assistida }) {
           <input type="hidden" name="cor" value={cor} />
         </div>
 
+        <Campo
+          nome="data_triagem"
+          rotulo="Data da triagem (1ª visita)"
+          dica="É daqui que sai a contagem do cartão: a triagem conta como 1ª visita e cada 4º sábado seguinte vira a próxima. Sem esta data o cartão mostra um traço no lugar do número."
+        >
+          <input
+            id="data_triagem"
+            name="data_triagem"
+            type="date"
+            defaultValue={assistida?.data_triagem ?? ''}
+            className="campo"
+          />
+        </Campo>
+
         <Campo nome="telefone" rotulo="Telefone (WhatsApp)" dica="Com DDD. Ex.: (31) 99999-9999">
           <input
             id="telefone"

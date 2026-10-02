@@ -1,4 +1,4 @@
-import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita } from '../lib/datas.js';
+import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior } from '../lib/datas.js';
 import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
@@ -43,6 +43,22 @@ conferir('sem nada', linkGoogleMaps({ latitude: null, longitude: null, endereco:
 console.log('--- iniciais ---');
 conferir('nome composto', iniciais('Maria da Silva Santos'), 'MS');
 conferir('nome simples', iniciais('Ana'), 'AN');
+
+console.log('--- numero da visita a partir da triagem ---');
+conferir('triagem no proprio 4o sabado conta como 1a', numeroDaVisita('2026-10-24', '2026-10-24'), 1);
+conferir('mes seguinte vira a 2a', numeroDaVisita('2026-10-24', '2026-11-28'), 2);
+conferir('dois meses depois vira a 3a', numeroDaVisita('2026-10-24', '2026-12-26'), 3);
+conferir('triagem em dia comum: o 4o sabado seguinte e a 2a', numeroDaVisita('2026-10-02', '2026-10-24'), 2);
+conferir('no dia da triagem ainda e a 1a', numeroDaVisita('2026-10-02', '2026-10-23'), 1);
+conferir('antes da triagem nao conta', numeroDaVisita('2026-10-24', '2026-10-01'), 0);
+conferir('sem triagem nao conta', numeroDaVisita(null, '2026-10-24'), 0);
+conferir('virada de ano', numeroDaVisita('2026-12-26', '2027-01-23'), 2);
+conferir('um ano inteiro de visitas', numeroDaVisita('2026-01-24', '2026-12-26'), 12);
+
+console.log('--- ultimo dia de visita ---');
+conferir('no meio do mes volta para o mes anterior', visitaAnterior('2026-10-02'), '2026-09-26');
+conferir('no proprio dia devolve o dia', visitaAnterior('2026-10-24'), '2026-10-24');
+conferir('comeco do ano volta para dezembro', visitaAnterior('2027-01-05'), '2026-12-26');
 
 console.log(falhas === 0 ? '\nTUDO OK' : `\n${falhas} FALHA(S)`);
 process.exit(falhas === 0 ? 0 : 1);

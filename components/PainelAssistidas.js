@@ -15,7 +15,7 @@ import 'swiper/css/pagination';
 function semAcento(texto) {
   return String(texto ?? '')
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/\p{Diacritic}/gu, '')
     .toLowerCase();
 }
 
@@ -41,13 +41,13 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
   const [filtro, setFiltro] = useState('todas');
 
   const comEmergencia = assistidas.filter((a) => a.necessidades_emergenciais).length;
-  const pendentes = assistidas.filter((a) => a.ultima_visita !== hoje).length;
+  const semTriagem = assistidas.filter((a) => !a.data_triagem).length;
 
   const visiveis = useMemo(() => {
     const termo = semAcento(busca.trim());
     return assistidas.filter((assistida) => {
       if (filtro === 'emergencia' && !assistida.necessidades_emergenciais) return false;
-      if (filtro === 'pendentes' && assistida.ultima_visita === hoje) return false;
+      if (filtro === 'semtriagem' && assistida.data_triagem) return false;
       if (!termo) return true;
       return textoPesquisavel(assistida).includes(termo);
     });
@@ -56,7 +56,10 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
   const filtros = [
     { chave: 'todas', rotulo: 'Todas', contagem: assistidas.length },
     { chave: 'emergencia', rotulo: '🚨 Com emergência', contagem: comEmergencia },
-    { chave: 'pendentes', rotulo: 'Falta registrar', contagem: pendentes },
+    // So aparece enquanto houver familia sem a data da triagem preenchida.
+    ...(semTriagem > 0
+      ? [{ chave: 'semtriagem', rotulo: 'Sem triagem', contagem: semTriagem }]
+      : []),
   ];
 
   if (assistidas.length === 0) {

@@ -5,14 +5,12 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import {
-  criarSessao, encerrarSessao, estaBloqueado, exigirAdmin, exigirSessao,
+  criarSessao, encerrarSessao, estaBloqueado, exigirAdmin,
   limparFalhas, papelDaSenha, registrarFalha,
 } from '@/lib/auth';
 import {
-  atualizarAssistida, criarAssistida, excluirAssistida, excluirVisita,
-  registrarVisita, substituirFamiliares,
+  atualizarAssistida, criarAssistida, excluirAssistida, substituirFamiliares,
 } from '@/lib/consultas';
-import { hojeIso } from '@/lib/datas';
 import { CHAVES_CORES } from '@/lib/cores';
 
 async function identificarCliente() {
@@ -43,21 +41,6 @@ export async function sair() {
   redirect('/login');
 }
 
-/** Qualquer voluntario pode marcar que a visita de hoje foi feita. */
-export async function acaoRegistrarVisita(formData) {
-  await exigirSessao();
-
-  const assistidaId = Number(formData.get('assistida_id'));
-  if (!Number.isInteger(assistidaId)) return;
-
-  const data = String(formData.get('data') || hojeIso());
-  const observacao = String(formData.get('observacao') || '').trim();
-
-  await registrarVisita(assistidaId, data, observacao);
-  revalidatePath('/');
-  revalidatePath(`/admin/assistida/${assistidaId}`);
-}
-
 /**
  * Aceita o formato que o Google Maps copia ("-19.9227, -43.9451") e tambem
  * separado por espaco. Sem coordenadas, o Waze e o Maps caem no endereco.
@@ -77,6 +60,16 @@ function lerCoordenadas(texto) {
     throw new Error('Coordenadas fora do intervalo valido.');
   }
   return { latitude, longitude };
+}
+
+/** O campo de data do navegador entrega "AAAA-MM-DD"; vazio vira nulo. */
+function lerData(valor) {
+  const texto = String(valor ?? '').trim();
+  if (!texto) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+    throw new Error('Data da triagem invalida.');
+  }
+  return texto;
 }
 
 function lerFamiliares(formData) {
@@ -115,8 +108,10 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
   const cor = String(formData.get('cor') ?? 'rosa');
 
   let coordenadas;
+  let dataTriagem;
   try {
     coordenadas = lerCoordenadas(formData.get('coordenadas'));
+    dataTriagem = lerData(formData.get('data_triagem'));
   } catch (erro) {
     return { erro: erro.message };
   }
@@ -133,6 +128,7 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
     observacoes: textoOuNulo(formData.get('observacoes')),
     cor: CHAVES_CORES.includes(cor) ? cor : 'rosa',
     ativa: formData.get('ativa') === 'on',
+    data_triagem: dataTriagem,
   };
 
   const idInformado = Number(formData.get('id'));
@@ -157,16 +153,4 @@ export async function acaoExcluirAssistida(formData) {
   revalidatePath('/');
   revalidatePath('/admin');
   redirect('/admin');
-}
-
-export async function acaoExcluirVisita(formData) {
-  await exigirAdmin();
-
-  const id = Number(formData.get('id'));
-  const assistidaId = Number(formData.get('assistida_id'));
-  if (!Number.isInteger(id)) return;
-
-  await excluirVisita(id);
-  revalidatePath('/');
-  revalidatePath(`/admin/assistida/${assistidaId}`);
 }

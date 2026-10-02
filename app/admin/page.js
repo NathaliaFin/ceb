@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { exigirAdmin } from '@/lib/auth';
 import { listarAssistidas } from '@/lib/consultas';
 import { corDe, iniciais } from '@/lib/cores';
-import { formatarData } from '@/lib/datas';
+import { formatarData, hojeIso, numeroDaVisita } from '@/lib/datas';
 import { IconeLapis, IconeMais, IconeSeta } from '@/components/Icones';
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 export default async function PaginaAdmin() {
   await exigirAdmin();
   const assistidas = await listarAssistidas({ incluirInativas: true });
+  const hoje = hojeIso();
 
   return (
     <main className="px-4 py-6 max-w-3xl mx-auto">
@@ -63,8 +64,9 @@ export default async function PaginaAdmin() {
                       )}
                     </p>
                     <p className="text-xs text-tinta-suave mt-0.5">
-                      {assistida.total_visitas} {assistida.total_visitas === 1 ? 'visita' : 'visitas'}
-                      {assistida.ultima_visita && ` · última em ${formatarData(assistida.ultima_visita)}`}
+                      {assistida.data_triagem
+                        ? `${numeroDaVisita(assistida.data_triagem, hoje)} visitas · triagem em ${formatarData(assistida.data_triagem)}`
+                        : 'sem data de triagem'}
                       {assistida.necessidades_emergenciais && ' · 🚨 emergência'}
                     </p>
                   </div>

@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { corDe, iniciais } from '@/lib/cores';
-import { formatarData, formatarDataCurta, ordinal } from '@/lib/datas';
+import { formatarData, formatarDataCurta, numeroDaVisita, ordinal } from '@/lib/datas';
 import { linkGoogleMaps, linkTelefone, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
-import BotaoRegistrarVisita from './BotaoRegistrarVisita';
 import {
   IconeAlerta, IconeCalendario, IconeCasa, IconeConversa, IconeNavegacao,
   IconeNota, IconePessoas, IconePino, IconePresente, IconeSeta,
@@ -40,10 +39,15 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
   const [aberto, setAberto] = useState(false);
 
   const cor = corDe(assistida.cor);
-  const total = assistida.total_visitas ?? 0;
-  const registradaHoje = assistida.ultima_visita === hoje;
-  const ehDiaDeVisita = proximaVisita === hoje;
   const temEmergencia = Boolean(assistida.necessidades_emergenciais);
+  const ehDiaDeVisita = proximaVisita === hoje;
+
+  // Contagem pelo calendario: a triagem e a 1a visita, cada 4o sabado seguinte
+  // e a proxima. Nao depende de ninguem confirmar nada.
+  const triagem = assistida.data_triagem;
+  const visitasAteHoje = numeroDaVisita(triagem, hoje);
+  const numeroDaProxima = numeroDaVisita(triagem, proximaVisita);
+  const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
 
   const temDetalhesExtras = Boolean(assistida.referencia || assistida.observacoes || assistida.telefone);
 
@@ -73,9 +77,9 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           </div>
 
           <div className="selo-visitas rounded-xl px-2.5 py-1.5 text-center shrink-0">
-            <div className="text-lg font-bold leading-none">{total}</div>
+            <div className="text-lg font-bold leading-none">{triagem ? visitasAteHoje : '—'}</div>
             <div className="text-[9px] uppercase tracking-wide font-bold mt-0.5">
-              {total === 1 ? 'visita' : 'visitas'}
+              {visitasAteHoje === 1 ? 'visita' : 'visitas'}
             </div>
           </div>
         </header>
@@ -183,34 +187,39 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
         )}
       </div>
 
-      <footer className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-t border-borda bg-superficie-2">
-        <div className="text-[11px] text-tinta-suave leading-tight min-w-0">
-          {registradaHoje ? (
+      <footer className="px-4 sm:px-5 py-3 border-t border-borda bg-superficie-2 text-[11px] text-tinta-suave leading-tight">
+        {!triagem ? (
+          <span className="flex items-center gap-1.5">
+            <IconeCalendario tamanho={12} />
+            <span>Falta informar a data da triagem</span>
+          </span>
+        ) : triagemNoFuturo ? (
+          <span className="flex items-center gap-1.5">
+            <IconeCalendario tamanho={12} />
             <span>
-              <span className="font-semibold text-tinta">{ordinal(total)} visita</span> registrada hoje
+              Triagem marcada para{' '}
+              <span className="font-semibold text-tinta">{formatarData(triagem)}</span>
             </span>
-          ) : (
+          </span>
+        ) : (
+          <>
             <span className="flex items-center gap-1.5">
               <IconeCalendario tamanho={12} />
-              <span>
-                {ehDiaDeVisita ? 'Hoje' : formatarDataCurta(proximaVisita)}
-                {' · '}
-                <span className="font-semibold text-tinta">será a {ordinal(total + 1)}</span>
-              </span>
+              {ehDiaDeVisita ? (
+                <span>
+                  Hoje é a <span className="font-semibold text-tinta">{ordinal(visitasAteHoje)} visita</span>
+                </span>
+              ) : (
+                <span>
+                  {formatarDataCurta(proximaVisita)}
+                  {' · '}
+                  <span className="font-semibold text-tinta">será a {ordinal(numeroDaProxima)}</span>
+                </span>
+              )}
             </span>
-          )}
-          {assistida.ultima_visita && !registradaHoje && (
-            <div className="mt-0.5 opacity-80">última: {formatarData(assistida.ultima_visita)}</div>
-          )}
-        </div>
-
-        <BotaoRegistrarVisita
-          assistidaId={assistida.id}
-          data={hoje}
-          jaRegistrada={registradaHoje}
-          numero={ordinal(total + 1)}
-          destaque={ehDiaDeVisita}
-        />
+            <div className="mt-0.5 opacity-80">triagem em {formatarData(triagem)}</div>
+          </>
+        )}
       </footer>
     </article>
   );
