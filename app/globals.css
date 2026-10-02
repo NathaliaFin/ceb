@@ -239,3 +239,51 @@ body {
   background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.22), transparent);
   animation: brilho 3.5s ease-in-out infinite;
 }
+
+/* ---------- carrossel ---------- */
+.carrossel {
+  --swiper-pagination-color: var(--tinta);
+  --swiper-pagination-bullet-inactive-color: var(--tinta-suave);
+  --swiper-pagination-bullet-inactive-opacity: 0.35;
+  --swiper-pagination-bullet-size: 8px;
+  --swiper-pagination-bullet-horizontal-gap: 4px;
+}
+
+/* O Swiper corta o que passa das bordas, e isso comeria a sombra do cartao e o
+   halo da necessidade emergencial. A folga aqui devolve esse espaco. */
+.carrossel .swiper {
+  padding: 8px 8px 2.5rem;
+  margin: -8px -8px 0;
+}
+
+/* Todos os cartoes da mesma altura, para a tira nao pular ao deslizar. */
+.carrossel .swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+.carrossel .swiper-slide > * {
+  width: 100%;
+}
+
+.seta-carrossel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--borda);
+  background: var(--superficie);
+  color: var(--tinta);
+  box-shadow: var(--sombra);
+  transition: transform 0.15s ease, background 0.15s ease, opacity 0.2s ease;
+}
+
+.seta-carrossel:active { transform: scale(0.94); }
+@media (hover: hover) { .seta-carrossel:hover { background: var(--superficie-2); } }
+
+/* Classes que o proprio Swiper aplica: sem mais cartoes para aquele lado, e
+   quando tudo cabe na tela e nao ha o que deslizar. */
+.seta-carrossel.swiper-button-disabled { opacity: 0.3; pointer-events: none; }
+.seta-carrossel.swiper-button-lock { display: none; }

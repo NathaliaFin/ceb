@@ -2,8 +2,14 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { A11y, Keyboard, Navigation, Pagination } from 'swiper/modules';
 import CardAssistida from './CardAssistida';
-import { IconeBusca, IconeMais } from './Icones';
+import { IconeBusca, IconeMais, IconeSeta } from './Icones';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 /** Busca sem acento, para "familia" encontrar "família". */
 function semAcento(texto) {
@@ -110,21 +116,63 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
 
       {visiveis.length === 0 ? (
         <div className="cartao p-8 text-center" style={{ '--cor': '#8a8178' }}>
-          <p className="text-sm text-tinta-suave">
-            Nenhum cartão corresponde ao que você procurou.
-          </p>
+          <p className="text-sm text-tinta-suave">Nenhum cartão corresponde ao que você procurou.</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {visiveis.map((assistida, indice) => (
-            <CardAssistida
-              key={assistida.id}
-              assistida={assistida}
-              hoje={hoje}
-              proximaVisita={proximaVisita}
-              indice={indice}
-            />
-          ))}
+        <div className="carrossel">
+          <Swiper
+            // Recria o carrossel quando a lista muda, para voltar ao primeiro cartao.
+            key={`${filtro}-${busca}-${visiveis.length}`}
+            modules={[Navigation, Pagination, Keyboard, A11y]}
+            spaceBetween={16}
+            slidesPerView={1.08}
+            grabCursor
+            watchOverflow
+            keyboard={{ enabled: true }}
+            navigation={{ nextEl: '.carrossel-proximo', prevEl: '.carrossel-anterior' }}
+            pagination={{ clickable: true }}
+            a11y={{
+              prevSlideMessage: 'Cartão anterior',
+              nextSlideMessage: 'Próximo cartão',
+              paginationBulletMessage: 'Ir para o cartão {{index}}',
+            }}
+            breakpoints={{
+              640: { slidesPerView: 2, spaceBetween: 16 },
+              1024: { slidesPerView: 3, spaceBetween: 20 },
+            }}
+          >
+            {visiveis.map((assistida, indice) => (
+              <SwiperSlide key={assistida.id}>
+                <CardAssistida
+                  assistida={assistida}
+                  hoje={hoje}
+                  proximaVisita={proximaVisita}
+                  indice={indice}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <button
+              type="button"
+              className="carrossel-anterior seta-carrossel"
+              aria-label="Cartão anterior"
+            >
+              <span className="rotate-90 inline-flex">
+                <IconeSeta tamanho={18} />
+              </span>
+            </button>
+            <button
+              type="button"
+              className="carrossel-proximo seta-carrossel"
+              aria-label="Próximo cartão"
+            >
+              <span className="-rotate-90 inline-flex">
+                <IconeSeta tamanho={18} />
+              </span>
+            </button>
+          </div>
         </div>
       )}
     </>
