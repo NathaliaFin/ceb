@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { corDe, iniciais } from '@/lib/cores';
 import { formatarData, formatarDataCurta, numeroDaVisita, ordinal } from '@/lib/datas';
-import { linkGoogleMaps, linkTelefone, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import { linkGoogleMaps, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import {
   IconeAlerta, IconeCalendario, IconeCasa, IconeConversa, IconeNavegacao,
-  IconeNota, IconePessoas, IconePino, IconePresente, IconeSeta,
+  IconeNota, IconePino, IconePresente, IconeSeta,
 } from './Icones';
 
 function BotaoAcao({ href, classe, rotulo, children }) {
@@ -26,13 +26,11 @@ function BotaoAcao({ href, classe, rotulo, children }) {
   );
 }
 
-function Rotulo({ icone, children }) {
-  return (
-    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
-      {icone}
-      {children}
-    </div>
-  );
+function descreverFamiliar(familiar) {
+  const complemento = [familiar.parentesco, familiar.idade !== null ? `${familiar.idade} anos` : null]
+    .filter(Boolean)
+    .join(', ');
+  return complemento ? `${familiar.nome} (${complemento})` : familiar.nome;
 }
 
 export default function CardAssistida({ assistida, hoje, proximaVisita, indice = 0 }) {
@@ -49,43 +47,36 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
   const numeroDaProxima = numeroDaVisita(triagem, proximaVisita);
   const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
 
-  const temDetalhesExtras = Boolean(assistida.referencia || assistida.observacoes || assistida.telefone);
+  const familiares = assistida.familiares ?? [];
+  const temDetalhes = Boolean(assistida.referencia || assistida.observacoes || assistida.itens_doacao);
 
   return (
     <article
-      className={`cartao entrada ${assistida.ativa ? '' : 'cartao-inativo'}`}
+      className={`cartao cartao--capa entrada ${assistida.ativa ? '' : 'cartao-inativo'}`}
       style={{ '--cor': cor.base, animationDelay: `${Math.min(indice, 8) * 70}ms` }}
     >
-      <div className="p-4 sm:p-5">
-        <header className="flex items-start gap-3">
-          <div className="avatar w-12 h-12 rounded-xl flex items-center justify-center font-bold text-sm shrink-0">
-            {iniciais(assistida.nome_completo)}
-          </div>
+      <div className="cartao__capa">
+        <span className="cartao__selo">
+          <strong>{triagem ? visitasAteHoje : '—'}</strong>
+          <span>{visitasAteHoje === 1 ? 'visita' : 'visitas'}</span>
+        </span>
 
-          <div className="min-w-0 flex-1">
-            <h2 className="font-bold text-[15px] leading-snug break-words">
-              {assistida.nome_completo}
-            </h2>
-            {assistida.endereco && (
-              <p className="text-xs text-tinta-suave mt-1 flex items-start gap-1.5 leading-snug">
-                <span className="mt-px shrink-0">
-                  <IconeCasa tamanho={13} />
-                </span>
-                <span className="break-words">{assistida.endereco}</span>
-              </p>
-            )}
-          </div>
+        <div className="cartao__sobre">
+          <h2>{assistida.nome_completo}</h2>
+          {assistida.endereco && (
+            <p className="cartao__endereco">
+              <span className="mt-px shrink-0">
+                <IconeCasa tamanho={12} />
+              </span>
+              <span className="break-words">{assistida.endereco}</span>
+            </p>
+          )}
+        </div>
+      </div>
 
-          <div className="selo-visitas rounded-xl px-2.5 py-1.5 text-center shrink-0">
-            <div className="text-lg font-bold leading-none">{triagem ? visitasAteHoje : '—'}</div>
-            <div className="text-[9px] uppercase tracking-wide font-bold mt-0.5">
-              {visitasAteHoje === 1 ? 'visita' : 'visitas'}
-            </div>
-          </div>
-        </header>
-
+      <div className="cartao__corpo">
         {temEmergencia && (
-          <div className="bloco-alerta rounded-xl p-3 mt-4 pulsa">
+          <div className="bloco-alerta rounded-xl p-3 mb-3 pulsa">
             <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
               <IconeAlerta tamanho={14} />
               Necessidade emergencial
@@ -96,50 +87,61 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-2 mt-4">
-          <BotaoAcao href={linkWhatsapp(assistida.telefone)} classe="botao-whatsapp" rotulo="WhatsApp">
-            <IconeConversa tamanho={16} />
-          </BotaoAcao>
-          <BotaoAcao href={linkWaze(assistida)} classe="botao-waze" rotulo="Waze">
-            <IconeNavegacao tamanho={16} />
-          </BotaoAcao>
-          <BotaoAcao href={linkGoogleMaps(assistida)} classe="botao-maps" rotulo="Maps">
-            <IconePino tamanho={16} />
-          </BotaoAcao>
-        </div>
+        <ul className="cartao__dados">
+          <li>
+            <IconeCalendario tamanho={16} />
+            <span>
+              {!triagem ? (
+                'Falta informar a data da triagem'
+              ) : triagemNoFuturo ? (
+                <>Triagem marcada para {formatarData(triagem)}</>
+              ) : ehDiaDeVisita ? (
+                <>
+                  Hoje é a <strong className="font-semibold text-tinta">{ordinal(visitasAteHoje)} visita</strong>
+                </>
+              ) : (
+                <>
+                  Próxima em {formatarDataCurta(proximaVisita)} —{' '}
+                  <strong className="font-semibold text-tinta">será a {ordinal(numeroDaProxima)}</strong>
+                </>
+              )}
+            </span>
+          </li>
 
-        {assistida.familiares?.length > 0 && (
-          <div className="mt-4">
-            <Rotulo icone={<IconePessoas tamanho={13} />}>Família</Rotulo>
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {assistida.familiares.map((familiar) => (
-                <span key={familiar.id} className="bloco-doacao rounded-lg px-2 py-1 text-xs">
-                  <strong className="font-semibold">{familiar.nome}</strong>
-                  {(familiar.parentesco || familiar.idade !== null) && (
-                    <span className="text-tinta-suave">
-                      {' · '}
-                      {[
-                        familiar.parentesco,
-                        familiar.idade !== null ? `${familiar.idade} anos` : null,
-                      ]
-                        .filter(Boolean)
-                        .join(', ')}
-                    </span>
-                  )}
-                </span>
-              ))}
+          {assistida.telefone && (
+            <li>
+              <IconeConversa tamanho={16} />
+              <span>{telefoneFormatado(assistida.telefone)}</span>
+            </li>
+          )}
+
+          {triagem && !triagemNoFuturo && (
+            <li>
+              <IconePino tamanho={16} />
+              <span>No projeto desde {formatarData(triagem)}</span>
+            </li>
+          )}
+        </ul>
+
+        {familiares.length > 0 && (
+          <div className="cartao__gente">
+            <span className="cartao__gente-rotulo">Família</span>
+            <div className="cartao__gente-linha">
+              <span className="cartao__avatares">
+                {familiares.slice(0, 4).map((familiar) => (
+                  <span key={familiar.id} className="cartao__avatar" title={descreverFamiliar(familiar)}>
+                    {iniciais(familiar.nome)}
+                  </span>
+                ))}
+              </span>
+              <span className="cartao__nomes">
+                {familiares.map((familiar) => familiar.nome.split(/\s+/)[0]).join(', ')}
+              </span>
             </div>
           </div>
         )}
 
-        {assistida.itens_doacao && (
-          <div className="bloco-doacao rounded-xl p-3 mt-3">
-            <Rotulo icone={<IconePresente tamanho={13} />}>Itens especiais de doação</Rotulo>
-            <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">{assistida.itens_doacao}</p>
-          </div>
-        )}
-
-        {temDetalhesExtras && (
+        {temDetalhes && (
           <>
             <button
               type="button"
@@ -158,26 +160,32 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
 
             {aberto && (
               <div className="space-y-3 pt-1 entrada">
-                {assistida.telefone && (
-                  <div>
-                    <Rotulo icone={<IconeConversa tamanho={13} />}>Telefone</Rotulo>
-                    <a
-                      href={linkTelefone(assistida.telefone)}
-                      className="text-sm mt-1 inline-block font-medium underline underline-offset-2"
-                    >
-                      {telefoneFormatado(assistida.telefone)}
-                    </a>
+                {assistida.itens_doacao && (
+                  <div className="bloco-doacao rounded-xl p-3">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
+                      <IconePresente tamanho={13} />
+                      Itens especiais de doação
+                    </div>
+                    <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">
+                      {assistida.itens_doacao}
+                    </p>
                   </div>
                 )}
                 {assistida.referencia && (
                   <div>
-                    <Rotulo icone={<IconePino tamanho={13} />}>Ponto de referência</Rotulo>
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
+                      <IconePino tamanho={13} />
+                      Ponto de referência
+                    </div>
                     <p className="text-sm mt-1 leading-snug whitespace-pre-line">{assistida.referencia}</p>
                   </div>
                 )}
                 {assistida.observacoes && (
                   <div>
-                    <Rotulo icone={<IconeNota tamanho={13} />}>Observações</Rotulo>
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
+                      <IconeNota tamanho={13} />
+                      Observações
+                    </div>
                     <p className="text-sm mt-1 leading-snug whitespace-pre-line">{assistida.observacoes}</p>
                   </div>
                 )}
@@ -185,42 +193,19 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
             )}
           </>
         )}
-      </div>
 
-      <footer className="px-4 sm:px-5 py-3 border-t border-borda bg-superficie-2 text-[11px] text-tinta-suave leading-tight">
-        {!triagem ? (
-          <span className="flex items-center gap-1.5">
-            <IconeCalendario tamanho={12} />
-            <span>Falta informar a data da triagem</span>
-          </span>
-        ) : triagemNoFuturo ? (
-          <span className="flex items-center gap-1.5">
-            <IconeCalendario tamanho={12} />
-            <span>
-              Triagem marcada para{' '}
-              <span className="font-semibold text-tinta">{formatarData(triagem)}</span>
-            </span>
-          </span>
-        ) : (
-          <>
-            <span className="flex items-center gap-1.5">
-              <IconeCalendario tamanho={12} />
-              {ehDiaDeVisita ? (
-                <span>
-                  Hoje é a <span className="font-semibold text-tinta">{ordinal(visitasAteHoje)} visita</span>
-                </span>
-              ) : (
-                <span>
-                  {formatarDataCurta(proximaVisita)}
-                  {' · '}
-                  <span className="font-semibold text-tinta">será a {ordinal(numeroDaProxima)}</span>
-                </span>
-              )}
-            </span>
-            <div className="mt-0.5 opacity-80">triagem em {formatarData(triagem)}</div>
-          </>
-        )}
-      </footer>
+        <div className="cartao__pe grid grid-cols-3 gap-2">
+          <BotaoAcao href={linkWhatsapp(assistida.telefone)} classe="botao-whatsapp" rotulo="WhatsApp">
+            <IconeConversa tamanho={16} />
+          </BotaoAcao>
+          <BotaoAcao href={linkWaze(assistida)} classe="botao-waze" rotulo="Waze">
+            <IconeNavegacao tamanho={16} />
+          </BotaoAcao>
+          <BotaoAcao href={linkGoogleMaps(assistida)} classe="botao-maps" rotulo="Maps">
+            <IconePino tamanho={16} />
+          </BotaoAcao>
+        </div>
+      </div>
     </article>
   );
 }

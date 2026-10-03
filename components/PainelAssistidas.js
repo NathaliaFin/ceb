@@ -64,7 +64,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
 
   if (assistidas.length === 0) {
     return (
-      <div className="cartao p-8 text-center entrada" style={{ '--cor': '#e0376f' }}>
+      <div className="cartao faixa-cartoes p-8 text-center entrada" style={{ '--cor': '#e0376f' }}>
         <p className="font-semibold">Nenhuma assistida cadastrada ainda.</p>
         <p className="text-sm text-tinta-suave mt-1.5">
           {podeEditar
@@ -86,9 +86,9 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
 
   return (
     <>
-      <div className="flex flex-col gap-3 mb-5">
+      <div className="controles-capa flex flex-col gap-3 mb-5">
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tinta-suave">
+          <span className="icone-busca absolute left-3 top-1/2 -translate-y-1/2 text-tinta-suave">
             <IconeBusca tamanho={17} />
           </span>
           <input
@@ -122,7 +122,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
           <p className="text-sm text-tinta-suave">Nenhum cartão corresponde ao que você procurou.</p>
         </div>
       ) : (
-        <div className="carrossel">
+        <div className="carrossel faixa-cartoes">
           <Swiper
             // Recria o carrossel quando a lista muda, para voltar ao primeiro cartao.
             key={`${filtro}-${busca}-${visiveis.length}`}

@@ -36,14 +36,18 @@ export default async function PaginaInicial() {
   }
 
   return (
-    <main className="px-4 py-6 max-w-6xl mx-auto">
+    <main className="pb-10">
       <Cabecalho papel={papel} hoje={hoje} proximaVisita={proxima} />
-      <PainelAssistidas
-        assistidas={assistidas}
-        hoje={hoje}
-        proximaVisita={proxima}
-        podeEditar={papel === 'admin'}
-      />
+
+      {/* Os cartoes encavalam a capa escura — e dai que vem a profundidade. */}
+      <div className="px-4 max-w-6xl mx-auto">
+        <PainelAssistidas
+          assistidas={assistidas}
+          hoje={hoje}
+          proximaVisita={proxima}
+          podeEditar={papel === 'admin'}
+        />
+      </div>
     </main>
   );
 }
