@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { corDe, iniciais } from '@/lib/cores';
 import { formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
 import { linkGoogleMaps, linkTelefone, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
@@ -27,6 +28,13 @@ function Secao({ icone, titulo, children }) {
 }
 
 export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFechar }) {
+  // A ficha e levada para o fim do <body>. Sem isso ela nasce dentro do cartao,
+  // que vive num contentor com transform (o carrossel) — e ali o position:fixed
+  // passa a valer em relacao ao cartao, nao a tela, e o overflow dele corta a
+  // ficha pelo topo.
+  const [montado, setMontado] = useState(false);
+  useEffect(() => setMontado(true), []);
+
   useEffect(() => {
     function aoTeclar(evento) {
       if (evento.key === 'Escape') aoFechar();
@@ -48,7 +56,9 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFec
   const familiares = assistida.familiares ?? [];
   const temCoordenadas = assistida.latitude !== null && assistida.latitude !== undefined;
 
-  return (
+  if (!montado) return null;
+
+  return createPortal(
     <div className="ficha-fundo" onClick={aoFechar} role="presentation">
       <div
         className="ficha"
@@ -229,6 +239,7 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFec
           </Secao>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

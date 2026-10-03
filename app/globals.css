@@ -621,6 +621,7 @@ body {
 
 .ficha__topo {
   position: relative;
+  flex: none; /* nunca e espremido pelo corpo */
   padding: 1.2rem 1.3rem;
   background: var(--cor);
 }
@@ -661,7 +662,11 @@ body {
 
 .ficha__corpo {
   flex: 1;
+  /* Sem isto o item flex nao encolhe abaixo do proprio conteudo, a ficha passa
+     da altura maxima e o topo acaba cortado. */
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1rem 1.3rem 1.6rem;
   padding-bottom: calc(1.6rem + env(safe-area-inset-bottom, 0px));
 }
