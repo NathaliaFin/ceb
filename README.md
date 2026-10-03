@@ -136,17 +136,21 @@ db/
 
 ## 7. Detalhes que valem saber
 
-**A contagem de visitas sai do calendário, não de confirmação.** Cada família tem
-uma **data de triagem**, que conta como a 1ª visita. A partir dela, cada 4º sábado
-do mês é a visita seguinte: 2ª, 3ª e assim por diante. Ninguém precisa marcar
-nada — o número do cartão se atualiza sozinho a cada mês que passa.
+**A contagem de visitas sai do calendário, não de confirmação.** O cartão mostra
+**Triagem + x visitas**: a triagem é sempre a primeira, e cada 4º sábado do mês
+depois dela soma um. Ninguém precisa marcar nada — o número se atualiza sozinho
+a cada mês que passa.
 
 Como consequência, se num mês a família não for visitada, o número avança do
 mesmo jeito. Era o preço de não depender de confirmação.
 
-**Enquanto a data da triagem não é preenchida**, o cartão mostra um traço no
-lugar do número, e aparece um filtro "Sem triagem" na tela principal para
-localizar quem ainda falta.
+**Uma família pode ter mais de uma triagem.** Todas ficam registradas e
+aparecem no cartão, mas **a contagem usa sempre a primeira** — as demais são
+histórico, não reiniciam nem somam ao número.
+
+**Enquanto nenhuma triagem é registrada**, o cartão mostra um traço no lugar do
+número, e aparece um filtro "Sem triagem" na tela principal para localizar quem
+ainda falta.
 
 **As coordenadas.** Sem elas, o Waze e o Google Maps abrem pelo texto do
 endereço, o que costuma cair no meio da rua. Com elas, abre no ponto certo. Para

@@ -10,6 +10,7 @@ import {
 } from '@/lib/auth';
 import {
   atualizarAssistida, criarAssistida, excluirAssistida, substituirFamiliares,
+  substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
 
@@ -62,14 +63,32 @@ function lerCoordenadas(texto) {
   return { latitude, longitude };
 }
 
-/** O campo de data do navegador entrega "AAAA-MM-DD"; vazio vira nulo. */
-function lerData(valor) {
-  const texto = String(valor ?? '').trim();
-  if (!texto) return null;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
-    throw new Error('Data da triagem invalida.');
+/**
+ * Uma familia pode passar por mais de uma triagem. O formulario manda uma linha
+ * por triagem; a lista volta em ordem, e a primeira e a que conta na contagem.
+ */
+function lerTriagens(formData) {
+  const datas = formData.getAll('triagem_data');
+  const observacoes = formData.getAll('triagem_observacao');
+
+  const jaVistas = new Set();
+  const lista = [];
+
+  for (const [indice, bruto] of datas.entries()) {
+    const data = String(bruto ?? '').trim();
+    if (!data) continue;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+      throw new Error('Data de triagem invalida.');
+    }
+    if (jaVistas.has(data)) continue; // mesma data repetida nao vira duas linhas
+    jaVistas.add(data);
+    lista.push({
+      data,
+      observacao: String(observacoes[indice] ?? '').trim() || null,
+    });
   }
-  return texto;
+
+  return lista.sort((a, b) => (a.data < b.data ? -1 : 1));
 }
 
 function lerFamiliares(formData) {
@@ -108,10 +127,10 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
   const cor = String(formData.get('cor') ?? 'rosa');
 
   let coordenadas;
-  let dataTriagem;
+  let triagens;
   try {
     coordenadas = lerCoordenadas(formData.get('coordenadas'));
-    dataTriagem = lerData(formData.get('data_triagem'));
+    triagens = lerTriagens(formData);
   } catch (erro) {
     return { erro: erro.message };
   }
@@ -128,7 +147,6 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
     observacoes: textoOuNulo(formData.get('observacoes')),
     cor: CHAVES_CORES.includes(cor) ? cor : 'rosa',
     ativa: formData.get('ativa') === 'on',
-    data_triagem: dataTriagem,
   };
 
   const idInformado = Number(formData.get('id'));
@@ -137,6 +155,7 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
   const id = editando ? idInformado : await criarAssistida(dados);
   if (editando) await atualizarAssistida(id, dados);
   await substituirFamiliares(id, lerFamiliares(formData));
+  await substituirTriagens(id, triagens);
 
   revalidatePath('/');
   revalidatePath('/admin');

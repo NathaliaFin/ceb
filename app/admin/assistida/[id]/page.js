@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { exigirAdmin } from '@/lib/auth';
 import { obterAssistida } from '@/lib/consultas';
-import { formatarData, hojeIso, numeroDaVisita, ordinal, proximaVisita } from '@/lib/datas';
+import {
+  formatarData, hojeIso, primeiraTriagem, proximaVisita, visitasDepoisDaTriagem,
+} from '@/lib/datas';
 import FormularioAssistida from '@/components/FormularioAssistida';
 import BotaoExcluirAssistida from '@/components/BotaoExcluirAssistida';
 import { IconeCalendario, IconeCheck, IconeSeta } from '@/components/Icones';
@@ -23,7 +25,8 @@ export default async function PaginaEditarAssistida({ params, searchParams }) {
 
   const hoje = hojeIso();
   const proxima = proximaVisita(hoje);
-  const triagem = assistida.data_triagem;
+  const triagem = primeiraTriagem(assistida.triagens);
+  const quantasTriagens = assistida.triagens?.length ?? 0;
 
   return (
     <main className="px-4 py-6 max-w-2xl mx-auto">
@@ -55,21 +58,24 @@ export default async function PaginaEditarAssistida({ params, searchParams }) {
           {triagem ? (
             <>
               <p>
-                Triagem em <strong>{formatarData(triagem)}</strong> — contam{' '}
+                O cartão mostra{' '}
                 <strong>
-                  {numeroDaVisita(triagem, hoje)}{' '}
-                  {numeroDaVisita(triagem, hoje) === 1 ? 'visita' : 'visitas'}
-                </strong>{' '}
-                até hoje.
+                  Triagem + {visitasDepoisDaTriagem(triagem, hoje)}{' '}
+                  {visitasDepoisDaTriagem(triagem, hoje) === 1 ? 'visita' : 'visitas'}
+                </strong>
+                , contando a partir de {formatarData(triagem)}.
               </p>
               <p className="text-tinta-suave text-xs mt-1">
-                Próxima em {formatarData(proxima)}, será a {ordinal(numeroDaVisita(triagem, proxima))}.
-                A contagem vem do calendário: nada precisa ser confirmado.
+                Próxima em {formatarData(proxima)}, quando vira Triagem +{' '}
+                {visitasDepoisDaTriagem(triagem, proxima)}. A contagem vem do calendário: nada
+                precisa ser confirmado.
+                {quantasTriagens > 1 &&
+                  ` São ${quantasTriagens} triagens registradas; a contagem usa a primeira.`}
               </p>
             </>
           ) : (
             <p className="text-tinta-suave">
-              Sem a data da triagem, o cartão mostra um traço no lugar do número de visitas.
+              Sem nenhuma triagem registrada, o cartão mostra um traço no lugar do número.
             </p>
           )}
         </div>

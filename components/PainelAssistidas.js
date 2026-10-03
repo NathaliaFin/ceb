@@ -41,13 +41,13 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
   const [filtro, setFiltro] = useState('todas');
 
   const comEmergencia = assistidas.filter((a) => a.necessidades_emergenciais).length;
-  const semTriagem = assistidas.filter((a) => !a.data_triagem).length;
+  const semTriagem = assistidas.filter((a) => !a.triagens?.length).length;
 
   const visiveis = useMemo(() => {
     const termo = semAcento(busca.trim());
     return assistidas.filter((assistida) => {
       if (filtro === 'emergencia' && !assistida.necessidades_emergenciais) return false;
-      if (filtro === 'semtriagem' && assistida.data_triagem) return false;
+      if (filtro === 'semtriagem' && assistida.triagens?.length) return false;
       if (!termo) return true;
       return textoPesquisavel(assistida).includes(termo);
     });
@@ -128,7 +128,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
             key={`${filtro}-${busca}-${visiveis.length}`}
             modules={[Navigation, Pagination, Keyboard, A11y]}
             spaceBetween={16}
-            slidesPerView={1.08}
+            slidesPerView={1.04}
             grabCursor
             watchOverflow
             keyboard={{ enabled: true }}
@@ -140,8 +140,8 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
               paginationBulletMessage: 'Ir para o cartão {{index}}',
             }}
             breakpoints={{
-              640: { slidesPerView: 2, spaceBetween: 16 },
-              1024: { slidesPerView: 3, spaceBetween: 20 },
+              768: { slidesPerView: 2, spaceBetween: 18 },
+              1280: { slidesPerView: 3, spaceBetween: 22 },
             }}
           >
             {visiveis.map((assistida, indice) => (

@@ -17,6 +17,14 @@ function Campo({ nome, rotulo, dica, children }) {
   );
 }
 
+function linhaDeTriagem(triagem) {
+  return {
+    chave: Math.random().toString(36).slice(2),
+    data: triagem?.data ?? '',
+    observacao: triagem?.observacao ?? '',
+  };
+}
+
 function linhaDeFamiliar(familiar) {
   return {
     chave: Math.random().toString(36).slice(2),
@@ -35,11 +43,20 @@ export default function FormularioAssistida({ assistida }) {
   const [familiares, setFamiliares] = useState(
     assistida?.familiares?.length ? assistida.familiares.map(linhaDeFamiliar) : [linhaDeFamiliar()],
   );
+  const [triagens, setTriagens] = useState(
+    assistida?.triagens?.length ? assistida.triagens.map(linhaDeTriagem) : [linhaDeTriagem()],
+  );
 
   const coordenadasIniciais =
     assistida?.latitude !== null && assistida?.latitude !== undefined
       ? `${assistida.latitude}, ${assistida.longitude}`
       : '';
+
+  function alterarTriagem(chave, campo, valor) {
+    setTriagens((linhas) =>
+      linhas.map((linha) => (linha.chave === chave ? { ...linha, [campo]: valor } : linha)),
+    );
+  }
 
   function alterarFamiliar(chave, campo, valor) {
     setFamiliares((linhas) =>
@@ -104,20 +121,6 @@ export default function FormularioAssistida({ assistida }) {
           <input type="hidden" name="cor" value={cor} />
         </div>
 
-        <Campo
-          nome="data_triagem"
-          rotulo="Data da triagem (1ª visita)"
-          dica="É daqui que sai a contagem do cartão: a triagem conta como 1ª visita e cada 4º sábado seguinte vira a próxima. Sem esta data o cartão mostra um traço no lugar do número."
-        >
-          <input
-            id="data_triagem"
-            name="data_triagem"
-            type="date"
-            defaultValue={assistida?.data_triagem ?? ''}
-            className="campo"
-          />
-        </Campo>
-
         <Campo nome="telefone" rotulo="Telefone (WhatsApp)" dica="Com DDD. Ex.: (31) 99999-9999">
           <input
             id="telefone"
@@ -166,6 +169,63 @@ export default function FormularioAssistida({ assistida }) {
             placeholder="Casa azul, ao lado da padaria"
           />
         </Campo>
+      </section>
+
+      <section className="cartao p-5 space-y-3" style={{ '--cor': PALETA[cor].base }}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-bold text-sm">Triagens</h2>
+            <p className="text-xs text-tinta-suave mt-0.5 leading-snug">
+              A primeira conta como 1ª visita e é dela que sai a contagem do cartão. Se a família
+              passou por mais de uma triagem, registre todas.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setTriagens((linhas) => [...linhas, linhaDeTriagem()])}
+            className="botao-secundario inline-flex items-center gap-1.5 px-3 py-1.5 text-xs shrink-0 self-start"
+          >
+            <IconeMais tamanho={14} />
+            Adicionar
+          </button>
+        </div>
+
+        {triagens.map((linha) => (
+          <div key={linha.chave} className="bloco-doacao rounded-xl p-3 space-y-2">
+            <div className="flex gap-2">
+              <input
+                name="triagem_data"
+                type="date"
+                value={linha.data}
+                onChange={(evento) => alterarTriagem(linha.chave, 'data', evento.target.value)}
+                className="campo flex-1"
+                aria-label="Data da triagem"
+              />
+              <button
+                type="button"
+                onClick={() => setTriagens((linhas) => linhas.filter((item) => item.chave !== linha.chave))}
+                className="botao-secundario px-3 shrink-0"
+                aria-label="Remover triagem"
+              >
+                <IconeLixeira tamanho={15} />
+              </button>
+            </div>
+            <input
+              name="triagem_observacao"
+              value={linha.observacao}
+              onChange={(evento) => alterarTriagem(linha.chave, 'observacao', evento.target.value)}
+              className="campo"
+              placeholder="Observação da triagem (opcional)"
+              aria-label="Observação da triagem"
+            />
+          </div>
+        ))}
+
+        {triagens.length === 0 && (
+          <p className="text-sm text-tinta-suave">
+            Nenhuma triagem registrada — o cartão vai mostrar um traço no lugar do número.
+          </p>
+        )}
       </section>
 
       <section className="cartao p-5 space-y-3" style={{ '--cor': PALETA[cor].base }}>

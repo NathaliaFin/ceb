@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { corDe, iniciais } from '@/lib/cores';
-import { formatarData, formatarDataCurta, numeroDaVisita, ordinal } from '@/lib/datas';
+import {
+  formatarData, formatarDataCurta, primeiraTriagem, visitasDepoisDaTriagem,
+} from '@/lib/datas';
 import { linkGoogleMaps, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import {
-  IconeAlerta, IconeCalendario, IconeCasa, IconeConversa, IconeNavegacao,
-  IconeNota, IconePino, IconePresente, IconeSeta,
+  IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
+  IconeNavegacao, IconeNota, IconePino, IconePresente, IconeSeta,
 } from './Icones';
 
 function BotaoAcao({ href, classe, rotulo, children }) {
@@ -33,6 +35,14 @@ function descreverFamiliar(familiar) {
   return complemento ? `${familiar.nome} (${complemento})` : familiar.nome;
 }
 
+/** "Triagem em 27/06/2026" ou, com mais de uma, "2 triagens · 27/06 e 25/07". */
+function textoDasTriagens(triagens) {
+  if (triagens.length === 1) return `Triagem em ${formatarData(triagens[0].data)}`;
+  const datas = triagens.map((t) => formatarDataCurta(t.data));
+  const ultima = datas.pop();
+  return `${triagens.length} triagens · ${datas.join(', ')} e ${ultima}`;
+}
+
 export default function CardAssistida({ assistida, hoje, proximaVisita, indice = 0 }) {
   const [aberto, setAberto] = useState(false);
 
@@ -40,15 +50,15 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
   const temEmergencia = Boolean(assistida.necessidades_emergenciais);
   const ehDiaDeVisita = proximaVisita === hoje;
 
-  // Contagem pelo calendario: a triagem e a 1a visita, cada 4o sabado seguinte
-  // e a proxima. Nao depende de ninguem confirmar nada.
-  const triagem = assistida.data_triagem;
-  const visitasAteHoje = numeroDaVisita(triagem, hoje);
-  const numeroDaProxima = numeroDaVisita(triagem, proximaVisita);
+  // A contagem sai do calendario, a partir da PRIMEIRA triagem. As demais ficam
+  // registradas, mas nao mudam o numero.
+  const triagens = assistida.triagens ?? [];
+  const triagem = primeiraTriagem(triagens);
+  const visitas = visitasDepoisDaTriagem(triagem, hoje);
   const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
 
   const familiares = assistida.familiares ?? [];
-  const temDetalhes = Boolean(assistida.referencia || assistida.observacoes || assistida.itens_doacao);
+  const temDetalhes = Boolean(assistida.referencia || assistida.observacoes);
 
   return (
     <article
@@ -57,8 +67,23 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
     >
       <div className="cartao__capa">
         <span className="cartao__selo">
-          <strong>{triagem ? visitasAteHoje : '—'}</strong>
-          <span>{visitasAteHoje === 1 ? 'visita' : 'visitas'}</span>
+          {!triagem ? (
+            <>
+              <strong>—</strong>
+              <span>sem triagem</span>
+            </>
+          ) : triagemNoFuturo ? (
+            <>
+              <strong>—</strong>
+              <span>a fazer</span>
+            </>
+          ) : (
+            <>
+              <span className="cartao__selo-topo">Triagem +</span>
+              <strong>{visitas}</strong>
+              <span>{visitas === 1 ? 'visita' : 'visitas'}</span>
+            </>
+          )}
         </span>
 
         <div className="cartao__sobre">
@@ -91,20 +116,25 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           <li>
             <IconeCalendario tamanho={16} />
             <span>
-              {!triagem ? (
-                'Falta informar a data da triagem'
-              ) : triagemNoFuturo ? (
-                <>Triagem marcada para {formatarData(triagem)}</>
-              ) : ehDiaDeVisita ? (
-                <>
-                  Hoje é a <strong className="font-semibold text-tinta">{ordinal(visitasAteHoje)} visita</strong>
-                </>
+              {ehDiaDeVisita ? (
+                <strong className="font-semibold text-tinta">Hoje é dia de visita</strong>
               ) : (
                 <>
-                  Próxima em {formatarDataCurta(proximaVisita)} —{' '}
-                  <strong className="font-semibold text-tinta">será a {ordinal(numeroDaProxima)}</strong>
+                  Próxima visita em{' '}
+                  <strong className="font-semibold text-tinta">
+                    {formatarDataCurta(proximaVisita)}
+                  </strong>
                 </>
               )}
+            </span>
+          </li>
+
+          <li>
+            <IconeCheck tamanho={16} />
+            <span>
+              {triagens.length === 0
+                ? 'Falta registrar a triagem'
+                : textoDasTriagens(triagens)}
             </span>
           </li>
 
@@ -114,14 +144,17 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
               <span>{telefoneFormatado(assistida.telefone)}</span>
             </li>
           )}
-
-          {triagem && !triagemNoFuturo && (
-            <li>
-              <IconePino tamanho={16} />
-              <span>No projeto desde {formatarData(triagem)}</span>
-            </li>
-          )}
         </ul>
+
+        {assistida.itens_doacao && (
+          <div className="bloco-doacao rounded-xl p-3 mt-3">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
+              <IconePresente tamanho={13} />
+              Itens especiais de doação
+            </div>
+            <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">{assistida.itens_doacao}</p>
+          </div>
+        )}
 
         {familiares.length > 0 && (
           <div className="cartao__gente">
@@ -160,17 +193,6 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
 
             {aberto && (
               <div className="space-y-3 pt-1 entrada">
-                {assistida.itens_doacao && (
-                  <div className="bloco-doacao rounded-xl p-3">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
-                      <IconePresente tamanho={13} />
-                      Itens especiais de doação
-                    </div>
-                    <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">
-                      {assistida.itens_doacao}
-                    </p>
-                  </div>
-                )}
                 {assistida.referencia && (
                   <div>
                     <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
