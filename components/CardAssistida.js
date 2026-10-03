@@ -79,7 +79,6 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
             </>
           ) : (
             <>
-              <span className="cartao__selo-topo">Triagem +</span>
               <strong>{visitas}</strong>
               <span>{visitas === 1 ? 'visita' : 'visitas'}</span>
             </>
@@ -146,15 +145,21 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           )}
         </ul>
 
-        {assistida.itens_doacao && (
-          <div className="bloco-doacao rounded-xl p-3 mt-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
-              <IconePresente tamanho={13} />
-              Itens especiais de doação
-            </div>
-            <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">{assistida.itens_doacao}</p>
+        {/* Aparece sempre, mesmo sem nada cadastrado: e informacao que o
+            voluntario procura no cartao, e a ausencia tambem diz algo. */}
+        <div className="bloco-doacao rounded-xl p-3 mt-3">
+          <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
+            <IconePresente tamanho={13} />
+            Itens especiais de doação
           </div>
-        )}
+          {assistida.itens_doacao ? (
+            <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">{assistida.itens_doacao}</p>
+          ) : (
+            <p className="text-sm mt-1.5 leading-snug text-tinta-suave italic opacity-70">
+              Nada registrado para esta família.
+            </p>
+          )}
+        </div>
 
         {familiares.length > 0 && (
           <div className="cartao__gente">

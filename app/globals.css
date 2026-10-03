@@ -264,6 +264,11 @@ body {
 
 .carrossel .swiper-slide > * {
   width: 100%;
+  /* Teto de largura: sem isso, com poucas familias o cartao estica e fica
+     comprido e raso. No celular a tela e mais estreita que o teto, entao ele
+     nao atrapalha; em tela grande segura o cartao num formato de retrato. */
+  max-width: 24rem;
+  margin-inline: auto;
 }
 
 .seta-carrossel {
@@ -468,8 +473,8 @@ body {
   left: 0.85rem;
   display: grid;
   place-items: center;
-  min-width: 4.1rem;
-  padding: 0.45rem 0.65rem;
+  min-width: 3.6rem;
+  padding: 0.4rem 0.6rem;
   line-height: 1;
   border-radius: 0.6rem;
   background: var(--superficie);
