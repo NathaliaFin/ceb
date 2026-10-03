@@ -6,9 +6,10 @@ import {
   formatarData, formatarDataCurta, numeroDaVisita, primeiraTriagem,
 } from '@/lib/datas';
 import { linkGoogleMaps, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import DetalheAssistida from './DetalheAssistida';
 import {
   IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
-  IconeNavegacao, IconeNota, IconePino, IconePresente, IconeSeta,
+  IconeNavegacao, IconePino, IconePresente,
 } from './Icones';
 
 function BotaoAcao({ href, classe, rotulo, children }) {
@@ -21,7 +22,14 @@ function BotaoAcao({ href, classe, rotulo, children }) {
     );
   }
   return (
-    <a className={`botao-acao ${classe}`} href={href} target="_blank" rel="noopener noreferrer">
+    <a
+      className={`botao-acao ${classe}`}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      // O cartao inteiro abre a ficha; tocar no botao nao pode fazer as duas coisas.
+      onClick={(evento) => evento.stopPropagation()}
+    >
       {children}
       <span>{rotulo}</span>
     </a>
@@ -44,7 +52,7 @@ function textoDasTriagens(triagens) {
 }
 
 export default function CardAssistida({ assistida, hoje, proximaVisita, indice = 0 }) {
-  const [aberto, setAberto] = useState(false);
+  const [fichaAberta, setFichaAberta] = useState(false);
 
   const cor = corDe(assistida.cor);
   const temEmergencia = Boolean(assistida.necessidades_emergenciais);
@@ -58,12 +66,21 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
   const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
 
   const familiares = assistida.familiares ?? [];
-  const temDetalhes = Boolean(assistida.referencia || assistida.observacoes);
 
   return (
     <article
-      className={`cartao cartao--capa entrada ${assistida.ativa ? '' : 'cartao-inativo'}`}
+      className={`cartao cartao--capa cartao--clicavel entrada ${assistida.ativa ? '' : 'cartao-inativo'}`}
       style={{ '--cor': cor.base, animationDelay: `${Math.min(indice, 8) * 70}ms` }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Abrir a ficha de ${assistida.nome_completo}`}
+      onClick={() => setFichaAberta(true)}
+      onKeyDown={(evento) => {
+        if (evento.key === 'Enter' || evento.key === ' ') {
+          evento.preventDefault();
+          setFichaAberta(true);
+        }
+      }}
     >
       <div className="cartao__capa">
         <span className="cartao__selo">
@@ -179,47 +196,9 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           </div>
         )}
 
-        {temDetalhes && (
-          <>
-            <button
-              type="button"
-              onClick={() => setAberto((valor) => !valor)}
-              aria-expanded={aberto}
-              className="mt-3 w-full flex items-center justify-center gap-1 text-xs font-semibold text-tinta-suave py-1.5"
-            >
-              {aberto ? 'Menos detalhes' : 'Mais detalhes'}
-              <span
-                className="transition-transform duration-200"
-                style={{ transform: aberto ? 'rotate(180deg)' : 'none' }}
-              >
-                <IconeSeta tamanho={14} />
-              </span>
-            </button>
-
-            {aberto && (
-              <div className="space-y-3 pt-1 entrada">
-                {assistida.referencia && (
-                  <div>
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
-                      <IconePino tamanho={13} />
-                      Ponto de referência
-                    </div>
-                    <p className="text-sm mt-1 leading-snug whitespace-pre-line">{assistida.referencia}</p>
-                  </div>
-                )}
-                {assistida.observacoes && (
-                  <div>
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
-                      <IconeNota tamanho={13} />
-                      Observações
-                    </div>
-                    <p className="text-sm mt-1 leading-snug whitespace-pre-line">{assistida.observacoes}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </>
-        )}
+        <p className="mt-3 text-center text-xs font-semibold text-tinta-suave">
+          Toque no cartão para ver a ficha completa
+        </p>
 
         <div className="cartao__pe grid grid-cols-3 gap-2">
           <BotaoAcao href={linkWhatsapp(assistida.telefone)} classe="botao-whatsapp" rotulo="WhatsApp">
@@ -233,6 +212,15 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           </BotaoAcao>
         </div>
       </div>
+
+      {fichaAberta && (
+        <DetalheAssistida
+          assistida={assistida}
+          hoje={hoje}
+          proximaVisita={proximaVisita}
+          aoFechar={() => setFichaAberta(false)}
+        />
+      )}
     </article>
   );
 }

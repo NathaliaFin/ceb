@@ -564,3 +564,104 @@ body {
 .cartao__nomes { font-size: 0.82rem; line-height: 1.3; color: var(--tinta-suave); }
 
 .cartao__pe { margin-top: auto; padding-top: 1rem; }
+
+/* ---------- ficha completa ---------- */
+.cartao--clicavel { cursor: pointer; }
+
+.cartao--clicavel:focus-visible {
+  outline: 3px solid var(--cor);
+  outline-offset: 3px;
+}
+
+.ficha-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: rgb(8 6 4 / 0.55);
+  backdrop-filter: blur(2px);
+  animation: entrada 0.2s ease-out both;
+  cursor: default;
+}
+
+@media (min-width: 640px) {
+  .ficha-fundo { align-items: center; padding: 1.5rem; }
+}
+
+.ficha {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 32rem;
+  /* No celular sobe de baixo e ocupa quase a tela toda; em tela grande vira
+     uma janela centrada. */
+  max-height: 92dvh;
+  border-radius: 1.25rem 1.25rem 0 0;
+  background: var(--superficie);
+  box-shadow: 0 -8px 40px rgb(2 6 30 / 0.4);
+  animation: sobe 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .ficha { border-radius: 1.25rem; max-height: 86dvh; }
+}
+
+@keyframes sobe {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ficha, .ficha-fundo { animation: none; }
+}
+
+.ficha__topo {
+  position: relative;
+  padding: 1.2rem 1.3rem;
+  background: var(--cor);
+}
+
+.ficha__topo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.08) 0 10px, transparent 10px 20px);
+}
+
+.ficha__topo > * { position: relative; }
+
+.ficha__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.8rem;
+  background: rgb(255 255 255 / 0.22);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex: none;
+}
+
+.ficha__fechar {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.2);
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.ficha__corpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.3rem 1.6rem;
+  padding-bottom: calc(1.6rem + env(safe-area-inset-bottom, 0px));
+}

@@ -1,0 +1,234 @@
+'use client';
+
+import { useEffect } from 'react';
+import { corDe, iniciais } from '@/lib/cores';
+import { formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
+import { linkGoogleMaps, linkTelefone, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import {
+  IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
+  IconeNavegacao, IconeNota, IconePessoas, IconePino, IconePresente,
+} from './Icones';
+
+/** Campos em branco aparecem assim, em vez de sumirem: a falta tambem informa. */
+function Vazio({ children }) {
+  return <span className="text-tinta-suave italic opacity-70">{children}</span>;
+}
+
+function Secao({ icone, titulo, children }) {
+  return (
+    <section className="py-3.5 border-t border-borda first:border-t-0 first:pt-0">
+      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave mb-2">
+        {icone}
+        {titulo}
+      </div>
+      <div className="text-sm leading-relaxed">{children}</div>
+    </section>
+  );
+}
+
+export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFechar }) {
+  useEffect(() => {
+    function aoTeclar(evento) {
+      if (evento.key === 'Escape') aoFechar();
+    }
+    document.addEventListener('keydown', aoTeclar);
+    // Trava a rolagem do fundo enquanto a ficha esta aberta.
+    const rolagemAnterior = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', aoTeclar);
+      document.body.style.overflow = rolagemAnterior;
+    };
+  }, [aoFechar]);
+
+  const cor = corDe(assistida.cor);
+  const triagens = assistida.triagens ?? [];
+  const triagem = primeiraTriagem(triagens);
+  const visitas = numeroDaVisita(triagem, hoje);
+  const familiares = assistida.familiares ?? [];
+  const temCoordenadas = assistida.latitude !== null && assistida.latitude !== undefined;
+
+  return (
+    <div className="ficha-fundo" onClick={aoFechar} role="presentation">
+      <div
+        className="ficha"
+        style={{ '--cor': cor.base }}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Ficha de ${assistida.nome_completo}`}
+        onClick={(evento) => evento.stopPropagation()}
+      >
+        <header className="ficha__topo">
+          <div className="flex items-start gap-3">
+            <span className="ficha__avatar">{iniciais(assistida.nome_completo)}</span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold text-lg leading-snug break-words text-white">
+                {assistida.nome_completo}
+              </h2>
+              <p className="text-white/85 text-sm mt-0.5">
+                {triagem ? `${visitas} ${visitas === 1 ? 'visita' : 'visitas'}` : 'sem triagem registrada'}
+              </p>
+            </div>
+            <button type="button" onClick={aoFechar} className="ficha__fechar" aria-label="Fechar ficha">
+              ✕
+            </button>
+          </div>
+        </header>
+
+        <div className="ficha__corpo">
+          {assistida.necessidades_emergenciais && (
+            <div className="bloco-alerta rounded-xl p-3 mb-3">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
+                <IconeAlerta tamanho={14} />
+                Necessidade emergencial
+              </div>
+              <p className="text-sm mt-1.5 leading-snug whitespace-pre-line text-tinta font-medium">
+                {assistida.necessidades_emergenciais}
+              </p>
+            </div>
+          )}
+
+          <Secao icone={<IconeCalendario tamanho={13} />} titulo="Visitas">
+            {triagem ? (
+              <>
+                <p>
+                  <strong>{visitas}</strong> {visitas === 1 ? 'visita' : 'visitas'} até hoje,
+                  contando a triagem como a primeira.
+                </p>
+                <p className="text-tinta-suave mt-1">
+                  Próxima: {formatarDataPorExtenso(proximaVisita)}, {formatarData(proximaVisita)} —
+                  será a {numeroDaVisita(triagem, proximaVisita)}ª.
+                </p>
+              </>
+            ) : (
+              <Vazio>Nenhuma triagem registrada, então ainda não há contagem.</Vazio>
+            )}
+          </Secao>
+
+          <Secao icone={<IconeCheck tamanho={13} />} titulo="Triagens">
+            {triagens.length === 0 ? (
+              <Vazio>Nenhuma triagem registrada.</Vazio>
+            ) : (
+              <ul className="space-y-1.5">
+                {triagens.map((item, indice) => (
+                  <li key={item.id} className="flex gap-2">
+                    <span className="font-semibold shrink-0">{indice + 1}ª</span>
+                    <span>
+                      {formatarData(item.data)}
+                      {item.observacao && <span className="text-tinta-suave"> — {item.observacao}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Secao>
+
+          <Secao icone={<IconePessoas tamanho={13} />} titulo="Família">
+            {familiares.length === 0 ? (
+              <Vazio>Nenhuma pessoa da família cadastrada.</Vazio>
+            ) : (
+              <ul className="space-y-2">
+                {familiares.map((familiar) => (
+                  <li key={familiar.id} className="flex items-start gap-2.5">
+                    <span className="cartao__avatar shrink-0">{iniciais(familiar.nome)}</span>
+                    <span>
+                      <strong className="font-semibold">{familiar.nome}</strong>
+                      {(familiar.parentesco || familiar.idade !== null) && (
+                        <span className="text-tinta-suave">
+                          {' · '}
+                          {[familiar.parentesco, familiar.idade !== null ? `${familiar.idade} anos` : null]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      )}
+                      {familiar.observacao && (
+                        <span className="block text-tinta-suave text-xs mt-0.5">{familiar.observacao}</span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Secao>
+
+          <Secao icone={<IconeCasa tamanho={13} />} titulo="Onde fica">
+            <p>{assistida.endereco || <Vazio>Endereço não informado.</Vazio>}</p>
+            <p className="mt-1.5">
+              <span className="text-tinta-suave">Referência: </span>
+              {assistida.referencia || <Vazio>não informada</Vazio>}
+            </p>
+            <p className="mt-1.5">
+              <span className="text-tinta-suave">Coordenadas: </span>
+              {temCoordenadas ? (
+                <span className="font-mono text-xs">
+                  {assistida.latitude}, {assistida.longitude}
+                </span>
+              ) : (
+                <Vazio>não informadas — o Waze vai procurar pelo endereço escrito</Vazio>
+              )}
+            </p>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <a
+                className="botao-acao botao-waze"
+                href={linkWaze(assistida) ?? undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-disabled={!linkWaze(assistida)}
+              >
+                <IconeNavegacao tamanho={16} />
+                <span>Waze</span>
+              </a>
+              <a
+                className="botao-acao botao-maps"
+                href={linkGoogleMaps(assistida) ?? undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-disabled={!linkGoogleMaps(assistida)}
+              >
+                <IconePino tamanho={16} />
+                <span>Maps</span>
+              </a>
+            </div>
+          </Secao>
+
+          <Secao icone={<IconeConversa tamanho={13} />} titulo="Contato">
+            {assistida.telefone ? (
+              <>
+                <a href={linkTelefone(assistida.telefone)} className="underline underline-offset-2">
+                  {telefoneFormatado(assistida.telefone)}
+                </a>
+                <a
+                  className="botao-acao botao-whatsapp mt-3"
+                  href={linkWhatsapp(assistida.telefone)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <IconeConversa tamanho={16} />
+                  <span>Abrir no WhatsApp</span>
+                </a>
+              </>
+            ) : (
+              <Vazio>Telefone não informado — o botão do WhatsApp fica desligado.</Vazio>
+            )}
+          </Secao>
+
+          <Secao icone={<IconePresente tamanho={13} />} titulo="Itens especiais de doação">
+            {assistida.itens_doacao ? (
+              <p className="whitespace-pre-line">{assistida.itens_doacao}</p>
+            ) : (
+              <Vazio>Nada registrado para esta família.</Vazio>
+            )}
+          </Secao>
+
+          <Secao icone={<IconeNota tamanho={13} />} titulo="Observações">
+            {assistida.observacoes ? (
+              <p className="whitespace-pre-line">{assistida.observacoes}</p>
+            ) : (
+              <Vazio>Nenhuma observação registrada.</Vazio>
+            )}
+          </Secao>
+        </div>
+      </div>
+    </div>
+  );
+}
