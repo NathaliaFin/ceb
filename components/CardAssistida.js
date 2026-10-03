@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { corDe, iniciais } from '@/lib/cores';
 import {
-  formatarData, formatarDataCurta, primeiraTriagem, visitasDepoisDaTriagem,
+  formatarData, formatarDataCurta, numeroDaVisita, primeiraTriagem,
 } from '@/lib/datas';
 import { linkGoogleMaps, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import {
@@ -50,11 +50,11 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
   const temEmergencia = Boolean(assistida.necessidades_emergenciais);
   const ehDiaDeVisita = proximaVisita === hoje;
 
-  // A contagem sai do calendario, a partir da PRIMEIRA triagem. As demais ficam
-  // registradas, mas nao mudam o numero.
+  // A contagem sai do calendario, a partir da PRIMEIRA triagem, que ja conta
+  // como visita. As demais triagens ficam registradas, mas nao mudam o numero.
   const triagens = assistida.triagens ?? [];
   const triagem = primeiraTriagem(triagens);
-  const visitas = visitasDepoisDaTriagem(triagem, hoje);
+  const visitas = numeroDaVisita(triagem, hoje);
   const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
 
   const familiares = assistida.familiares ?? [];

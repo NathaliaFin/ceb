@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { exigirAdmin } from '@/lib/auth';
 import { obterAssistida } from '@/lib/consultas';
 import {
-  formatarData, hojeIso, primeiraTriagem, proximaVisita, visitasDepoisDaTriagem,
+  formatarData, hojeIso, numeroDaVisita, primeiraTriagem, proximaVisita,
 } from '@/lib/datas';
 import FormularioAssistida from '@/components/FormularioAssistida';
 import BotaoExcluirAssistida from '@/components/BotaoExcluirAssistida';
@@ -60,15 +60,14 @@ export default async function PaginaEditarAssistida({ params, searchParams }) {
               <p>
                 O cartão mostra{' '}
                 <strong>
-                  Triagem + {visitasDepoisDaTriagem(triagem, hoje)}{' '}
-                  {visitasDepoisDaTriagem(triagem, hoje) === 1 ? 'visita' : 'visitas'}
+                  {numeroDaVisita(triagem, hoje)}{' '}
+                  {numeroDaVisita(triagem, hoje) === 1 ? 'visita' : 'visitas'}
                 </strong>
-                , contando a partir de {formatarData(triagem)}.
+                , contando a triagem de {formatarData(triagem)} como a primeira.
               </p>
               <p className="text-tinta-suave text-xs mt-1">
-                Próxima em {formatarData(proxima)}, quando vira Triagem +{' '}
-                {visitasDepoisDaTriagem(triagem, proxima)}. A contagem vem do calendário: nada
-                precisa ser confirmado.
+                Próxima em {formatarData(proxima)}, quando passa a {numeroDaVisita(triagem, proxima)}.
+                A contagem vem do calendário: nada precisa ser confirmado.
                 {quantasTriagens > 1 &&
                   ` São ${quantasTriagens} triagens registradas; a contagem usa a primeira.`}
               </p>

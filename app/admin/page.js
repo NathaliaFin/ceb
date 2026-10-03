@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { exigirAdmin } from '@/lib/auth';
 import { listarAssistidas } from '@/lib/consultas';
 import { corDe, iniciais } from '@/lib/cores';
-import { formatarData, hojeIso, primeiraTriagem, visitasDepoisDaTriagem } from '@/lib/datas';
+import { formatarData, hojeIso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
 import { IconeLapis, IconeMais, IconeSeta } from '@/components/Icones';
 
 export const dynamic = 'force-dynamic';
@@ -65,7 +65,7 @@ export default async function PaginaAdmin() {
                     </p>
                     <p className="text-xs text-tinta-suave mt-0.5">
                       {assistida.triagens?.length
-                        ? `Triagem + ${visitasDepoisDaTriagem(primeiraTriagem(assistida.triagens), hoje)} visitas · ${
+                        ? `${numeroDaVisita(primeiraTriagem(assistida.triagens), hoje)} visitas · ${
                             assistida.triagens.length > 1
                               ? `${assistida.triagens.length} triagens, a 1ª em `
                               : 'em '

@@ -1,4 +1,4 @@
-import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, visitasDepoisDaTriagem } from '../lib/datas.js';
+import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem } from '../lib/datas.js';
 import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
@@ -60,13 +60,13 @@ conferir('no meio do mes volta para o mes anterior', visitaAnterior('2026-10-02'
 conferir('no proprio dia devolve o dia', visitaAnterior('2026-10-24'), '2026-10-24');
 conferir('comeco do ano volta para dezembro', visitaAnterior('2027-01-05'), '2026-12-26');
 
-console.log('--- Triagem + x visitas ---');
-conferir('no dia da triagem: Triagem + 0', visitasDepoisDaTriagem('2026-10-24', '2026-10-24'), 0);
-conferir('um mes depois: Triagem + 1', visitasDepoisDaTriagem('2026-10-24', '2026-11-28'), 1);
-conferir('triagem em dia comum, 1o sabado seguinte: Triagem + 1', visitasDepoisDaTriagem('2026-10-02', '2026-10-24'), 1);
-conferir('antes da triagem: 0', visitasDepoisDaTriagem('2026-10-24', '2026-10-01'), 0);
-conferir('sem triagem: 0', visitasDepoisDaTriagem(null, '2026-10-24'), 0);
-conferir('um ano: Triagem + 11', visitasDepoisDaTriagem('2026-01-24', '2026-12-26'), 11);
+console.log('--- contagem com a triagem incluida ---');
+conferir('no dia da triagem ja e 1 visita', numeroDaVisita('2026-10-24', '2026-10-24'), 1);
+conferir('um mes depois sao 2', numeroDaVisita('2026-10-24', '2026-11-28'), 2);
+conferir('caso real da Vanilde: triagem 23/05 vista em 02/10', numeroDaVisita('2026-05-23', '2026-10-02'), 5);
+conferir('mesma Vanilde na proxima visita, 24/10', numeroDaVisita('2026-05-23', '2026-10-24'), 6);
+conferir('antes da triagem nao conta', numeroDaVisita('2026-10-24', '2026-10-01'), 0);
+conferir('sem triagem nao conta', numeroDaVisita(null, '2026-10-24'), 0);
 
 console.log('--- a triagem que conta e a primeira ---');
 conferir('lista vazia', primeiraTriagem([]), null);
@@ -74,8 +74,8 @@ conferir('uma so', primeiraTriagem([{ data: '2026-06-27' }]), '2026-06-27');
 conferir('pega a mais antiga mesmo fora de ordem', primeiraTriagem([
   { data: '2026-08-22' }, { data: '2026-06-27' }, { data: '2026-07-25' },
 ]), '2026-06-27');
-conferir('segunda triagem nao muda a contagem', visitasDepoisDaTriagem(
-  primeiraTriagem([{ data: '2026-06-27' }, { data: '2026-08-22' }]), '2026-10-02'), 3);
+conferir('segunda triagem nao muda a contagem', numeroDaVisita(
+  primeiraTriagem([{ data: '2026-06-27' }, { data: '2026-08-22' }]), '2026-10-02'), 4);
 
 console.log(falhas === 0 ? '\nTUDO OK' : `\n${falhas} FALHA(S)`);
 process.exit(falhas === 0 ? 0 : 1);

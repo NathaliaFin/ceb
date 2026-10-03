@@ -136,10 +136,13 @@ db/
 
 ## 7. Detalhes que valem saber
 
-**A contagem de visitas sai do calendário, não de confirmação.** O cartão mostra
-**Triagem + x visitas**: a triagem é sempre a primeira, e cada 4º sábado do mês
-depois dela soma um. Ninguém precisa marcar nada — o número se atualiza sozinho
-a cada mês que passa.
+**A contagem de visitas sai do calendário, não de confirmação.** A triagem conta
+como uma visita normal — é a primeira — e cada 4º sábado do mês depois dela soma
+mais uma. Ninguém precisa marcar nada: o número se atualiza sozinho a cada mês
+que passa.
+
+Exemplo: triagem em 23/05/2026, olhando em 02/10/2026 → 5 visitas (a triagem
+mais 27/06, 25/07, 22/08 e 26/09).
 
 Como consequência, se num mês a família não for visitada, o número avança do
 mesmo jeito. Era o preço de não depender de confirmação.
