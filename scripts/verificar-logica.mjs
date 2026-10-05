@@ -1,5 +1,5 @@
 import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem } from '../lib/datas.js';
-import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa } from '../lib/links.js';
+import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa, extrairLink } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
 let falhas = 0;
@@ -95,6 +95,14 @@ console.log('--- rota prefere o link cadastrado ---');
 conferir('Maps usa o link colado', linkGoogleMaps({ link_mapa: doPedido, latitude: -15.765, longitude: -47.7777 }), doPedido);
 conferir('Maps sem link cai nas coordenadas', linkGoogleMaps({ link_mapa: null, latitude: -15.765, longitude: -47.7777 }), 'https://www.google.com/maps/search/?api=1&query=-15.765%2C-47.7777');
 conferir('Waze usa as coordenadas, nao o link', linkWaze({ link_mapa: doPedido, latitude: -15.765, longitude: -47.7777 }), 'https://waze.com/ul?ll=-15.765%2C-47.7777&navigate=yes');
+
+console.log('--- link colado junto com outro texto ---');
+conferir('nome do lugar antes do link', extrairLink(['Carmen Silva', 'https://maps.app.goo.gl/AbC123'].join(String.fromCharCode(10))), 'https://maps.app.goo.gl/AbC123');
+conferir('link solto', extrairLink(doPedido), doPedido);
+conferir('ponto final grudado no link', extrairLink('veja aqui https://maps.app.goo.gl/AbC123.'), 'https://maps.app.goo.gl/AbC123');
+conferir('texto sem link nenhum', extrairLink('Quadra 28 conjunto H'), null);
+conferir('coordenadas digitadas nao viram link', extrairLink('-15.765, -47.7777'), null);
+conferir('acha as coordenadas do link colado com texto', extrairCoordenadas(extrairLink('Casa da Carmen ' + doPedido)), { latitude: -15.76500415802002, longitude: -47.77771759033203 });
 
 console.log(falhas === 0 ? '\nTUDO OK' : `\n${falhas} FALHA(S)`);
 process.exit(falhas === 0 ? 0 : 1);

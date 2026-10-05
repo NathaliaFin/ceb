@@ -152,11 +152,18 @@ export default function FormularioAssistida({ assistida }) {
           <input
             id="link_mapa"
             name="link_mapa"
-            type="url"
+            // De proposito nao e type="url": o navegador bloquearia o envio
+            // quando o texto colado trouxer o nome do lugar junto com o link,
+            // que e como o compartilhamento do celular costuma vir. A conferencia
+            // e feita no servidor, que avisa com uma mensagem clara.
+            type="text"
             inputMode="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             defaultValue={localizacaoInicial}
             className="campo text-sm"
-            placeholder="https://maps.app.goo.gl/..."
+            placeholder="Cole aqui o link do Google Maps"
           />
         </Campo>
 

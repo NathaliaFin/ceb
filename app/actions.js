@@ -13,7 +13,7 @@ import {
   substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
-import { ehLinkCurtoDeMapa, extrairCoordenadas } from '@/lib/links';
+import { ehLinkCurtoDeMapa, extrairCoordenadas, extrairLink } from '@/lib/links';
 
 async function identificarCliente() {
   const cabecalhos = await headers();
@@ -53,19 +53,21 @@ async function lerLocalizacao(texto) {
   const bruto = String(texto ?? '').trim();
   if (!bruto) return { link_mapa: null, latitude: null, longitude: null };
 
-  const ehLink = /^https?:\/\//i.test(bruto);
-  let alvo = bruto;
+  // Aceita o texto inteiro que veio da area de transferencia: o link pode estar
+  // no meio dele, depois do nome do lugar.
+  const link = extrairLink(bruto);
+  let alvo = link ?? bruto;
 
   // O link que o celular compartilha e encurtado e nao carrega as coordenadas.
   // Abrimos uma vez, aqui no salvar, so para descobrir o endereco final.
-  if (ehLink && ehLinkCurtoDeMapa(bruto)) {
+  if (link && ehLinkCurtoDeMapa(link)) {
     try {
-      const resposta = await fetch(bruto, {
+      const resposta = await fetch(link, {
         redirect: 'follow',
         signal: AbortSignal.timeout(8000),
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; CEB)' },
       });
-      alvo = resposta.url || bruto;
+      alvo = resposta.url || link;
     } catch {
       // Sem rede ou link fora do ar: segue com o que foi colado.
     }
@@ -73,14 +75,14 @@ async function lerLocalizacao(texto) {
 
   const coordenadas = extrairCoordenadas(alvo) ?? extrairCoordenadas(bruto);
 
-  if (!ehLink && !coordenadas) {
+  if (!link && !coordenadas) {
     throw new Error(
       'Nao reconheci isso como link de mapa. Cole o link que o Google Maps compartilha, ou as coordenadas no formato -15.7650, -47.7777',
     );
   }
 
   return {
-    link_mapa: ehLink ? bruto : null,
+    link_mapa: link,
     latitude: coordenadas?.latitude ?? null,
     longitude: coordenadas?.longitude ?? null,
   };
