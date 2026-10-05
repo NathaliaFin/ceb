@@ -168,31 +168,14 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFec
               <span className="text-tinta-suave">Referência: </span>
               {assistida.referencia || <Vazio>não informada</Vazio>}
             </p>
-            <p className="mt-1.5">
-              <span className="text-tinta-suave">Link do mapa: </span>
-              {assistida.link_mapa ? (
-                <a
-                  href={assistida.link_mapa}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline underline-offset-2 break-all text-xs"
-                >
-                  {assistida.link_mapa}
-                </a>
-              ) : (
-                <Vazio>não cadastrado</Vazio>
-              )}
-            </p>
-            <p className="mt-1.5">
-              <span className="text-tinta-suave">Coordenadas: </span>
-              {temCoordenadas ? (
-                <span className="font-mono text-xs">
-                  {assistida.latitude}, {assistida.longitude}
-                </span>
-              ) : (
-                <Vazio>não extraídas — o Waze vai procurar pelo endereço escrito</Vazio>
-              )}
-            </p>
+            {!temCoordenadas && (
+              <p className="mt-1.5">
+                <Vazio>
+                  Sem link de mapa cadastrado — a rota vai pelo endereço escrito, que costuma parar
+                  na rua e não na casa.
+                </Vazio>
+              </p>
+            )}
             <div className="mt-3">
               <BotaoComoChegar assistida={assistida} />
             </div>
