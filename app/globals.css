@@ -670,3 +670,48 @@ body {
   padding: 1rem 1.3rem 1.6rem;
   padding-bottom: calc(1.6rem + env(safe-area-inset-bottom, 0px));
 }
+
+/* ---------- escolher o aplicativo de rota ---------- */
+.botao-rota { background: #2f7de1; }
+
+.escolha-rota {
+  width: 100%;
+  max-width: 22rem;
+  margin: 0 1rem 1rem;
+  padding: 1.3rem;
+  border-radius: 1.25rem;
+  background: var(--superficie);
+  box-shadow: 0 -8px 40px rgb(2 6 30 / 0.4);
+  animation: sobe 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (min-width: 640px) {
+  .escolha-rota { margin: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escolha-rota { animation: none; }
+}
+
+.escolha-rota__titulo {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.escolha-rota__nome {
+  margin: 0.2rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.escolha-rota__aviso {
+  margin: 0.9rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--tinta-suave);
+}

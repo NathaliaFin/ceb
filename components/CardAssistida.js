@@ -5,11 +5,12 @@ import { corDe, iniciais } from '@/lib/cores';
 import {
   formatarData, formatarDataCurta, numeroDaVisita, primeiraTriagem,
 } from '@/lib/datas';
-import { linkGoogleMaps, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import { linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import DetalheAssistida from './DetalheAssistida';
+import BotaoComoChegar from './BotaoComoChegar';
 import {
   IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
-  IconeNavegacao, IconePino, IconePresente,
+  IconePresente,
 } from './Icones';
 
 function BotaoAcao({ href, classe, rotulo, children }) {
@@ -200,16 +201,11 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           Toque no cartão para ver a ficha completa
         </p>
 
-        <div className="cartao__pe grid grid-cols-3 gap-2">
+        <div className="cartao__pe grid grid-cols-2 gap-2">
           <BotaoAcao href={linkWhatsapp(assistida.telefone)} classe="botao-whatsapp" rotulo="WhatsApp">
             <IconeConversa tamanho={16} />
           </BotaoAcao>
-          <BotaoAcao href={linkWaze(assistida)} classe="botao-waze" rotulo="Waze">
-            <IconeNavegacao tamanho={16} />
-          </BotaoAcao>
-          <BotaoAcao href={linkGoogleMaps(assistida)} classe="botao-maps" rotulo="Maps">
-            <IconePino tamanho={16} />
-          </BotaoAcao>
+          <BotaoComoChegar assistida={assistida} />
         </div>
       </div>
 

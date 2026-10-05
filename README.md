@@ -155,10 +155,19 @@ histórico, não reiniciam nem somam ao número.
 número, e aparece um filtro "Sem triagem" na tela principal para localizar quem
 ainda falta.
 
-**As coordenadas.** Sem elas, o Waze e o Google Maps abrem pelo texto do
-endereço, o que costuma cair no meio da rua. Com elas, abre no ponto certo. Para
-pegar: no Google Maps, segure o dedo sobre a casa e copie os números que
-aparecem (algo como `-19.9227, -43.9451`).
+**O link do mapa.** No cadastro, cole o link que o Google Maps compartilha — no
+celular, abra o local, toque em Compartilhar e copie. Ao salvar, o sistema tira
+a latitude e a longitude do link e guarda as duas coisas: o link (que o Google
+Maps abre no ponto exato que você marcou) e as coordenadas (que é do que o Waze
+precisa).
+
+Links encurtados (`maps.app.goo.gl/...`), que é o que o celular gera, são
+abertos uma vez no momento de salvar só para descobrir o endereço completo. Se
+isso falhar, o link continua valendo para o Google Maps e o Waze cai na busca
+pelo endereço escrito — a ficha da família avisa quando é o caso.
+
+No cartão há um único botão **Como chegar**, que pergunta se é para abrir no
+Waze ou no Google Maps e manda para o aplicativo instalado.
 
 **Para tirar uma família da lista** sem perder o histórico, desmarque
 _Família ativa no projeto_ em vez de apagar o cadastro.

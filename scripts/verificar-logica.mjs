@@ -1,5 +1,5 @@
 import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem } from '../lib/datas.js';
-import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado } from '../lib/links.js';
+import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
 let falhas = 0;
@@ -76,6 +76,25 @@ conferir('pega a mais antiga mesmo fora de ordem', primeiraTriagem([
 ]), '2026-06-27');
 conferir('segunda triagem nao muda a contagem', numeroDaVisita(
   primeiraTriagem([{ data: '2026-06-27' }, { data: '2026-08-22' }]), '2026-10-02'), 4);
+
+console.log('--- link de mapa ---');
+const doPedido = 'https://www.google.com/maps?q=-15.76500415802002,-47.77771759033203&z=17&hl=pt-BR';
+conferir('link que a Nathalia passou', extrairCoordenadas(doPedido), { latitude: -15.76500415802002, longitude: -47.77771759033203 });
+conferir('link com /@lat,lng,zoom', extrairCoordenadas('https://www.google.com/maps/@-15.765,-47.7777,17z'), { latitude: -15.765, longitude: -47.7777 });
+conferir('link de lugar com !3d!4d', extrairCoordenadas('https://www.google.com/maps/place/Casa/@-15.7,-47.7,17z/data=!3d-15.765!4d-47.7777'), { latitude: -15.765, longitude: -47.7777 });
+conferir('link no formato api=1&query', extrairCoordenadas('https://www.google.com/maps/search/?api=1&query=-15.765,-47.7777'), { latitude: -15.765, longitude: -47.7777 });
+conferir('virgula escapada como %2C', extrairCoordenadas('https://www.google.com/maps/search/?api=1&query=-15.765%2C-47.7777'), { latitude: -15.765, longitude: -47.7777 });
+conferir('link do proprio Waze', extrairCoordenadas('https://waze.com/ul?ll=-15.765,-47.7777&navigate=yes'), { latitude: -15.765, longitude: -47.7777 });
+conferir('par digitado na mao', extrairCoordenadas('-15.765, -47.7777'), { latitude: -15.765, longitude: -47.7777 });
+conferir('texto que nao e mapa', extrairCoordenadas('Quadra 28 conjunto H casa 04'), null);
+conferir('vazio', extrairCoordenadas(''), null);
+conferir('reconhece link encurtado do celular', ehLinkCurtoDeMapa('https://maps.app.goo.gl/AbCdEf123'), true);
+conferir('link normal nao e encurtado', ehLinkCurtoDeMapa(doPedido), false);
+
+console.log('--- rota prefere o link cadastrado ---');
+conferir('Maps usa o link colado', linkGoogleMaps({ link_mapa: doPedido, latitude: -15.765, longitude: -47.7777 }), doPedido);
+conferir('Maps sem link cai nas coordenadas', linkGoogleMaps({ link_mapa: null, latitude: -15.765, longitude: -47.7777 }), 'https://www.google.com/maps/search/?api=1&query=-15.765%2C-47.7777');
+conferir('Waze usa as coordenadas, nao o link', linkWaze({ link_mapa: doPedido, latitude: -15.765, longitude: -47.7777 }), 'https://waze.com/ul?ll=-15.765%2C-47.7777&navigate=yes');
 
 console.log(falhas === 0 ? '\nTUDO OK' : `\n${falhas} FALHA(S)`);
 process.exit(falhas === 0 ? 0 : 1);

@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { corDe, iniciais } from '@/lib/cores';
 import { formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
-import { linkGoogleMaps, linkTelefone, linkWaze, linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import { linkTelefone, linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import BotaoComoChegar from './BotaoComoChegar';
 import {
   IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
-  IconeNavegacao, IconeNota, IconePessoas, IconePino, IconePresente,
+  IconeNota, IconePessoas, IconePino, IconePresente,
 } from './Icones';
 
 /** Campos em branco aparecem assim, em vez de sumirem: a falta tambem informa. */
@@ -168,36 +169,32 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFec
               {assistida.referencia || <Vazio>não informada</Vazio>}
             </p>
             <p className="mt-1.5">
+              <span className="text-tinta-suave">Link do mapa: </span>
+              {assistida.link_mapa ? (
+                <a
+                  href={assistida.link_mapa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 break-all text-xs"
+                >
+                  {assistida.link_mapa}
+                </a>
+              ) : (
+                <Vazio>não cadastrado</Vazio>
+              )}
+            </p>
+            <p className="mt-1.5">
               <span className="text-tinta-suave">Coordenadas: </span>
               {temCoordenadas ? (
                 <span className="font-mono text-xs">
                   {assistida.latitude}, {assistida.longitude}
                 </span>
               ) : (
-                <Vazio>não informadas — o Waze vai procurar pelo endereço escrito</Vazio>
+                <Vazio>não extraídas — o Waze vai procurar pelo endereço escrito</Vazio>
               )}
             </p>
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              <a
-                className="botao-acao botao-waze"
-                href={linkWaze(assistida) ?? undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-disabled={!linkWaze(assistida)}
-              >
-                <IconeNavegacao tamanho={16} />
-                <span>Waze</span>
-              </a>
-              <a
-                className="botao-acao botao-maps"
-                href={linkGoogleMaps(assistida) ?? undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-disabled={!linkGoogleMaps(assistida)}
-              >
-                <IconePino tamanho={16} />
-                <span>Maps</span>
-              </a>
+            <div className="mt-3">
+              <BotaoComoChegar assistida={assistida} />
             </div>
           </Secao>
 

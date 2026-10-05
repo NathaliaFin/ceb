@@ -47,10 +47,12 @@ export default function FormularioAssistida({ assistida }) {
     assistida?.triagens?.length ? assistida.triagens.map(linhaDeTriagem) : [linhaDeTriagem()],
   );
 
-  const coordenadasIniciais =
-    assistida?.latitude !== null && assistida?.latitude !== undefined
+  // Mostra o link que ela colou; se so houver coordenadas antigas, mostra o par.
+  const localizacaoInicial =
+    assistida?.link_mapa ??
+    (assistida?.latitude !== null && assistida?.latitude !== undefined
       ? `${assistida.latitude}, ${assistida.longitude}`
-      : '';
+      : '');
 
   function alterarTriagem(chave, campo, valor) {
     setTriagens((linhas) =>
@@ -143,16 +145,18 @@ export default function FormularioAssistida({ assistida }) {
         </Campo>
 
         <Campo
-          nome="coordenadas"
-          rotulo="Coordenadas"
-          dica="No Google Maps, segure o dedo sobre a casa e copie os números que aparecem. Com isso o Waze abre no portão certo, não no meio da rua."
+          nome="link_mapa"
+          rotulo="Link do mapa"
+          dica="No celular, abra o local no Google Maps, toque em Compartilhar e cole o link aqui. O sistema tira as coordenadas sozinho — é do que o Waze precisa para parar no portão certo. Também aceita um par de coordenadas digitado."
         >
           <input
-            id="coordenadas"
-            name="coordenadas"
-            defaultValue={coordenadasIniciais}
-            className="campo font-mono text-sm"
-            placeholder="-19.9227, -43.9451"
+            id="link_mapa"
+            name="link_mapa"
+            type="url"
+            inputMode="url"
+            defaultValue={localizacaoInicial}
+            className="campo text-sm"
+            placeholder="https://maps.app.goo.gl/..."
           />
         </Campo>
 
