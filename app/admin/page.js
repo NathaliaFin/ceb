@@ -1,16 +1,20 @@
 import Link from 'next/link';
 import { exigirAdmin } from '@/lib/auth';
-import { listarAssistidas } from '@/lib/consultas';
+import { listarAssistidas, listarDiasSemVisita } from '@/lib/consultas';
 import { corDe, iniciais } from '@/lib/cores';
 import { formatarData, hojeIso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
-import { IconeLapis, IconeMais, IconeSeta } from '@/components/Icones';
+import { IconeCalendario, IconeLapis, IconeMais, IconeSeta } from '@/components/Icones';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PaginaAdmin() {
   await exigirAdmin();
-  const assistidas = await listarAssistidas({ incluirInativas: true });
+  const [assistidas, diasSemVisita] = await Promise.all([
+    listarAssistidas({ incluirInativas: true }),
+    listarDiasSemVisita(),
+  ]);
   const hoje = hojeIso();
+  const pulados = diasSemVisita.map((dia) => dia.data);
 
   return (
     <main className="px-4 py-6 max-w-3xl mx-auto">
@@ -33,6 +37,27 @@ export default async function PaginaAdmin() {
           Nova
         </Link>
       </div>
+
+      <Link
+        href="/admin/calendario"
+        className="cartao flex items-center gap-3 p-4 mb-5"
+        style={{ '--cor': '#1584c0' }}
+      >
+        <span className="text-tinta-suave">
+          <IconeCalendario tamanho={18} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold text-sm">Calendário das visitas</span>
+          <span className="block text-xs text-tinta-suave mt-0.5">
+            {pulados.length === 0
+              ? 'Marque aqui os meses em que o grupo não foi a campo'
+              : `${pulados.length} ${pulados.length === 1 ? 'mês marcado' : 'meses marcados'} sem visita`}
+          </span>
+        </span>
+        <span className="text-tinta-suave shrink-0 -rotate-90 inline-flex">
+          <IconeSeta tamanho={16} />
+        </span>
+      </Link>
 
       {assistidas.length === 0 ? (
         <div className="cartao p-8 text-center" style={{ '--cor': '#e0376f' }}>
@@ -65,7 +90,7 @@ export default async function PaginaAdmin() {
                     </p>
                     <p className="text-xs text-tinta-suave mt-0.5">
                       {assistida.triagens?.length
-                        ? `${numeroDaVisita(primeiraTriagem(assistida.triagens), hoje)} visitas · ${
+                        ? `${numeroDaVisita(primeiraTriagem(assistida.triagens), hoje, pulados)} visitas · ${
                             assistida.triagens.length > 1
                               ? `${assistida.triagens.length} triagens, a 1ª em `
                               : 'em '

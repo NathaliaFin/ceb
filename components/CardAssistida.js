@@ -52,7 +52,7 @@ function textoDasTriagens(triagens) {
   return `${triagens.length} triagens · ${datas.join(', ')} e ${ultima}`;
 }
 
-export default function CardAssistida({ assistida, hoje, proximaVisita, indice = 0 }) {
+export default function CardAssistida({ assistida, hoje, proximaVisita, diasSemVisita = [], indice = 0 }) {
   const [fichaAberta, setFichaAberta] = useState(false);
 
   const cor = corDe(assistida.cor);
@@ -63,7 +63,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
   // como visita. As demais triagens ficam registradas, mas nao mudam o numero.
   const triagens = assistida.triagens ?? [];
   const triagem = primeiraTriagem(triagens);
-  const visitas = numeroDaVisita(triagem, hoje);
+  const visitas = numeroDaVisita(triagem, hoje, diasSemVisita);
   const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
 
   const familiares = assistida.familiares ?? [];
@@ -214,6 +214,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, indice =
           assistida={assistida}
           hoje={hoje}
           proximaVisita={proximaVisita}
+          diasSemVisita={diasSemVisita}
           aoFechar={() => setFichaAberta(false)}
         />
       )}

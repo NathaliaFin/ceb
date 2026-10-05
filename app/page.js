@@ -1,5 +1,5 @@
 import { exigirSessao } from '@/lib/auth';
-import { listarAssistidas } from '@/lib/consultas';
+import { listarAssistidas, listarDiasSemVisita } from '@/lib/consultas';
 import { hojeIso, proximaVisita } from '@/lib/datas';
 import Cabecalho from '@/components/Cabecalho';
 import PainelAssistidas from '@/components/PainelAssistidas';
@@ -22,11 +22,11 @@ function AvisoDeBanco({ mensagem }) {
 export default async function PaginaInicial() {
   const papel = await exigirSessao();
   const hoje = hojeIso();
-  const proxima = proximaVisita(hoje);
 
   let assistidas;
+  let diasSemVisita;
   try {
-    assistidas = await listarAssistidas();
+    [assistidas, diasSemVisita] = await Promise.all([listarAssistidas(), listarDiasSemVisita()]);
   } catch (erro) {
     return (
       <main className="px-4 py-6 max-w-6xl mx-auto">
@@ -34,6 +34,10 @@ export default async function PaginaInicial() {
       </main>
     );
   }
+
+  // Meses em que o grupo nao foi a campo nao contam para familia nenhuma.
+  const pulados = diasSemVisita.map((dia) => dia.data);
+  const proxima = proximaVisita(hoje, pulados);
 
   return (
     <main className="pb-10">
@@ -45,6 +49,7 @@ export default async function PaginaInicial() {
           assistidas={assistidas}
           hoje={hoje}
           proximaVisita={proxima}
+          diasSemVisita={pulados}
           podeEditar={papel === 'admin'}
         />
       </div>

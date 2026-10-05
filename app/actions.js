@@ -9,8 +9,8 @@ import {
   limparFalhas, papelDasCredenciais, registrarFalha,
 } from '@/lib/auth';
 import {
-  atualizarAssistida, criarAssistida, excluirAssistida, substituirFamiliares,
-  substituirTriagens,
+  atualizarAssistida, criarAssistida, desmarcarSemVisita, excluirAssistida,
+  marcarSemVisita, substituirFamiliares, substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
 import { ehLinkCurtoDeMapa, extrairCoordenadas, extrairLink } from '@/lib/links';
@@ -198,4 +198,30 @@ export async function acaoExcluirAssistida(formData) {
   revalidatePath('/');
   revalidatePath('/admin');
   redirect('/admin');
+}
+
+/** Marca que o grupo nao foi a campo naquele dia de visita. */
+export async function acaoMarcarSemVisita(formData) {
+  await exigirAdmin();
+
+  const data = String(formData.get('data') ?? '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return;
+
+  await marcarSemVisita(data, String(formData.get('motivo') ?? '').trim());
+  revalidatePath('/');
+  revalidatePath('/admin');
+  revalidatePath('/admin/calendario');
+}
+
+/** Desfaz a marcacao: a visita aconteceu, afinal. */
+export async function acaoDesmarcarSemVisita(formData) {
+  await exigirAdmin();
+
+  const data = String(formData.get('data') ?? '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return;
+
+  await desmarcarSemVisita(data);
+  revalidatePath('/');
+  revalidatePath('/admin');
+  revalidatePath('/admin/calendario');
 }

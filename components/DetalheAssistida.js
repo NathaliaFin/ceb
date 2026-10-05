@@ -28,7 +28,7 @@ function Secao({ icone, titulo, children }) {
   );
 }
 
-export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFechar }) {
+export default function DetalheAssistida({ assistida, hoje, proximaVisita, diasSemVisita = [], aoFechar }) {
   // A ficha e levada para o fim do <body>. Sem isso ela nasce dentro do cartao,
   // que vive num contentor com transform (o carrossel) — e ali o position:fixed
   // passa a valer em relacao ao cartao, nao a tela, e o overflow dele corta a
@@ -53,7 +53,7 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFec
   const cor = corDe(assistida.cor);
   const triagens = assistida.triagens ?? [];
   const triagem = primeiraTriagem(triagens);
-  const visitas = numeroDaVisita(triagem, hoje);
+  const visitas = numeroDaVisita(triagem, hoje, diasSemVisita);
   const familiares = assistida.familiares ?? [];
   const temCoordenadas = assistida.latitude !== null && assistida.latitude !== undefined;
 
@@ -108,7 +108,7 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, aoFec
                 </p>
                 <p className="text-tinta-suave mt-1">
                   Próxima: {formatarDataPorExtenso(proximaVisita)}, {formatarData(proximaVisita)} —
-                  será a {numeroDaVisita(triagem, proximaVisita)}ª.
+                  será a {numeroDaVisita(triagem, proximaVisita, diasSemVisita)}ª.
                 </p>
               </>
             ) : (

@@ -36,7 +36,7 @@ function textoPesquisavel(assistida) {
   );
 }
 
-export default function PainelAssistidas({ assistidas, hoje, proximaVisita, podeEditar }) {
+export default function PainelAssistidas({ assistidas, hoje, proximaVisita, diasSemVisita = [], podeEditar }) {
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState('todas');
 
@@ -150,6 +150,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, pode
                   assistida={assistida}
                   hoje={hoje}
                   proximaVisita={proximaVisita}
+                  diasSemVisita={diasSemVisita}
                   indice={indice}
                 />
               </SwiperSlide>
