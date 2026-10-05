@@ -48,7 +48,8 @@ console.log('--- numero da visita a partir da triagem ---');
 conferir('triagem no proprio 4o sabado conta como 1a', numeroDaVisita('2026-10-24', '2026-10-24'), 1);
 conferir('mes seguinte vira a 2a', numeroDaVisita('2026-10-24', '2026-11-28'), 2);
 conferir('dois meses depois vira a 3a', numeroDaVisita('2026-10-24', '2026-12-26'), 3);
-conferir('triagem em dia comum: o 4o sabado seguinte e a 2a', numeroDaVisita('2026-10-02', '2026-10-24'), 2);
+conferir('o 4o sabado do mes da triagem nao conta de novo', numeroDaVisita('2026-10-02', '2026-10-24'), 1);
+conferir('a 2a visita e no mes seguinte ao da triagem', numeroDaVisita('2026-10-02', '2026-11-28'), 2);
 conferir('no dia da triagem ainda e a 1a', numeroDaVisita('2026-10-02', '2026-10-23'), 1);
 conferir('antes da triagem nao conta', numeroDaVisita('2026-10-24', '2026-10-01'), 0);
 conferir('sem triagem nao conta', numeroDaVisita(null, '2026-10-24'), 0);
@@ -62,6 +63,8 @@ conferir('comeco do ano volta para dezembro', visitaAnterior('2027-01-05'), '202
 
 console.log('--- contagem com a triagem incluida ---');
 conferir('no dia da triagem ja e 1 visita', numeroDaVisita('2026-10-24', '2026-10-24'), 1);
+conferir('triagem antes do 4o sabado nao soma duas no mesmo mes', numeroDaVisita('2025-12-20', '2025-12-31'), 1);
+conferir('caso real da Carmen: triagem 20/12/2025 vista em 05/10/2026', numeroDaVisita('2025-12-20', '2026-10-05'), 10);
 conferir('um mes depois sao 2', numeroDaVisita('2026-10-24', '2026-11-28'), 2);
 conferir('caso real da Vanilde: triagem 23/05 vista em 02/10', numeroDaVisita('2026-05-23', '2026-10-02'), 5);
 conferir('mesma Vanilde na proxima visita, 24/10', numeroDaVisita('2026-05-23', '2026-10-24'), 6);

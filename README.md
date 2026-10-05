@@ -141,6 +141,9 @@ como uma visita normal — é a primeira — e cada 4º sábado do mês depois d
 mais uma. Ninguém precisa marcar nada: o número se atualiza sozinho a cada mês
 que passa.
 
+A triagem vale pelo mês em que aconteceu. Se ela cair em 20/12, o 4º sábado
+daquele mesmo dezembro não conta de novo — a contagem recomeça em janeiro.
+
 Exemplo: triagem em 23/05/2026, olhando em 02/10/2026 → 5 visitas (a triagem
 mais 27/06, 25/07, 22/08 e 26/09).
 
