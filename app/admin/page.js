@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { exigirAdmin } from '@/lib/auth';
-import { listarAssistidas, listarDiasSemVisita } from '@/lib/consultas';
+import { listarAssistidas, listarExcecoesCalendario, mapaDeExcecoes } from '@/lib/consultas';
 import { corDe, iniciais } from '@/lib/cores';
 import { formatarData, hojeIso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
 import { IconeCalendario, IconeLapis, IconeMais, IconeSeta } from '@/components/Icones';
@@ -9,12 +9,12 @@ export const dynamic = 'force-dynamic';
 
 export default async function PaginaAdmin() {
   await exigirAdmin();
-  const [assistidas, diasSemVisita] = await Promise.all([
+  const [assistidas, excecoes] = await Promise.all([
     listarAssistidas({ incluirInativas: true }),
-    listarDiasSemVisita(),
+    listarExcecoesCalendario(),
   ]);
   const hoje = hojeIso();
-  const pulados = diasSemVisita.map((dia) => dia.data);
+  const calendario = mapaDeExcecoes(excecoes);
 
   return (
     <main className="px-4 py-6 max-w-3xl mx-auto">
@@ -49,9 +49,9 @@ export default async function PaginaAdmin() {
         <span className="min-w-0 flex-1">
           <span className="block font-semibold text-sm">Calendário das visitas</span>
           <span className="block text-xs text-tinta-suave mt-0.5">
-            {pulados.length === 0
-              ? 'Marque aqui os meses em que o grupo não foi a campo'
-              : `${pulados.length} ${pulados.length === 1 ? 'mês marcado' : 'meses marcados'} sem visita`}
+            {excecoes.length === 0
+              ? '4º sábado, menos dezembro (3º). Corrija aqui quando fugir da regra.'
+              : `${excecoes.length} ${excecoes.length === 1 ? 'mês corrigido' : 'meses corrigidos'}`}
           </span>
         </span>
         <span className="text-tinta-suave shrink-0 -rotate-90 inline-flex">
@@ -90,7 +90,7 @@ export default async function PaginaAdmin() {
                     </p>
                     <p className="text-xs text-tinta-suave mt-0.5">
                       {assistida.triagens?.length
-                        ? `${numeroDaVisita(primeiraTriagem(assistida.triagens), hoje, pulados)} visitas · ${
+                        ? `${numeroDaVisita(primeiraTriagem(assistida.triagens), hoje, calendario)} visitas · ${
                             assistida.triagens.length > 1
                               ? `${assistida.triagens.length} triagens, a 1ª em `
                               : 'em '

@@ -1,5 +1,5 @@
 import { exigirSessao } from '@/lib/auth';
-import { listarAssistidas, listarDiasSemVisita } from '@/lib/consultas';
+import { listarAssistidas, listarExcecoesCalendario, mapaDeExcecoes } from '@/lib/consultas';
 import { hojeIso, proximaVisita } from '@/lib/datas';
 import Cabecalho from '@/components/Cabecalho';
 import PainelAssistidas from '@/components/PainelAssistidas';
@@ -24,9 +24,9 @@ export default async function PaginaInicial() {
   const hoje = hojeIso();
 
   let assistidas;
-  let diasSemVisita;
+  let excecoes;
   try {
-    [assistidas, diasSemVisita] = await Promise.all([listarAssistidas(), listarDiasSemVisita()]);
+    [assistidas, excecoes] = await Promise.all([listarAssistidas(), listarExcecoesCalendario()]);
   } catch (erro) {
     return (
       <main className="px-4 py-6 max-w-6xl mx-auto">
@@ -35,9 +35,9 @@ export default async function PaginaInicial() {
     );
   }
 
-  // Meses em que o grupo nao foi a campo nao contam para familia nenhuma.
-  const pulados = diasSemVisita.map((dia) => dia.data);
-  const proxima = proximaVisita(hoje, pulados);
+  // As excecoes do calendario valem para todas as familias de uma vez.
+  const calendario = mapaDeExcecoes(excecoes);
+  const proxima = proximaVisita(hoje, calendario);
 
   return (
     <main className="pb-10">
@@ -49,7 +49,7 @@ export default async function PaginaInicial() {
           assistidas={assistidas}
           hoje={hoje}
           proximaVisita={proxima}
-          diasSemVisita={pulados}
+          calendario={calendario}
           podeEditar={papel === 'admin'}
         />
       </div>

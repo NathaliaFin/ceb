@@ -147,10 +147,13 @@ daquele mesmo dezembro não conta de novo — a contagem recomeça em janeiro.
 Exemplo: triagem em 23/05/2026, olhando em 02/10/2026 → 5 visitas (a triagem
 mais 27/06, 25/07, 22/08 e 26/09).
 
-**Quando o grupo não vai a campo**, abra _Gerenciar_ → _Calendário das visitas_ e
-marque o mês como "Não houve". Ele deixa de contar para **todas** as famílias de
-uma vez — a visita é coletiva, então não faz sentido marcar uma a uma — e o
-número de cada cartão se corrige sozinho. O mesmo botão desfaz.
+**O dia da visita** é o 4º sábado do mês, exceto em **dezembro**, que é o 3º.
+
+Quando um mês fugir da regra, abra _Gerenciar_ → _Calendário das visitas_. Cada
+mês pode ser corrigido de duas formas: **mudar a data** (a visita aconteceu em
+outro dia) ou **marcar que não houve**. Vale para **todas** as famílias de uma
+vez — a visita é coletiva — e os números dos cartões se corrigem sozinhos.
+"Voltar ao padrão" desfaz.
 
 **Uma família pode ter mais de uma triagem.** Todas ficam registradas e
 aparecem no cartão, mas **a contagem usa sempre a primeira** — as demais são

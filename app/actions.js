@@ -9,8 +9,8 @@ import {
   limparFalhas, papelDasCredenciais, registrarFalha,
 } from '@/lib/auth';
 import {
-  atualizarAssistida, criarAssistida, desmarcarSemVisita, excluirAssistida,
-  marcarSemVisita, substituirFamiliares, substituirTriagens,
+  atualizarAssistida, criarAssistida, excluirAssistida, removerExcecaoCalendario,
+  salvarExcecaoCalendario, substituirFamiliares, substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
 import { ehLinkCurtoDeMapa, extrairCoordenadas, extrairLink } from '@/lib/links';
@@ -200,27 +200,41 @@ export async function acaoExcluirAssistida(formData) {
   redirect('/admin');
 }
 
-/** Marca que o grupo nao foi a campo naquele dia de visita. */
-export async function acaoMarcarSemVisita(formData) {
+/**
+ * Guarda a excecao de um mes: ou a visita nao aconteceu, ou aconteceu em outro
+ * dia que nao o padrao (dezembro, por exemplo, costuma cair no 3o sabado).
+ */
+export async function acaoSalvarExcecaoCalendario(formData) {
   await exigirAdmin();
 
-  const data = String(formData.get('data') ?? '').trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return;
+  const mes = String(formData.get('mes') ?? '').trim();
+  if (!/^\d{4}-\d{2}$/.test(mes)) return;
 
-  await marcarSemVisita(data, String(formData.get('motivo') ?? '').trim());
+  const tipo = String(formData.get('tipo') ?? '');
+  const motivo = String(formData.get('motivo') ?? '').trim();
+
+  if (tipo === 'sem') {
+    await salvarExcecaoCalendario(mes, null, motivo);
+  } else {
+    const data = String(formData.get('data') ?? '').trim();
+    // Data em branco ou fora do mes informado nao vira excecao.
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || !data.startsWith(mes)) return;
+    await salvarExcecaoCalendario(mes, data, motivo);
+  }
+
   revalidatePath('/');
   revalidatePath('/admin');
   revalidatePath('/admin/calendario');
 }
 
-/** Desfaz a marcacao: a visita aconteceu, afinal. */
-export async function acaoDesmarcarSemVisita(formData) {
+/** Devolve o mes ao dia padrao do calendario. */
+export async function acaoRemoverExcecaoCalendario(formData) {
   await exigirAdmin();
 
-  const data = String(formData.get('data') ?? '').trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return;
+  const mes = String(formData.get('mes') ?? '').trim();
+  if (!/^\d{4}-\d{2}$/.test(mes)) return;
 
-  await desmarcarSemVisita(data);
+  await removerExcecaoCalendario(mes);
   revalidatePath('/');
   revalidatePath('/admin');
   revalidatePath('/admin/calendario');

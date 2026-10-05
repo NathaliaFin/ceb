@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { exigirAdmin } from '@/lib/auth';
-import { listarDiasSemVisita, obterAssistida } from '@/lib/consultas';
+import { listarExcecoesCalendario, mapaDeExcecoes, obterAssistida } from '@/lib/consultas';
 import {
   formatarData, hojeIso, numeroDaVisita, primeiraTriagem, proximaVisita,
 } from '@/lib/datas';
@@ -24,8 +24,8 @@ export default async function PaginaEditarAssistida({ params, searchParams }) {
   if (!assistida) notFound();
 
   const hoje = hojeIso();
-  const pulados = (await listarDiasSemVisita()).map((dia) => dia.data);
-  const proxima = proximaVisita(hoje, pulados);
+  const calendario = mapaDeExcecoes(await listarExcecoesCalendario());
+  const proxima = proximaVisita(hoje, calendario);
   const triagem = primeiraTriagem(assistida.triagens);
   const quantasTriagens = assistida.triagens?.length ?? 0;
 
@@ -61,13 +61,13 @@ export default async function PaginaEditarAssistida({ params, searchParams }) {
               <p>
                 O cartão mostra{' '}
                 <strong>
-                  {numeroDaVisita(triagem, hoje, pulados)}{' '}
-                  {numeroDaVisita(triagem, hoje, pulados) === 1 ? 'visita' : 'visitas'}
+                  {numeroDaVisita(triagem, hoje, calendario)}{' '}
+                  {numeroDaVisita(triagem, hoje, calendario) === 1 ? 'visita' : 'visitas'}
                 </strong>
                 , contando a triagem de {formatarData(triagem)} como a primeira.
               </p>
               <p className="text-tinta-suave text-xs mt-1">
-                Próxima em {formatarData(proxima)}, quando passa a {numeroDaVisita(triagem, proxima, pulados)}.
+                Próxima em {formatarData(proxima)}, quando passa a {numeroDaVisita(triagem, proxima, calendario)}.
                 A contagem vem do calendário: nada precisa ser confirmado.
                 {quantasTriagens > 1 &&
                   ` São ${quantasTriagens} triagens registradas; a contagem usa a primeira.`}

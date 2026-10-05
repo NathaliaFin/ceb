@@ -1,4 +1,4 @@
-import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem } from '../lib/datas.js';
+import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao } from '../lib/datas.js';
 import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa, extrairLink } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
@@ -65,11 +65,21 @@ console.log('--- contagem com a triagem incluida ---');
 conferir('no dia da triagem ja e 1 visita', numeroDaVisita('2026-10-24', '2026-10-24'), 1);
 conferir('triagem antes do 4o sabado nao soma duas no mesmo mes', numeroDaVisita('2025-12-20', '2025-12-31'), 1);
 conferir('caso real da Carmen: triagem 20/12/2025 vista em 05/10/2026', numeroDaVisita('2025-12-20', '2026-10-05'), 10);
-conferir('a mesma Carmen sem a visita de julho', numeroDaVisita('2025-12-20', '2026-10-05', ['2026-07-25']), 9);
-conferir('dois meses marcados tiram dois', numeroDaVisita('2025-12-20', '2026-10-05', ['2026-07-25', '2026-08-22']), 8);
-conferir('marcar o mes da triagem nao tira a triagem', numeroDaVisita('2025-12-20', '2026-01-24', ['2025-12-27']), 2);
-conferir('proxima visita pula o mes marcado', proximaVisita('2026-10-05', ['2026-10-24']), '2026-11-28');
-conferir('proxima visita normal quando nada e marcado', proximaVisita('2026-10-05', []), '2026-10-24');
+conferir('a mesma Carmen sem a visita de julho', numeroDaVisita('2025-12-20', '2026-10-05', { '2026-07': null }), 9);
+conferir('dois meses sem visita tiram dois', numeroDaVisita('2025-12-20', '2026-10-05', { '2026-07': null, '2026-08': null }), 8);
+conferir('cancelar o mes da triagem nao tira a triagem', numeroDaVisita('2025-12-20', '2026-01-24', { '2025-12': null }), 2);
+conferir('visita adiada dentro do mes ainda conta', numeroDaVisita('2026-05-23', '2026-10-05', { '2026-07': '2026-07-18' }), 5);
+conferir('visita adiada para depois da referencia nao conta ainda', numeroDaVisita('2026-05-23', '2026-09-30', { '2026-09': '2026-09-30' }), 5);
+conferir('proxima visita pula o mes cancelado', proximaVisita('2026-10-05', { '2026-10': null }), '2026-11-28');
+conferir('proxima visita respeita a data corrigida', proximaVisita('2026-10-05', { '2026-10': '2026-10-31' }), '2026-10-31');
+conferir('proxima visita normal sem excecao', proximaVisita('2026-10-05', {}), '2026-10-24');
+
+console.log('--- dezembro cai no 3o sabado ---');
+conferir('3o sabado de dez/2025', terceiroSabado(2025, 12), '2025-12-20');
+conferir('padrao de dezembro e o 3o sabado', diaDeVisitaPadrao(2025, 12), '2025-12-20');
+conferir('padrao de outubro segue o 4o sabado', diaDeVisitaPadrao(2026, 10), '2026-10-24');
+conferir('dez/2026 cai em 19', diaDeVisitaPadrao(2026, 12), '2026-12-19');
+conferir('em dezembro a proxima visita e o 3o sabado', proximaVisita('2026-12-01', {}), '2026-12-19');
 conferir('um mes depois sao 2', numeroDaVisita('2026-10-24', '2026-11-28'), 2);
 conferir('caso real da Vanilde: triagem 23/05 vista em 02/10', numeroDaVisita('2026-05-23', '2026-10-02'), 5);
 conferir('mesma Vanilde na proxima visita, 24/10', numeroDaVisita('2026-05-23', '2026-10-24'), 6);
