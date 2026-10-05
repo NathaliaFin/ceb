@@ -64,8 +64,12 @@ conferir('comeco do ano volta para dezembro', visitaAnterior('2027-01-05'), '202
 console.log('--- contagem com a triagem incluida ---');
 conferir('no dia da triagem ja e 1 visita', numeroDaVisita('2026-10-24', '2026-10-24'), 1);
 conferir('triagem antes do 4o sabado nao soma duas no mesmo mes', numeroDaVisita('2025-12-20', '2025-12-31'), 1);
-conferir('caso real da Carmen: triagem 20/12/2025 vista em 05/10/2026', numeroDaVisita('2025-12-20', '2026-10-05'), 10);
-conferir('a mesma Carmen sem a visita de julho', numeroDaVisita('2025-12-20', '2026-10-05', { '2026-07': null }), 9);
+// Os dois casos reais, conferidos contra a lista de datas da Nathalia.
+// Julho de 2026 nao teve visita: nao aparece na lista de nenhuma das duas.
+const SEM_JULHO = { '2026-07': null };
+conferir('Carmen: triagem 20/12/2025, em 05/10/2026 sao 9', numeroDaVisita('2025-12-20', '2026-10-05', SEM_JULHO), 9);
+conferir('Vanilde: triagem 23/05/2026, em 05/10/2026 sao 4', numeroDaVisita('2026-05-23', '2026-10-05', SEM_JULHO), 4);
+conferir('Carmen contaria 10 se julho tivesse acontecido', numeroDaVisita('2025-12-20', '2026-10-05'), 10);
 conferir('dois meses sem visita tiram dois', numeroDaVisita('2025-12-20', '2026-10-05', { '2026-07': null, '2026-08': null }), 8);
 conferir('cancelar o mes da triagem nao tira a triagem', numeroDaVisita('2025-12-20', '2026-01-24', { '2025-12': null }), 2);
 conferir('visita adiada dentro do mes ainda conta', numeroDaVisita('2026-05-23', '2026-10-05', { '2026-07': '2026-07-18' }), 5);
@@ -81,8 +85,7 @@ conferir('padrao de outubro segue o 4o sabado', diaDeVisitaPadrao(2026, 10), '20
 conferir('dez/2026 cai em 19', diaDeVisitaPadrao(2026, 12), '2026-12-19');
 conferir('em dezembro a proxima visita e o 3o sabado', proximaVisita('2026-12-01', {}), '2026-12-19');
 conferir('um mes depois sao 2', numeroDaVisita('2026-10-24', '2026-11-28'), 2);
-conferir('caso real da Vanilde: triagem 23/05 vista em 02/10', numeroDaVisita('2026-05-23', '2026-10-02'), 5);
-conferir('mesma Vanilde na proxima visita, 24/10', numeroDaVisita('2026-05-23', '2026-10-24'), 6);
+conferir('Vanilde na proxima visita, 24/10, vira 5', numeroDaVisita('2026-05-23', '2026-10-24', SEM_JULHO), 5);
 conferir('antes da triagem nao conta', numeroDaVisita('2026-10-24', '2026-10-01'), 0);
 conferir('sem triagem nao conta', numeroDaVisita(null, '2026-10-24'), 0);
 
