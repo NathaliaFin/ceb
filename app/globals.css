@@ -404,6 +404,7 @@ body {
   position: relative;
   z-index: 2;
   margin-top: -9rem;
+  min-height: 2.25rem; /* a altura de um filtro, mesmo quando nao ha nenhum */
 }
 
 .controles-capa .filtro {

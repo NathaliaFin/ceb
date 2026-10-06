@@ -12,29 +12,16 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 export default function PainelAssistidas({ assistidas, hoje, proximaVisita, calendario = {}, podeEditar }) {
-  const [filtro, setFiltro] = useState('todas');
-
-  const comEmergencia = assistidas.filter((a) => a.necessidades_emergenciais).length;
+  // Unico filtro que sobrou: liga e desliga. A emergencia nao precisa de
+  // filtro, ja aparece em destaque na frente do cartao.
+  const [soSemTriagem, setSoSemTriagem] = useState(false);
   const semTriagem = assistidas.filter((a) => !a.triagens?.length).length;
+  const filtrando = soSemTriagem && semTriagem > 0;
 
   const visiveis = useMemo(
-    () =>
-      assistidas.filter((assistida) => {
-        if (filtro === 'emergencia') return Boolean(assistida.necessidades_emergenciais);
-        if (filtro === 'semtriagem') return !assistida.triagens?.length;
-        return true;
-      }),
-    [assistidas, filtro],
+    () => (filtrando ? assistidas.filter((a) => !a.triagens?.length) : assistidas),
+    [assistidas, filtrando],
   );
-
-  const filtros = [
-    { chave: 'todas', rotulo: 'Todas', contagem: assistidas.length },
-    { chave: 'emergencia', rotulo: '🚨 Com emergência', contagem: comEmergencia },
-    // So aparece enquanto houver familia sem a data da triagem preenchida.
-    ...(semTriagem > 0
-      ? [{ chave: 'semtriagem', rotulo: 'Sem triagem', contagem: semTriagem }]
-      : []),
-  ];
 
   if (assistidas.length === 0) {
     return (
@@ -60,21 +47,21 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, cale
 
   return (
     <>
+      {/* Ocupa sempre a mesma altura, com ou sem o filtro, para os cartoes
+          ficarem no mesmo ponto da faixa cinza. So aparece enquanto houver
+          familia sem triagem registrada. */}
       <div className="controles-capa mb-5">
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          {filtros.map((opcao) => (
-            <button
-              key={opcao.chave}
-              type="button"
-              onClick={() => setFiltro(opcao.chave)}
-              aria-pressed={filtro === opcao.chave}
-              className="filtro"
-            >
-              {opcao.rotulo}
-              <span className="ml-1.5 opacity-60">{opcao.contagem}</span>
-            </button>
-          ))}
-        </div>
+        {semTriagem > 0 && (
+          <button
+            type="button"
+            onClick={() => setSoSemTriagem((ligado) => !ligado)}
+            aria-pressed={filtrando}
+            className="filtro"
+          >
+            Sem triagem
+            <span className="ml-1.5 opacity-60">{semTriagem}</span>
+          </button>
+        )}
       </div>
 
       {visiveis.length === 0 ? (
@@ -85,7 +72,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, cale
         <div className="carrossel faixa-cartoes">
           <Swiper
             // Recria o carrossel quando a lista muda, para voltar ao primeiro cartao.
-            key={`${filtro}-${visiveis.length}`}
+            key={`${filtrando}-${visiveis.length}`}
             modules={[Navigation, Pagination, Keyboard, A11y]}
             spaceBetween={16}
             slidesPerView={1.04}
