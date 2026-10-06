@@ -42,15 +42,12 @@ export default function Cabecalho({ papel, hoje, proximaVisita }) {
             <IconeCoracao tamanho={21} />
           </span>
           <h1>
-            Atendimento às Famílias
             <span className="capa__grupo">Paranoá04</span>
+            Atendimento às Famílias
           </h1>
           <p className="capa__instituicao">
             <span>Diretoria de Promoção Social</span>
             <span>Comunhão Espírita de Brasília</span>
-          </p>
-          <p className="capa__sub">
-            As famílias atendidas pelo projeto, à mão na hora da visita.
           </p>
           <p className="capa__nota">
             {/* Cada pedaco quebra inteiro, para a data nao partir no meio no celular. */}

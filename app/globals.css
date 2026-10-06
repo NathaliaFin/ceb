@@ -372,14 +372,14 @@ body {
    maior que ele (2rem contra 1.9rem). */
 .capa__grupo {
   display: block;
-  margin-top: 0.15rem;
+  margin-bottom: 0.15rem;
   font-size: 2rem;
   color: #5ccffa;
 }
 
 /* Diretoria e casa espirita, uma por linha, abaixo do nome do grupo. */
 .capa__instituicao {
-  margin: 0 auto 0.9rem;
+  margin: 0 auto;
   font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.45;
@@ -388,21 +388,14 @@ body {
 
 .capa__instituicao span { display: block; }
 
-.capa__sub {
-  margin: 0 auto;
-  max-width: 34ch;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #c7cbd3;
-}
-
 .capa__nota {
   margin: 1.3rem auto 0;
   font-size: 0.9rem;
   color: #aeb4bf;
 }
 
-.capa__nota strong { color: #5ccffa; }
+/* A data so ganha negrito; a cor e a mesma do resto da linha. */
+.capa__nota strong { color: inherit; }
 
 /* A busca e os filtros ficam sobre a faixa escura; os cartoes vem logo abaixo,
    ainda encavalando o pe dela. E dai que vem a profundidade da pagina. */
