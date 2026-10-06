@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- O mesmo coracao da capa e do login (IconeCoracao), branco sobre o rosa
+       do projeto: fundo cheio para continuar legivel em aba clara ou escura. -->
+  <rect width="32" height="32" rx="8" fill="#e0376f"/>
+  <path transform="translate(16 16.4) scale(1.1) translate(-12 -12.6)"
+        d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8z"
+        fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
