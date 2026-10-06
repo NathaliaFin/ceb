@@ -177,7 +177,7 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
               </p>
             )}
             <div className="mt-3">
-              <BotaoComoChegar assistida={assistida} />
+              <BotaoComoChegar assistida={assistida} classe="w-full" />
             </div>
           </Secao>
 

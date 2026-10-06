@@ -162,7 +162,7 @@ export default function FormularioAssistida({ assistida }) {
             autoCorrect="off"
             spellCheck={false}
             defaultValue={localizacaoInicial}
-            className="campo text-sm"
+            className="campo"
             placeholder="Cole aqui o link do Google Maps"
           />
         </Campo>
@@ -353,16 +353,18 @@ export default function FormularioAssistida({ assistida }) {
           />
         </Campo>
 
-        <label className="flex items-center gap-2.5 text-sm font-medium cursor-pointer">
+        <label className="flex items-start gap-2.5 text-sm font-medium cursor-pointer">
           <input
             type="checkbox"
             name="ativa"
             defaultChecked={assistida ? assistida.ativa : true}
-            className="w-4 h-4 accent-current"
+            className="w-4 h-4 mt-0.5 shrink-0 accent-current"
           />
-          Família ativa no projeto
-          <span className="text-xs text-tinta-suave font-normal">
-            (desmarque para esconder o cartão sem apagar o histórico)
+          <span>
+            Família ativa no projeto{' '}
+            <span className="text-xs text-tinta-suave font-normal">
+              (desmarque para esconder o cartão sem apagar o histórico)
+            </span>
           </span>
         </label>
       </section>

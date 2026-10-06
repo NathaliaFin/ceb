@@ -40,7 +40,9 @@ export default async function PaginaInicial() {
   const proxima = proximaVisita(hoje, calendario);
 
   return (
-    <main className="pb-10">
+    // overflow-x-clip: a folga do carrossel para a sombra passa da borda da
+    // tela em tablet, e nao pode virar rolagem lateral.
+    <main className="pb-10 overflow-x-clip">
       <Cabecalho papel={papel} hoje={hoje} proximaVisita={proxima} />
 
       {/* Os cartoes encavalam a capa escura — e dai que vem a profundidade. */}

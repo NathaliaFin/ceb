@@ -46,8 +46,11 @@ export default function Cabecalho({ papel, hoje, proximaVisita }) {
             As famílias atendidas pelo projeto, à mão na hora da visita.
           </p>
           <p className="capa__nota">
-            {textoDaProximaVisita(dias)} · <strong>{formatarDataPorExtenso(proximaVisita)}</strong>,{' '}
-            {formatarData(proximaVisita)}
+            {/* Cada pedaco quebra inteiro, para a data nao partir no meio no celular. */}
+            <span className="whitespace-nowrap">{textoDaProximaVisita(dias)} ·</span>{' '}
+            <span className="whitespace-nowrap">
+              <strong>{formatarDataPorExtenso(proximaVisita)}</strong>, {formatarData(proximaVisita)}
+            </span>
           </p>
         </div>
       </div>

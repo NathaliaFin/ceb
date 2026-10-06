@@ -57,7 +57,9 @@ export default async function PaginaCalendario() {
           const semVisita = item.alterado && item.data === null;
           const mudouDia = item.alterado && item.data !== null;
           const futuro = item.data !== null && item.data > hoje;
-          const rotulo = `${NOMES_MESES[item.mes - 1]} de ${item.ano}`;
+          const nomeMes = NOMES_MESES[item.mes - 1];
+          // So a inicial em maiuscula: o "capitalize" do CSS deixava "Janeiro De 2027".
+          const rotulo = `${nomeMes[0].toUpperCase()}${nomeMes.slice(1)} de ${item.ano}`;
 
           return (
             <li
@@ -71,10 +73,10 @@ export default async function PaginaCalendario() {
                 </span>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold capitalize">
+                  <p className="text-sm font-semibold">
                     {rotulo}
                     {futuro && (
-                      <span className="text-tinta-suave font-normal lowercase"> · ainda vai acontecer</span>
+                      <span className="text-tinta-suave font-normal"> · ainda vai acontecer</span>
                     )}
                   </p>
                   <p className="text-xs text-tinta-suave mt-0.5">
@@ -105,7 +107,9 @@ export default async function PaginaCalendario() {
               </div>
 
               {!item.alterado && (
-                <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-borda">
+                // Uma coluna no celular, duas lado a lado em tela maior — sempre
+                // alinhadas de um mes para o outro.
+                <div className="grid sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-borda">
                   <form action={acaoSalvarExcecaoCalendario} className="flex items-center gap-2">
                     <input type="hidden" name="mes" value={item.chave} />
                     <input type="hidden" name="tipo" value="data" />
@@ -116,7 +120,7 @@ export default async function PaginaCalendario() {
                       min={`${item.chave}-01`}
                       max={`${item.chave}-31`}
                       aria-label={`Data da visita de ${rotulo}`}
-                      className="campo text-xs px-2 py-1.5 w-auto"
+                      className="campo px-2.5 py-2 flex-1 min-w-0"
                     />
                     <button type="submit" className="botao-secundario px-3 py-2 text-xs whitespace-nowrap">
                       Mudar a data
@@ -130,7 +134,7 @@ export default async function PaginaCalendario() {
                       name="motivo"
                       placeholder="motivo"
                       aria-label={`Motivo de não haver visita em ${rotulo}`}
-                      className="campo text-xs px-2 py-1.5 w-24"
+                      className="campo px-2.5 py-2 flex-1 min-w-0"
                     />
                     <button type="submit" className="botao-secundario px-3 py-2 text-xs whitespace-nowrap">
                       Não houve

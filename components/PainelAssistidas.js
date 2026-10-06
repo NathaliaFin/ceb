@@ -88,7 +88,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, cale
     <>
       <div className="controles-capa flex flex-col gap-3 mb-5">
         <div className="relative">
-          <span className="icone-busca absolute left-3 top-1/2 -translate-y-1/2 text-tinta-suave">
+          <span className="icone-busca absolute left-3 top-1/2 -translate-y-1/2">
             <IconeBusca tamanho={17} />
           </span>
           <input
