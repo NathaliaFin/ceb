@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { corDe, iniciais } from '@/lib/cores';
-import { formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
+import {
+  VISITAS_DO_CICLO, etapaDoCiclo, formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem,
+} from '@/lib/datas';
 import { linkTelefone, linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import BotaoComoChegar from './BotaoComoChegar';
 import {
@@ -107,9 +109,13 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
                   contando a triagem como a primeira.
                 </p>
                 <p className="text-tinta-suave mt-1">
-                  Próxima: {formatarDataPorExtenso(proximaVisita)}, {formatarData(proximaVisita)} —
-                  será a {numeroDaVisita(triagem, proximaVisita, calendario)}ª.
+                  Próxima: {formatarDataPorExtenso(proximaVisita)}
                 </p>
+                {etapaDoCiclo(visitas) === 'falta-uma' && (
+                  <p className="mt-1.5 font-semibold" style={{ color: '#b9650a' }}>
+                    Falta 1 para completar as {VISITAS_DO_CICLO} visitas.
+                  </p>
+                )}
               </>
             ) : (
               <Vazio>Nenhuma triagem registrada, então ainda não há contagem.</Vazio>
@@ -202,7 +208,7 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
             )}
           </Secao>
 
-          <Secao icone={<IconePresente tamanho={13} />} titulo="Itens especiais de doação">
+          <Secao icone={<IconePresente tamanho={13} />} titulo="Itens especiais para solicitar">
             {assistida.itens_doacao ? (
               <p className="whitespace-pre-line">{assistida.itens_doacao}</p>
             ) : (

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { corDe, iniciais } from '@/lib/cores';
 import {
-  formatarData, formatarDataCurta, numeroDaVisita, primeiraTriagem,
+  etapaDoCiclo, formatarData, formatarDataCurta, numeroDaVisita, primeiraTriagem,
 } from '@/lib/datas';
 import { linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import DetalheAssistida from './DetalheAssistida';
@@ -65,6 +65,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
   const triagem = primeiraTriagem(triagens);
   const visitas = numeroDaVisita(triagem, hoje, calendario);
   const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
+  const etapa = triagem && !triagemNoFuturo ? etapaDoCiclo(visitas) : 'normal';
 
   const familiares = assistida.familiares ?? [];
 
@@ -84,7 +85,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
       }}
     >
       <div className="cartao__capa">
-        <span className="cartao__selo">
+        <span className={`cartao__selo ${etapa === 'normal' ? '' : `cartao__selo--${etapa}`}`}>
           {!triagem ? (
             <>
               <strong>—</strong>
@@ -97,6 +98,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
             </>
           ) : (
             <>
+              {etapa === 'falta-uma' && <span className="cartao__selo-topo">Falta 1</span>}
               <strong>{visitas}</strong>
               <span>{visitas === 1 ? 'visita' : 'visitas'}</span>
             </>
@@ -168,7 +170,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
         <div className="bloco-doacao rounded-xl p-3 mt-3">
           <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
             <IconePresente tamanho={13} />
-            Itens especiais de doação
+            Itens especiais para solicitar
           </div>
           {assistida.itens_doacao ? (
             <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">{assistida.itens_doacao}</p>

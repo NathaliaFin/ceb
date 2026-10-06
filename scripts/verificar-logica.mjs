@@ -1,4 +1,4 @@
-import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao } from '../lib/datas.js';
+import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao, etapaDoCiclo } from '../lib/datas.js';
 import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa, extrairLink } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
@@ -27,7 +27,7 @@ conferir('e dia de visita?', ehDiaDeVisita('2026-10-24'), true);
 console.log('--- datas e contagem ---');
 conferir('dias ate', diasAte('2026-10-24', '2026-10-02'), 22);
 conferir('formato curto', formatarData('2026-10-24'), '24/10/2026');
-conferir('por extenso', formatarDataPorExtenso('2026-10-24'), 'sabado, 24 de outubro');
+conferir('por extenso', formatarDataPorExtenso('2026-10-24'), 'sábado, 24 de outubro');
 conferir('ordinal', ordinal(8), '8ª');
 
 console.log('--- links ---');
@@ -88,6 +88,13 @@ conferir('um mes depois sao 2', numeroDaVisita('2026-10-24', '2026-11-28'), 2);
 conferir('Vanilde na proxima visita, 24/10, vira 5', numeroDaVisita('2026-05-23', '2026-10-24', SEM_JULHO), 5);
 conferir('antes da triagem nao conta', numeroDaVisita('2026-10-24', '2026-10-01'), 0);
 conferir('sem triagem nao conta', numeroDaVisita(null, '2026-10-24'), 0);
+
+console.log('--- reta final do ciclo de 7 visitas ---');
+conferir('5 visitas e normal', etapaDoCiclo(5), 'normal');
+conferir('6 visitas: falta 1', etapaDoCiclo(6), 'falta-uma');
+conferir('7 visitas: o aviso era so no 6, volta ao normal', etapaDoCiclo(7), 'normal');
+conferir('Carmen com 9 segue normal, nada se encerra', etapaDoCiclo(9), 'normal');
+conferir('triagem 28/03/2026, sem julho, em 06/10 tem 6 e falta 1', etapaDoCiclo(numeroDaVisita('2026-03-28', '2026-10-06', SEM_JULHO)), 'falta-uma');
 
 console.log('--- a triagem que conta e a primeira ---');
 conferir('lista vazia', primeiraTriagem([]), null);

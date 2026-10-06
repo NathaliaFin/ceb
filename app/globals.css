@@ -518,14 +518,6 @@ body {
   box-shadow: 0 4px 14px rgb(11 16 48 / 0.28);
 }
 
-.cartao__selo .cartao__selo-topo {
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.85;
-}
-
 .cartao__selo strong {
   font-size: 1.65rem;
   font-weight: 800;
@@ -538,6 +530,30 @@ body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+
+/* Reta final do ciclo de 7 visitas. O selo deixa de ser branco e vira bloco
+   cheio, para saltar aos olhos mesmo de longe. Nao pisca: piscar ja e o sinal
+   da necessidade emergencial, e os dois avisos nao podem se confundir. */
+.cartao__selo .cartao__selo-topo {
+  margin-bottom: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.24);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+.cartao__selo--falta-uma {
+  background: #b9650a; /* ambar escuro: o branco por cima continua legivel */
+  color: #fff;
+  box-shadow:
+    0 0 0 3px rgb(255 255 255 / 0.9),
+    0 0 0 7px rgb(232 150 30 / 0.55),
+    0 6px 18px rgb(11 16 48 / 0.35);
+}
+
 
 .cartao__corpo {
   display: flex;
