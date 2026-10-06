@@ -170,7 +170,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
         <div className="bloco-doacao rounded-xl p-3 mt-3">
           <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-tinta-suave">
             <IconePresente tamanho={13} />
-            Itens especiais para solicitar
+            Itens especiais para solicitar no almoxarifado
           </div>
           {assistida.itens_doacao ? (
             <p className="text-sm mt-1.5 leading-snug whitespace-pre-line">{assistida.itens_doacao}</p>

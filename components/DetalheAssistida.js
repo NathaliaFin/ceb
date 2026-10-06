@@ -208,7 +208,7 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
             )}
           </Secao>
 
-          <Secao icone={<IconePresente tamanho={13} />} titulo="Itens especiais para solicitar">
+          <Secao icone={<IconePresente tamanho={13} />} titulo="Itens especiais para solicitar no almoxarifado">
             {assistida.itens_doacao ? (
               <p className="whitespace-pre-line">{assistida.itens_doacao}</p>
             ) : (

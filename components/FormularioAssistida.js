@@ -314,7 +314,7 @@ export default function FormularioAssistida({ assistida }) {
       <section className="cartao p-5 space-y-4" style={{ '--cor': PALETA[cor].base }}>
         <Campo
           nome="itens_doacao"
-          rotulo="Itens especiais para solicitar"
+          rotulo="Itens especiais para solicitar no almoxarifado"
           dica="O que esta família precisa com regularidade."
         >
           <textarea
