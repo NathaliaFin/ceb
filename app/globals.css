@@ -363,7 +363,18 @@ body {
   color: #fff;
   font-size: 1.9rem;
   font-weight: 800;
+  line-height: 1.15;
   letter-spacing: -0.02em;
+  text-wrap: balance; /* no celular quebra em duas linhas parecidas */
+}
+
+/* O nome do grupo, logo abaixo do titulo e na mesma fonte. */
+.capa__grupo {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.25rem;
+  color: #5ccffa;
+  letter-spacing: 0;
 }
 
 .capa__sub {
