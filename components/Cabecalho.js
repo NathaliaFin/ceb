@@ -46,8 +46,7 @@ export default function Cabecalho({ papel, hoje, proximaVisita }) {
             Atendimento às Famílias
           </h1>
           <p className="capa__instituicao">
-            <span>Diretoria de Promoção Social</span>
-            <span>Comunhão Espírita de Brasília</span>
+            Diretoria de Promoção Social - Comunhão Espírita de Brasília
           </p>
           <p className="capa__nota">
             {/* Cada pedaco quebra inteiro, para a data nao partir no meio no celular. */}

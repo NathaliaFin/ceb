@@ -337,7 +337,8 @@ body {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 1.6rem 0 9.5rem;
+  /* O pe alto e o espaco que os cartoes invadem (ver .controles-capa). */
+  padding: 1.6rem 0 11rem;
   text-align: center;
   color: #e8eaef;
   background:
@@ -384,9 +385,8 @@ body {
   font-weight: 600;
   line-height: 1.45;
   color: #e8eaef;
+  text-wrap: balance; /* no celular quebra em duas linhas parecidas */
 }
-
-.capa__instituicao span { display: block; }
 
 .capa__nota {
   margin: 1.3rem auto 0;
@@ -397,28 +397,14 @@ body {
 /* A data so ganha negrito; a cor e a mesma do resto da linha. */
 .capa__nota strong { color: inherit; }
 
-/* A busca e os filtros ficam sobre a faixa escura; os cartoes vem logo abaixo,
-   ainda encavalando o pe dela. E dai que vem a profundidade da pagina. */
+/* Os filtros ficam sobre a faixa escura e os cartoes sobem logo atras, com
+   uns 5rem por cima dela: e a sobreposicao que faz eles parecerem cartoes
+   de verdade, apoiados na faixa. */
 .controles-capa {
   position: relative;
   z-index: 2;
-  margin-top: -6.5rem;
+  margin-top: -9rem;
 }
-
-.controles-capa .campo {
-  background: rgb(255 255 255 / 0.12);
-  border-color: rgb(255 255 255 / 0.3);
-  color: #fff;
-}
-
-.controles-capa .campo::placeholder { color: rgb(255 255 255 / 0.65); }
-
-.controles-capa .campo:focus {
-  border-color: rgb(255 255 255 / 0.6);
-  box-shadow: 0 0 0 3px rgb(255 255 255 / 0.14);
-}
-
-.controles-capa .icone-busca { color: rgb(255 255 255 / 0.7); }
 
 .controles-capa .filtro {
   background: rgb(255 255 255 / 0.1);
