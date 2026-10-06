@@ -369,11 +369,11 @@ body {
 }
 
 /* O nome do grupo e o destaque da capa: na mesma fonte do titulo e um pouco
-   maior que ele (2rem contra 1.9rem). */
+   maior que ele (34px contra 30px). */
 .capa__grupo {
   display: block;
   margin-bottom: 0.15rem;
-  font-size: 2rem;
+  font-size: 2.125rem; /* 34px */
   color: #5ccffa;
 }
 
