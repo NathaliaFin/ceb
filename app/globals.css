@@ -368,14 +368,25 @@ body {
   text-wrap: balance; /* no celular quebra em duas linhas parecidas */
 }
 
-/* O nome do grupo, logo abaixo do titulo e na mesma fonte. */
+/* O nome do grupo e o destaque da capa: na mesma fonte do titulo e um pouco
+   maior que ele (2rem contra 1.9rem). */
 .capa__grupo {
   display: block;
-  margin-top: 0.3rem;
-  font-size: 1.25rem;
+  margin-top: 0.15rem;
+  font-size: 2rem;
   color: #5ccffa;
-  letter-spacing: 0;
 }
+
+/* Diretoria e casa espirita, uma por linha, abaixo do nome do grupo. */
+.capa__instituicao {
+  margin: 0 auto 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #e8eaef;
+}
+
+.capa__instituicao span { display: block; }
 
 .capa__sub {
   margin: 0 auto;
