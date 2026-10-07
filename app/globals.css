@@ -776,4 +776,24 @@ body {
   color: var(--tinta-suave);
 }
 
+/* ---------- app sem sinal (ModoAplicativo) ---------- */
+/* Acima da ficha aberta (z 50): o aviso vale para qualquer tela. */
+.aviso-sem-internet {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 60;
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  background: #32353c;
+  box-shadow: var(--sombra-alta);
+}
+
 } /* fim de @layer components */
