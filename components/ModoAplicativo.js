@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useSyncExternalStore } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 function acompanharConexao(avisar) {
   window.addEventListener('online', avisar);
@@ -21,6 +21,7 @@ function acompanharConexao(avisar) {
  */
 export default function ModoAplicativo() {
   const caminho = usePathname();
+  const router = useRouter();
   // No servidor nao ha como saber; parte de "com internet".
   const semInternet = useSyncExternalStore(acompanharConexao, () => !navigator.onLine, () => false);
 
@@ -38,6 +39,30 @@ export default function ModoAplicativo() {
       .then((nomes) => Promise.all(nomes.filter((n) => n.startsWith('ceb-paginas')).map((n) => caches.delete(n))))
       .catch(() => {});
   }, [caminho]);
+
+  // O app instalado nao recarrega sozinho: o iPhone o deixa suspenso e, ao
+  // voltar, mostra a tela de antes, sem o que foi cadastrado nesse meio tempo
+  // (e no app nao ha botao de recarregar). Ao voltar para a frente, ou quando
+  // a internet volta, os cartoes sao buscados de novo. So na tela dos
+  // cartoes: nas de cadastro nao se mexe no que esta sendo digitado.
+  useEffect(() => {
+    if (caminho !== '/') return undefined;
+    function atualizar() {
+      if (document.visibilityState === 'visible' && navigator.onLine) router.refresh();
+    }
+    // Pagina restaurada do cache de voltar do navegador: recarrega inteira.
+    function aoMostrar(evento) {
+      if (evento.persisted) window.location.reload();
+    }
+    document.addEventListener('visibilitychange', atualizar);
+    window.addEventListener('online', atualizar);
+    window.addEventListener('pageshow', aoMostrar);
+    return () => {
+      document.removeEventListener('visibilitychange', atualizar);
+      window.removeEventListener('online', atualizar);
+      window.removeEventListener('pageshow', aoMostrar);
+    };
+  }, [caminho, router]);
 
   if (!semInternet) return null;
 
