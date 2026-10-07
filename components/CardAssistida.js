@@ -199,7 +199,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
           </div>
         )}
 
-        <p className="mt-3 text-center text-xs font-semibold text-tinta-suave">
+        <p className="cartao__dica mt-3 text-center text-xs font-semibold text-tinta-suave">
           Toque no cartão para ver a ficha completa
         </p>
 

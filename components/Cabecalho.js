@@ -16,7 +16,7 @@ export default function Cabecalho({ papel, hoje, proximaVisita }) {
   return (
     <header className="capa">
       <div className="px-4 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2 justify-end mb-6">
+        <div className="capa__acoes flex items-center gap-2 justify-end mb-6">
           {papel === 'admin' && (
             <Link
               href="/admin"
@@ -44,7 +44,8 @@ export default function Cabecalho({ papel, hoje, proximaVisita }) {
             {/* Cada pedaco quebra inteiro, para a data nao partir no meio no celular. */}
             <span className="whitespace-nowrap">{textoDaProximaVisita(dias)} ·</span>{' '}
             <span className="whitespace-nowrap">
-              <strong>{formatarDataPorExtenso(proximaVisita)}</strong>, {formatarData(proximaVisita)}
+              <strong>{formatarDataPorExtenso(proximaVisita)}</strong>
+              <span className="capa__nota-numero">, {formatarData(proximaVisita)}</span>
             </span>
           </p>
         </div>
