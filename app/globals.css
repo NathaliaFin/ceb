@@ -915,7 +915,7 @@ body:has(.tela-login) { background-color: #585d66; }
 
 .modo-app .capa--principal h1 {
   margin-bottom: 0.6rem;
-  font-size: 1.45rem;
+  font-size: 1.3875rem; /* 22,2px */
 }
 
 .modo-app .capa--principal .capa__grupo {
@@ -1027,7 +1027,7 @@ body:has(.tela-login) { background-color: #585d66; }
    linhas deixava o topo desproporcional. Sai a dica, que fica no cartao. */
 @media (max-height: 700px) {
   .modo-app .capa--principal { padding: 0.8rem 0 4.9rem; } /* respiro entre a data e o cartao */
-  .modo-app .capa--principal h1 { font-size: 1.3rem; margin-bottom: 0.45rem; }
+  .modo-app .capa--principal h1 { font-size: 1.2375rem; margin-bottom: 0.45rem; } /* 19,8px */
   .modo-app .capa--principal .capa__grupo { font-size: 1.8rem; margin-bottom: 0.1rem; }
   .modo-app .capa--principal .capa__icone { width: 2.5rem; height: 2.5rem; margin-bottom: 0.5rem; }
   .modo-app .capa--principal .capa__nota { margin-top: 0.6rem; font-size: 0.78rem; }
