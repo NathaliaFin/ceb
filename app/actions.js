@@ -10,7 +10,7 @@ import {
 } from '@/lib/auth';
 import {
   atualizarAssistida, concluirEmergencia, criarAssistida, excluirAssistida,
-  reabrirEmergencia, registrarEmergencia, removerExcecaoCalendario,
+  excluirEmergencia, reabrirEmergencia, registrarEmergencia, removerExcecaoCalendario,
   salvarExcecaoCalendario, substituirFamiliares, substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
@@ -233,6 +233,16 @@ export async function acaoReabrirEmergencia(id) {
   if (!Number.isInteger(emergencia)) return;
 
   const assistidaId = await reabrirEmergencia(emergencia);
+  if (assistidaId) atualizarTelasDaFamilia(assistidaId);
+}
+
+/** Apaga uma necessidade de vez (registrada por engano, por exemplo). */
+export async function acaoExcluirEmergencia(id) {
+  await exigirAdmin();
+  const emergencia = Number(id);
+  if (!Number.isInteger(emergencia)) return;
+
+  const assistidaId = await excluirEmergencia(emergencia);
   if (assistidaId) atualizarTelasDaFamilia(assistidaId);
 }
 

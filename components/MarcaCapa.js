@@ -12,11 +12,9 @@ export default function MarcaCapa() {
         <span className="capa__grupo">Paranoá04</span>
         Atendimento às Famílias
       </h1>
-      {/* No computador numa linha so, com o hifen; no celular uma por linha. */}
+      {/* So no computador: no celular o .modo-app esconde esta linha. */}
       <p className="capa__instituicao">
-        <span className="capa__diretoria">Diretoria de Promoção Social</span>
-        <span className="capa__traco">{' - '}</span>
-        <span className="capa__casa">Comunhão Espírita de Brasília</span>
+        Diretoria de Promoção Social - Comunhão Espírita de Brasília
       </p>
     </>
   );

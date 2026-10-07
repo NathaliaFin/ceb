@@ -906,7 +906,12 @@ body:has(.tela-login) { background-color: #585d66; }
 
 /* ---------- capa ---------- */
 .modo-app .capa--principal { padding: 1.4rem 0 5.25rem; }
-.modo-app .capa--principal .capa__icone { display: none; } /* o icone do app ja e o coracao */
+/* O coracao fica acima do nome do grupo, um pouco menor que no navegador. */
+.modo-app .capa--principal .capa__icone {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.75rem;
+}
 
 .modo-app .capa--principal h1 {
   margin-bottom: 0.6rem;
@@ -918,13 +923,9 @@ body:has(.tela-login) { background-color: #585d66; }
   font-size: 2rem;
 }
 
-.modo-app .capa--principal .capa__instituicao { font-size: 0.8rem; }
-
-/* Diretoria e casa espirita uma por linha, centralizadas e sem o hifen (no
-   login do celular tambem). */
-.modo-app .capa__traco { display: none; }
-.modo-app .capa__diretoria,
-.modo-app .capa__casa { display: block; }
+/* No celular (e no login do celular) a linha da diretoria e da casa espirita
+   sai: o coracao e o nome do grupo bastam. No computador ela continua. */
+.modo-app .capa__instituicao { display: none; }
 
 .modo-app .capa--principal .capa__nota {
   margin-top: 0.85rem;
@@ -999,21 +1000,14 @@ body:has(.tela-login) { background-color: #585d66; }
   padding: 0.7rem 0.75rem 0.85rem;
 }
 
-/* Selo em pilula horizontal ("10 VISITAS"). */
+/* O selo e o mesmo quadradinho do navegador (numero em cima, "visitas"
+   embaixo); so sai de cima do nome e fica no fluxo, acima dele. */
 .modo-app .carrossel .cartao__selo {
   position: relative;
   top: auto;
   left: auto;
   align-self: flex-start;
-  display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
-  min-width: 0;
-  padding: 0.3rem 0.6rem;
 }
-
-.modo-app .carrossel .cartao__selo strong { font-size: 1.15rem; }
-.modo-app .carrossel .cartao__selo .cartao__selo-topo { margin-bottom: 0; align-self: center; }
 
 .modo-app .carrossel .cartao__sobre {
   position: relative;
@@ -1035,7 +1029,7 @@ body:has(.tela-login) { background-color: #585d66; }
   .modo-app .capa--principal { padding: 0.8rem 0 4.9rem; } /* respiro entre a data e o cartao */
   .modo-app .capa--principal h1 { font-size: 1.3rem; margin-bottom: 0.45rem; }
   .modo-app .capa--principal .capa__grupo { font-size: 1.8rem; margin-bottom: 0.1rem; }
-  .modo-app .capa--principal .capa__instituicao { font-size: 0.76rem; }
+  .modo-app .capa--principal .capa__icone { width: 2.5rem; height: 2.5rem; margin-bottom: 0.5rem; }
   .modo-app .capa--principal .capa__nota { margin-top: 0.6rem; font-size: 0.78rem; }
   .modo-app .carrossel .cartao__dica { display: none; }
 }

@@ -2,10 +2,25 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { acaoConcluirEmergencia, acaoReabrirEmergencia } from '@/app/actions';
+import { acaoConcluirEmergencia, acaoExcluirEmergencia, acaoReabrirEmergencia } from '@/app/actions';
 import { formatarData } from '@/lib/datas';
 import { emergenciasAbertas, emergenciasConcluidas } from '@/lib/emergencias';
-import { IconeAlerta, IconeCheck } from './Icones';
+import { IconeAlerta, IconeCheck, IconeLixeira } from './Icones';
+
+function BotaoExcluir({ aoClicar, desligado }) {
+  return (
+    <button
+      type="button"
+      onClick={aoClicar}
+      disabled={desligado}
+      className="botao-secundario shrink-0 inline-flex items-center justify-center w-8 h-8 text-tinta-suave"
+      aria-label="Excluir necessidade"
+      title="Excluir"
+    >
+      <IconeLixeira tamanho={14} />
+    </button>
+  );
+}
 
 /**
  * Necessidades emergenciais no cadastro: as abertas com o botao de concluir,
@@ -21,6 +36,17 @@ export default function EmergenciasNoCadastro({ assistida }) {
 
   const abertas = emergenciasAbertas(assistida);
   const concluidas = emergenciasConcluidas(assistida);
+
+  function excluir(emergencia) {
+    const confirmou = window.confirm(
+      `Excluir esta necessidade?
+
+"${emergencia.texto}"
+
+Ela some do cartão e do histórico, sem como desfazer.`,
+    );
+    if (confirmou) executar(acaoExcluirEmergencia, emergencia.id);
+  }
 
   function executar(acao, id) {
     setEmAndamento(id);
@@ -54,8 +80,9 @@ export default function EmergenciasNoCadastro({ assistida }) {
                 className="botao-secundario shrink-0 inline-flex items-center gap-1 px-3 py-2 text-xs"
               >
                 <IconeCheck tamanho={14} />
-                {pendente && emAndamento === emergencia.id ? 'Concluindo…' : 'Concluir'}
+                {pendente && emAndamento === emergencia.id ? 'Aguarde…' : 'Concluir'}
               </button>
+              <BotaoExcluir aoClicar={() => excluir(emergencia)} desligado={pendente} />
             </li>
           ))}
         </ul>
@@ -102,8 +129,9 @@ export default function EmergenciasNoCadastro({ assistida }) {
                   disabled={pendente}
                   className="botao-secundario shrink-0 px-3 py-1.5 text-xs"
                 >
-                  {pendente && emAndamento === emergencia.id ? 'Reabrindo…' : 'Reabrir'}
+                  {pendente && emAndamento === emergencia.id ? 'Aguarde…' : 'Reabrir'}
                 </button>
+                <BotaoExcluir aoClicar={() => excluir(emergencia)} desligado={pendente} />
               </li>
             ))}
           </ul>
