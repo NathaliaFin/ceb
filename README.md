@@ -12,21 +12,22 @@ voluntário abrir no celular durante a visita.
 
 ## 1. Como as pessoas entram
 
-Há dois acessos, definidos em variáveis de ambiente:
+A tela de entrada pede só a senha. Há duas, definidas em variáveis de ambiente,
+e o sistema reconhece quem entrou por qual delas foi digitada:
 
-| Usuário | Senha | Quem usa | O que pode fazer |
-|---|---|---|---|
-| `USUARIO_VOLUNTARIO` | `SENHA_VOLUNTARIO` | voluntários | ver os cartões |
-| `USUARIO_ADMIN` | `SENHA_ADMIN` | administradora | tudo, incluindo cadastrar e editar famílias |
+| Senha | Quem usa | O que pode fazer |
+|---|---|---|
+| `SENHA_VOLUNTARIO` | voluntários | ver os cartões |
+| `SENHA_ADMIN` | administradora | tudo, incluindo cadastrar e editar famílias |
 
-O usuário não diferencia maiúscula de minúscula — o teclado do celular costuma
-colocar inicial maiúscula sozinho, e isso travaria a entrada em campo. A senha é
-comparada exatamente como digitada.
+As duas precisam ser diferentes: se forem iguais, o acesso de admin fica
+desligado até a variável ser corrigida. A senha é comparada exatamente como
+digitada.
 
 Quem entra com a senha de admin vê o botão **Gerenciar**. A sessão dura 30 dias,
 para o voluntário não ter que digitar senha a cada visita.
 
-Para trocar um usuário ou uma senha, altere a variável no Railway e reimplante. Todo mundo
+Para trocar uma senha, altere a variável no Railway e reimplante. Todo mundo
 continua logado — as sessões antigas só caem se você trocar `SESSION_SECRET`.
 
 ---
@@ -42,9 +43,7 @@ Crie um arquivo `.env.local` na raiz (ele não vai para o GitHub) copiando o
 
 ```
 DATABASE_URL=...
-USUARIO_VOLUNTARIO=...
 SENHA_VOLUNTARIO=...
-USUARIO_ADMIN=...
 SENHA_ADMIN=...
 SESSION_SECRET=...
 ```

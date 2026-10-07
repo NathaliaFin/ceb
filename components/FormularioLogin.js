@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import { entrar } from '@/app/actions';
-import { IconeCadeado, IconeCoracao, IconePessoas } from './Icones';
+import { IconeCadeado, IconeCoracao } from './Icones';
 
 export default function FormularioLogin() {
   const [estado, acao, pendente] = useActionState(entrar, { erro: null });
@@ -24,32 +24,6 @@ export default function FormularioLogin() {
 
       <form action={acao} className="cartao p-5 space-y-4" style={{ '--cor': '#e0376f' }}>
         <div>
-          <label htmlFor="usuario" className="block text-sm font-semibold mb-2">
-            Usuário
-          </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tinta-suave">
-              <IconePessoas tamanho={17} />
-            </span>
-            <input
-              id="usuario"
-              name="usuario"
-              type="text"
-              required
-              autoFocus
-              autoComplete="username"
-              // O teclado do celular colocaria inicial maiuscula e tentaria
-              // corrigir o texto, o que atrapalharia na hora de entrar.
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              placeholder="Digite o usuário"
-              className="campo pl-10"
-            />
-          </div>
-        </div>
-
-        <div>
           <label htmlFor="senha" className="block text-sm font-semibold mb-2">
             Senha
           </label>
@@ -62,6 +36,7 @@ export default function FormularioLogin() {
               name="senha"
               type="password"
               required
+              autoFocus
               autoComplete="current-password"
               placeholder="Digite a senha"
               className="campo pl-10"

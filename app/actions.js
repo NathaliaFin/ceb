@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 
 import {
   criarSessao, encerrarSessao, estaBloqueado, exigirAdmin,
-  limparFalhas, papelDasCredenciais, registrarFalha,
+  limparFalhas, papelDaSenha, registrarFalha,
 } from '@/lib/auth';
 import {
   atualizarAssistida, criarAssistida, excluirAssistida, removerExcecaoCalendario,
@@ -27,10 +27,10 @@ export async function entrar(_estadoAnterior, formData) {
     return { erro: 'Muitas tentativas seguidas. Espere 15 minutos e tente de novo.' };
   }
 
-  const papel = papelDasCredenciais(formData.get('usuario'), formData.get('senha'));
+  const papel = papelDaSenha(formData.get('senha'));
   if (!papel) {
     registrarFalha(cliente);
-    return { erro: 'Usuário ou senha incorretos.' };
+    return { erro: 'Senha incorreta.' };
   }
 
   limparFalhas(cliente);
