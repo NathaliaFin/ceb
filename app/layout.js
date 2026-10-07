@@ -19,9 +19,10 @@ export const viewport = {
   themeColor: '#32353c',
 };
 
-// Aberto pelo icone da tela inicial, o site vira o "modo app": capa compacta
-// e o cartao inteiro na tela. Roda antes da pintura para o layout nao pular.
-const DETECTAR_MODO_APP = `try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone){document.documentElement.classList.add('modo-app')}}catch(e){}`;
+// No celular (no app instalado ou no navegador) o site usa o "modo app": a
+// tela toda preenchida, com o cartao esticando ate o pe. Computador e tablet
+// ficam com o layout de pagina. Roda antes da pintura para o layout nao pular.
+const DETECTAR_MODO_APP = `try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone||matchMedia('(max-width: 767px)').matches){document.documentElement.classList.add('modo-app')}}catch(e){}`;
 
 export default function LayoutRaiz({ children }) {
   return (

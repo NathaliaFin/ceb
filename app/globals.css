@@ -860,9 +860,10 @@ body:has(.tela-login) { background-color: #585d66; }
 } /* fim de @layer components */
 
 /* ============================================================
-   Modo app: aberto pelo icone da tela inicial (classe posta pelo
-   script do layout). A tela principal ocupa a altura toda, com o
-   cartao esticando ate o pe. No navegador nada disso vale.
+   Modo app: no celular, seja no app instalado ou no navegador
+   (classe posta pelo script do layout). A tela principal ocupa a
+   altura toda, com o cartao esticando ate o pe. No computador e no
+   tablet nada disso vale.
    Fica fora das camadas para ganhar tambem das classes do
    Tailwind (p-3, mt-3...) postas nos mesmos elementos.
    ============================================================ */
