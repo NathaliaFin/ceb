@@ -369,13 +369,12 @@ body {
   text-wrap: balance; /* no celular quebra em duas linhas parecidas */
 }
 
-/* O nome do grupo e o destaque da capa: na mesma fonte do titulo e um pouco
-   maior que ele (34px contra 30px). */
+/* O nome do grupo e o destaque da capa: na mesma fonte e cor do titulo, so
+   um pouco maior que ele (34px contra 30px). */
 .capa__grupo {
   display: block;
   margin-bottom: 0.15rem;
   font-size: 2.125rem; /* 34px */
-  color: #5ccffa;
 }
 
 /* Diretoria e casa espirita, uma por linha, abaixo do nome do grupo. */

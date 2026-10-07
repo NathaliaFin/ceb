@@ -23,7 +23,6 @@ export default function FormularioLogin() {
           </span>
           <div className="cartao__sobre">
             <h2>Acesso dos voluntários</h2>
-            <p className="cartao__endereco">Digite a senha do grupo para ver os cartões das famílias.</p>
           </div>
         </div>
 
@@ -60,12 +59,6 @@ export default function FormularioLogin() {
           </button>
         </div>
       </form>
-
-      <p className="text-xs text-tinta-suave text-center mt-5 leading-relaxed">
-        Estas informações são das famílias atendidas.
-        <br />
-        Não compartilhe a senha fora do grupo de voluntários.
-      </p>
     </div>
   );
 }
