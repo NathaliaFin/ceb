@@ -7,6 +7,10 @@
      para as contas de altura do modo app usarem o mesmo valor. */
   --seguro-topo: env(safe-area-inset-top, 0px);
   --seguro-base: env(safe-area-inset-bottom, 0px);
+  /* Altura real da tela. O script do layout troca pelo valor medido: no app
+     instalado do iPhone o 100dvh vem curto (desconta o relogio, embora a
+     pagina passe por baixo dele) e sobrava uma faixa vazia embaixo. */
+  --altura-tela: 100dvh;
   --papel: #faf7f2;
   --superficie: #ffffff;
   --superficie-2: #f3eee6;
@@ -437,7 +441,7 @@ body:has(.tela-login) { background-color: #585d66; }
   flex-direction: column;
   justify-content: center;
   gap: 2rem;
-  min-height: calc(100dvh - var(--seguro-topo) - var(--seguro-base));
+  min-height: calc(var(--altura-tela) - var(--seguro-topo) - var(--seguro-base));
   padding: 2.5rem 1rem 3rem;
   background:
     radial-gradient(90% 45% at 50% 0%, rgba(255, 255, 255, 0.1), transparent 70%),
@@ -889,7 +893,7 @@ body:has(.tela-login) { background-color: #585d66; }
 .modo-app .tela-cartoes {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - var(--seguro-topo) - var(--seguro-base));
+  min-height: calc(var(--altura-tela) - var(--seguro-topo) - var(--seguro-base));
   padding-bottom: 0.4rem;
 }
 
@@ -985,7 +989,7 @@ body:has(.tela-login) { background-color: #585d66; }
   justify-content: space-between;
   gap: 0.6rem;
   height: auto;
-  min-height: clamp(7rem, 100dvh - 44rem, 12rem);
+  min-height: clamp(7rem, var(--altura-tela) - 44rem, 12rem);
   padding: 0.7rem 0.75rem 0.85rem;
 }
 

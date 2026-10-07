@@ -22,7 +22,20 @@ export const viewport = {
 // No celular (no app instalado ou no navegador) o site usa o "modo app": a
 // tela toda preenchida, com o cartao esticando ate o pe. Computador e tablet
 // ficam com o layout de pagina. Roda antes da pintura para o layout nao pular.
-const DETECTAR_MODO_APP = `try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone||matchMedia('(max-width: 767px)').matches){document.documentElement.classList.add('modo-app')}}catch(e){}`;
+//
+// Tambem mede a altura da tela (--altura-tela). No app instalado do iPhone a
+// pagina ocupa a tela inteira, mas o 100dvh e o innerHeight vem sem a faixa do
+// relogio; la a medida certa e a da propria tela (screen), na orientacao atual.
+const DETECTAR_MODO_APP = `(function(){try{
+var d=document.documentElement;
+if(matchMedia('(display-mode: standalone)').matches||navigator.standalone||matchMedia('(max-width: 767px)').matches){d.classList.add('modo-app')}
+function medir(){
+  var h=window.innerHeight;
+  if(navigator.standalone){var deitado=window.innerWidth>window.innerHeight;h=Math.max(h,deitado?Math.min(screen.width,screen.height):Math.max(screen.width,screen.height))}
+  d.style.setProperty('--altura-tela',h+'px');
+}
+medir();addEventListener('resize',medir);addEventListener('orientationchange',function(){setTimeout(medir,250)});
+}catch(e){}})();`;
 
 export default function LayoutRaiz({ children }) {
   return (
