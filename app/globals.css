@@ -920,6 +920,12 @@ body:has(.tela-login) { background-color: #585d66; }
 
 .modo-app .capa--principal .capa__instituicao { font-size: 0.8rem; }
 
+/* Diretoria e casa espirita uma por linha, centralizadas e sem o hifen (no
+   login do celular tambem). */
+.modo-app .capa__traco { display: none; }
+.modo-app .capa__diretoria,
+.modo-app .capa__casa { display: block; }
+
 .modo-app .capa--principal .capa__nota {
   margin-top: 0.85rem;
   font-size: 0.82rem;
@@ -1022,15 +1028,21 @@ body:has(.tela-login) { background-color: #585d66; }
 .modo-app .carrossel .cartao__gente { margin-top: 0.75rem; padding-top: 0.7rem; }
 .modo-app .carrossel .cartao__pe { padding-top: 0.8rem; }
 
-/* ---------- tela baixa (iPhone SE e afins) ---------- */
-/* Saem a linha da instituicao, a da proxima visita (o cartao ja mostra a
-   data) e a dica do cartao; os titulos encolhem um pouco. */
+/* ---------- tela baixa (Safari com as barras, iPhone SE) ---------- */
+/* A capa continua inteira, so que toda na mesma escala menor: esconder
+   linhas deixava o topo desproporcional. Sai a dica, que fica no cartao. */
 @media (max-height: 700px) {
-  .modo-app .capa--principal { padding: 1rem 0 5rem; }
-  .modo-app .capa--principal h1 { font-size: 1.25rem; margin-bottom: 0; }
-  .modo-app .capa--principal .capa__grupo { font-size: 1.7rem; }
-  .modo-app .capa--principal .capa__instituicao,
-  .modo-app .capa--principal .capa__nota,
+  .modo-app .capa--principal { padding: 0.8rem 0 4.9rem; } /* respiro entre a data e o cartao */
+  .modo-app .capa--principal h1 { font-size: 1.3rem; margin-bottom: 0.45rem; }
+  .modo-app .capa--principal .capa__grupo { font-size: 1.8rem; margin-bottom: 0.1rem; }
+  .modo-app .capa--principal .capa__instituicao { font-size: 0.76rem; }
+  .modo-app .capa--principal .capa__nota { margin-top: 0.6rem; font-size: 0.78rem; }
   .modo-app .carrossel .cartao__dica { display: none; }
-  .modo-app .carrossel .cartao__sobre h2 { font-size: 1.02rem; }
+}
+
+/* Abaixo de 600px visiveis (Safari do iPhone SE): sai tambem a linha da
+   proxima visita, que o cartao ja mostra. */
+@media (max-height: 600px) {
+  .modo-app .capa--principal .capa__nota { display: none; }
+  .modo-app .carrossel .cartao__sobre h2 { font-size: 1.05rem; }
 }
