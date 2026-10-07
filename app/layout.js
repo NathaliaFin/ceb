@@ -2,7 +2,7 @@ import './globals.css';
 import ModoAplicativo from '@/components/ModoAplicativo';
 
 export const metadata = {
-  title: 'CEB · Cartões das assistidas',
+  title: 'Paranoá04 - Visitas',
   description: 'Informações das famílias atendidas pelo projeto de voluntariado',
   robots: { index: false, follow: false },
   // Instalado no iPhone ("Adicionar a Tela de Inicio"): nome sob o icone e

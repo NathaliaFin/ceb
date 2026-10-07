@@ -421,6 +421,29 @@ body {
 
 .faixa-cartoes { position: relative; z-index: 2; }
 
+/* Login: a mesma capa, sem a fileira de botoes no alto (dai o respiro maior)
+   e com o cartao de entrada subindo sobre ela como os cartoes das familias.
+   A borda da faixa corta o topo rosa no meio, como corta a cor dos cartoes. */
+.capa--login { padding: 3rem 0 8rem; }
+
+.login-cartao {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 24rem;
+  margin: -5.5rem auto 0;
+}
+
+.login-cartao .cartao__capa { height: 8.5rem; }
+
+/* O selo do cadeado ocupa o lugar do selo de visitas. */
+.login-cartao .cartao__selo {
+  min-width: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+}
+
 /* ============================================================
    Cartao da assistida
    ============================================================ */
