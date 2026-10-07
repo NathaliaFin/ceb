@@ -7,9 +7,11 @@ import {
   VISITAS_DO_CICLO, etapaDoCiclo, formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem,
 } from '@/lib/datas';
 import { linkTelefone, linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import { emergenciasAbertas, emergenciasConcluidas } from '@/lib/emergencias';
+import BlocoEmergencias from './BlocoEmergencias';
 import BotaoComoChegar from './BotaoComoChegar';
 import {
-  IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
+  IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
   IconeNota, IconePessoas, IconePino, IconePresente,
 } from './Icones';
 
@@ -89,17 +91,7 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
         </header>
 
         <div className="ficha__corpo">
-          {assistida.necessidades_emergenciais && (
-            <div className="bloco-alerta rounded-xl p-3 mb-3">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
-                <IconeAlerta tamanho={14} />
-                Necessidade emergencial
-              </div>
-              <p className="text-sm mt-1.5 leading-snug whitespace-pre-line text-tinta font-medium">
-                {assistida.necessidades_emergenciais}
-              </p>
-            </div>
-          )}
+          <BlocoEmergencias emergencias={emergenciasAbertas(assistida)} className="mb-3" />
 
           <Secao icone={<IconeCalendario tamanho={13} />} titulo="Visitas">
             {triagem ? (
@@ -223,6 +215,23 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
               <Vazio>Nenhuma observação registrada.</Vazio>
             )}
           </Secao>
+
+          {/* So aparece quando ja houve alguma: o que a familia precisou e foi atendido. */}
+          {emergenciasConcluidas(assistida).length > 0 && (
+            <Secao icone={<IconeCheck tamanho={13} />} titulo="Necessidades já atendidas">
+              <ul className="space-y-2">
+                {emergenciasConcluidas(assistida).map((emergencia) => (
+                  <li key={emergencia.id}>
+                    <p className="whitespace-pre-line">{emergencia.texto}</p>
+                    <p className="text-xs text-tinta-suave">
+                      Registrada em {formatarData(emergencia.registrada_em)} · concluída em{' '}
+                      {formatarData(emergencia.concluida_em)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </Secao>
+          )}
         </div>
       </div>
     </div>,

@@ -3,6 +3,7 @@ import { exigirAdmin } from '@/lib/auth';
 import { listarAssistidas, listarExcecoesCalendario, mapaDeExcecoes } from '@/lib/consultas';
 import { corDe, iniciais } from '@/lib/cores';
 import { formatarData, hojeIso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
+import { emergenciasAbertas } from '@/lib/emergencias';
 import { IconeCalendario, IconeLapis, IconeMais, IconeSeta } from '@/components/Icones';
 
 export const dynamic = 'force-dynamic';
@@ -96,7 +97,7 @@ export default async function PaginaAdmin() {
                               : 'em '
                           }${formatarData(primeiraTriagem(assistida.triagens))}`
                         : 'sem triagem registrada'}
-                      {assistida.necessidades_emergenciais && ' · 🚨 emergência'}
+                      {emergenciasAbertas(assistida).length > 0 && ' · 🚨 emergência'}
                     </p>
                   </div>
                   <span className="text-tinta-suave shrink-0">

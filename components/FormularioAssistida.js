@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react';
 import { acaoSalvarAssistida } from '@/app/actions';
 import { CHAVES_CORES, PALETA, iniciais } from '@/lib/cores';
+import EmergenciasNoCadastro from './EmergenciasNoCadastro';
 import { IconeLixeira, IconeMais } from './Icones';
 
 function Campo({ nome, rotulo, dica, children }) {
@@ -327,20 +328,7 @@ export default function FormularioAssistida({ assistida }) {
           />
         </Campo>
 
-        <Campo
-          nome="necessidades_emergenciais"
-          rotulo="Necessidade emergencial"
-          dica="Aparece em destaque e piscando no cartão. Apague quando estiver resolvido."
-        >
-          <textarea
-            id="necessidades_emergenciais"
-            name="necessidades_emergenciais"
-            rows={2}
-            defaultValue={assistida?.necessidades_emergenciais ?? ''}
-            className="campo resize-y"
-            placeholder="O botijão de gás acabou"
-          />
-        </Campo>
+        <EmergenciasNoCadastro assistida={assistida} />
 
         <Campo nome="observacoes" rotulo="Observações gerais">
           <textarea

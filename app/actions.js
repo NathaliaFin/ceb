@@ -9,10 +9,12 @@ import {
   limparFalhas, papelDaSenha, registrarFalha,
 } from '@/lib/auth';
 import {
-  atualizarAssistida, criarAssistida, excluirAssistida, removerExcecaoCalendario,
+  atualizarAssistida, concluirEmergencia, criarAssistida, excluirAssistida,
+  reabrirEmergencia, registrarEmergencia, removerExcecaoCalendario,
   salvarExcecaoCalendario, substituirFamiliares, substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
+import { hojeIso } from '@/lib/datas';
 import { ehLinkCurtoDeMapa, extrairCoordenadas, extrairLink } from '@/lib/links';
 
 async function identificarCliente() {
@@ -169,7 +171,6 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
     latitude: localizacao.latitude,
     longitude: localizacao.longitude,
     itens_doacao: textoOuNulo(formData.get('itens_doacao')),
-    necessidades_emergenciais: textoOuNulo(formData.get('necessidades_emergenciais')),
     observacoes: textoOuNulo(formData.get('observacoes')),
     cor: CHAVES_CORES.includes(cor) ? cor : 'rosa',
     ativa: formData.get('ativa') === 'on',
@@ -182,6 +183,11 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
   if (editando) await atualizarAssistida(id, dados);
   await substituirFamiliares(id, lerFamiliares(formData));
   await substituirTriagens(id, triagens);
+
+  // O campo da necessidade emergencial sempre registra uma NOVA: as abertas
+  // ficam listadas acima dele, e o campo volta vazio para a proxima.
+  const novaEmergencia = textoOuNulo(formData.get('nova_emergencia'));
+  if (novaEmergencia) await registrarEmergencia(id, novaEmergencia, hojeIso());
 
   revalidatePath('/');
   revalidatePath('/admin');
@@ -198,6 +204,36 @@ export async function acaoExcluirAssistida(formData) {
   revalidatePath('/');
   revalidatePath('/admin');
   redirect('/admin');
+}
+
+function atualizarTelasDaFamilia(assistidaId) {
+  revalidatePath('/');
+  revalidatePath('/admin');
+  revalidatePath(`/admin/assistida/${assistidaId}`);
+}
+
+/**
+ * Conclui uma necessidade emergencial: sai do cartao e vai para o historico.
+ * Chamada direto pelo botao, sem enviar o formulario do cadastro, para nao
+ * perder o que estiver sendo editado nele.
+ */
+export async function acaoConcluirEmergencia(id) {
+  await exigirAdmin();
+  const emergencia = Number(id);
+  if (!Number.isInteger(emergencia)) return;
+
+  const assistidaId = await concluirEmergencia(emergencia, hojeIso());
+  if (assistidaId) atualizarTelasDaFamilia(assistidaId);
+}
+
+/** Desfaz uma conclusao feita por engano: a necessidade volta ao cartao. */
+export async function acaoReabrirEmergencia(id) {
+  await exigirAdmin();
+  const emergencia = Number(id);
+  if (!Number.isInteger(emergencia)) return;
+
+  const assistidaId = await reabrirEmergencia(emergencia);
+  if (assistidaId) atualizarTelasDaFamilia(assistidaId);
 }
 
 /**

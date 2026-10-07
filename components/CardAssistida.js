@@ -6,10 +6,12 @@ import {
   etapaDoCiclo, formatarData, formatarDataCurta, numeroDaVisita, primeiraTriagem,
 } from '@/lib/datas';
 import { linkWhatsapp, telefoneFormatado } from '@/lib/links';
+import { emergenciasAbertas } from '@/lib/emergencias';
+import BlocoEmergencias from './BlocoEmergencias';
 import DetalheAssistida from './DetalheAssistida';
 import BotaoComoChegar from './BotaoComoChegar';
 import {
-  IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
+  IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
   IconePresente,
 } from './Icones';
 
@@ -56,7 +58,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
   const [fichaAberta, setFichaAberta] = useState(false);
 
   const cor = corDe(assistida.cor);
-  const temEmergencia = Boolean(assistida.necessidades_emergenciais);
+  const emergencias = emergenciasAbertas(assistida);
   const ehDiaDeVisita = proximaVisita === hoje;
 
   // A contagem sai do calendario, a partir da PRIMEIRA triagem, que ja conta
@@ -119,17 +121,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
       </div>
 
       <div className="cartao__corpo">
-        {temEmergencia && (
-          <div className="bloco-alerta rounded-xl p-3 mb-3 pulsa">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
-              <IconeAlerta tamanho={14} />
-              Necessidade emergencial
-            </div>
-            <p className="text-sm mt-1.5 leading-snug whitespace-pre-line text-tinta font-medium">
-              {assistida.necessidades_emergenciais}
-            </p>
-          </div>
-        )}
+        <BlocoEmergencias emergencias={emergencias} className="mb-3 pulsa" />
 
         <ul className="cartao__dados">
           <li>
