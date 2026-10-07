@@ -4,8 +4,8 @@ import { useActionState } from 'react';
 import { entrar } from '@/app/actions';
 import { IconeCadeado } from './Icones';
 
-// O rosa do coracao do projeto: o cartao de entrada e "o cartao do grupo".
-const COR_DO_PROJETO = '#e0376f';
+// Azul claro: destaca o cartao de entrada sem competir com a capa escura.
+const COR_DO_CARTAO = '#6cb8e6';
 
 export default function FormularioLogin() {
   const [estado, acao, pendente] = useActionState(entrar, { erro: null });
@@ -15,14 +15,14 @@ export default function FormularioLogin() {
       <form
         action={acao}
         className="cartao cartao--capa entrada"
-        style={{ '--cor': COR_DO_PROJETO, animationDelay: '90ms' }}
+        style={{ '--cor': COR_DO_CARTAO, animationDelay: '90ms' }}
       >
         <div className="cartao__capa">
           <span className="cartao__selo" aria-hidden="true">
             <IconeCadeado tamanho={22} />
           </span>
           <div className="cartao__sobre">
-            <h2>Acesso dos voluntários</h2>
+            <h2>Acesso Voluntário</h2>
           </div>
         </div>
 
