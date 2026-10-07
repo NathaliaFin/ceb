@@ -4,8 +4,8 @@ import { useActionState } from 'react';
 import { entrar } from '@/app/actions';
 import { IconeCadeado } from './Icones';
 
-// Azul claro: destaca o cartao de entrada sem competir com a capa escura.
-const COR_DO_CARTAO = '#6cb8e6';
+// O verde Esmeralda da paleta das familias (lib/cores.js).
+const COR_DO_CARTAO = '#0f9372';
 
 export default function FormularioLogin() {
   const [estado, acao, pendente] = useActionState(entrar, { erro: null });
