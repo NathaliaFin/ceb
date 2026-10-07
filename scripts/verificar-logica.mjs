@@ -118,6 +118,11 @@ conferir('texto que nao e mapa', extrairCoordenadas('Quadra 28 conjunto H casa 0
 conferir('vazio', extrairCoordenadas(''), null);
 conferir('reconhece link encurtado do celular', ehLinkCurtoDeMapa('https://maps.app.goo.gl/AbCdEf123'), true);
 conferir('link normal nao e encurtado', ehLinkCurtoDeMapa(doPedido), false);
+conferir('alfinete solto: /maps/search/lat,+lng', extrairCoordenadas('https://www.google.com/maps/search/-15.765004,+-47.777717?entry=tts&g_ep=EgoyMDI2'), { latitude: -15.765004, longitude: -47.777717 });
+conferir('alfinete solto com %2C e %2B', extrairCoordenadas('https://www.google.com/maps/search/-15.765004%2C%2B-47.777717?entry=tts'), { latitude: -15.765004, longitude: -47.777717 });
+conferir('alfinete em /maps/place/lat,lng', extrairCoordenadas('https://www.google.com/maps/place/-15.765004,-47.777717/data=!4m2'), { latitude: -15.765004, longitude: -47.777717 });
+conferir('pagina de aviso de cookies com o link dentro', extrairCoordenadas('https://consent.google.com/ml?continue=https://www.google.com/maps/search/-15.765004,%2B-47.777717?entry%3Dtts&gl=BR'), { latitude: -15.765004, longitude: -47.777717 });
+conferir('lugar com nome nao vira coordenada falsa', extrairCoordenadas('https://www.google.com/maps/place/Quadra+28+Conjunto+H/data=!4m2!3m1!1s0x0:0x0'), null);
 
 console.log('--- rota prefere o link cadastrado ---');
 conferir('Maps usa o link colado', linkGoogleMaps({ link_mapa: doPedido, latitude: -15.765, longitude: -47.7777 }), doPedido);

@@ -166,11 +166,13 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
               <span className="text-tinta-suave">Referência: </span>
               {assistida.referencia || <Vazio>não informada</Vazio>}
             </p>
+            {/* O Waze depende das coordenadas; o Google Maps usa o link colado. */}
             {!temCoordenadas && (
               <p className="mt-1.5">
                 <Vazio>
-                  Sem link de mapa cadastrado — a rota vai pelo endereço escrito, que costuma parar
-                  na rua e não na casa.
+                  {assistida.link_mapa
+                    ? 'Há um link de mapa, mas sem as coordenadas: o Google Maps vai pelo link, e o Waze vai pelo endereço escrito, que costuma parar na rua e não na casa.'
+                    : 'Sem link de mapa cadastrado — a rota vai pelo endereço escrito, que costuma parar na rua e não na casa.'}
                 </Vazio>
               </p>
             )}

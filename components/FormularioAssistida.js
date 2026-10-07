@@ -166,6 +166,15 @@ export default function FormularioAssistida({ assistida }) {
             className="campo"
             placeholder="Cole aqui o link do Google Maps"
           />
+          {/* Link salvo do qual nao deu para tirar as coordenadas: o Waze fica sem
+              o ponto exato. Avisa aqui, na hora, em vez de so na ficha. */}
+          {assistida?.link_mapa && (assistida.latitude === null || assistida.latitude === undefined) && (
+            <p className="bloco-alerta rounded-xl px-3 py-2 mt-2 text-xs leading-snug" role="status">
+              O link foi salvo, mas não consegui tirar dele as coordenadas, e o Waze vai pelo endereço
+              escrito. No Google Maps, toque e segure sobre a casa para marcar um alfinete, compartilhe
+              e cole aqui o link novo. Também dá para colar as coordenadas, como -15.7650, -47.7777.
+            </p>
+          )}
         </Campo>
 
         <Campo
