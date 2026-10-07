@@ -9,18 +9,12 @@ export default async function PaginaLogin() {
   if (await papelAtual()) redirect('/');
 
   return (
-    // A mesma capa da tela principal, com o cartao de entrada subindo sobre
-    // ela como os cartoes das familias.
-    <main className="min-h-dvh pb-10 overflow-x-clip">
-      <header className="capa capa--login">
-        <div className="px-4 max-w-6xl mx-auto entrada">
-          <MarcaCapa />
-        </div>
+    // Tela cheia no cinza da capa: a marca e o cartao de entrada juntos no meio.
+    <main className="tela-login">
+      <header className="capa capa--login entrada">
+        <MarcaCapa />
       </header>
-
-      <div className="px-4">
-        <FormularioLogin />
-      </div>
+      <FormularioLogin />
     </main>
   );
 }

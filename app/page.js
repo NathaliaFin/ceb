@@ -42,11 +42,11 @@ export default async function PaginaInicial() {
   return (
     // overflow-x-clip: a folga do carrossel para a sombra passa da borda da
     // tela em tablet, e nao pode virar rolagem lateral.
-    <main className="pb-10 overflow-x-clip">
+    <main className="tela-cartoes pb-10 overflow-x-clip">
       <Cabecalho papel={papel} hoje={hoje} proximaVisita={proxima} />
 
       {/* Os cartoes encavalam a capa escura — e dai que vem a profundidade. */}
-      <div className="px-4 max-w-6xl mx-auto">
+      <div className="tela-cartoes__painel px-4 max-w-6xl mx-auto">
         <PainelAssistidas
           assistidas={assistidas}
           hoje={hoje}

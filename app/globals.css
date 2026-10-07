@@ -3,6 +3,10 @@
 /* ---------- paleta ---------- */
 :root {
   color-scheme: light;
+  /* Recorte da tela (relogio em cima, barra de gesto embaixo). Em variavel
+     para as contas de altura do modo app usarem o mesmo valor. */
+  --seguro-topo: env(safe-area-inset-top, 0px);
+  --seguro-base: env(safe-area-inset-bottom, 0px);
   --papel: #faf7f2;
   --superficie: #ffffff;
   --superficie-2: #f3eee6;
@@ -47,13 +51,17 @@ body {
   color: var(--tinta);
   font-family: var(--font-sans);
   /* respeita o recorte da tela em celular */
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-top: var(--seguro-topo);
+  padding-bottom: var(--seguro-base);
   /* e o recorte das laterais, com o celular deitado */
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   -webkit-font-smoothing: antialiased;
 }
+
+/* No login a tela toda e cinza: a faixa da barra de gesto, embaixo, fica na
+   cor do pe do degrade em vez do fundo claro. */
+body:has(.tela-login) { background-color: #585d66; }
 
 /* ---------- animacoes ---------- */
 @keyframes entrada {
@@ -420,17 +428,48 @@ body {
 
 .faixa-cartoes { position: relative; z-index: 2; }
 
-/* Login: a mesma capa, sem a fileira de botoes no alto (dai o respiro maior)
-   e com o cartao de entrada subindo sobre ela como os cartoes das familias.
-   A borda da faixa corta o topo rosa no meio, como corta a cor dos cartoes. */
-.capa--login { padding: 3rem 0 8rem; }
+/* Login: a tela inteira no cinza da capa, com a marca e o cartao de entrada
+   juntos no meio. Sem faixa clara embaixo, no navegador e no app. */
+.tela-login {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+  min-height: calc(100dvh - var(--seguro-topo) - var(--seguro-base));
+  padding: 2.5rem 1rem 3rem;
+  background:
+    radial-gradient(90% 45% at 50% 0%, rgba(255, 255, 255, 0.1), transparent 70%),
+    linear-gradient(#32353c 0%, #44484f 55%, #585d66 100%);
+}
+
+.tela-login::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.045) 0 14px,
+    transparent 14px 28px
+  );
+}
+
+/* A marca usa a tipografia da capa, mas sem o fundo proprio dela. */
+.tela-login .capa {
+  padding: 0;
+  overflow: visible;
+  background: none;
+}
+
+.tela-login .capa::before { display: none; }
 
 .login-cartao {
   position: relative;
-  z-index: 2;
   width: 100%;
   max-width: 24rem;
-  margin: -5.5rem auto 0;
+  margin: 0 auto;
 }
 
 .login-cartao .cartao__capa { height: 8.5rem; }
@@ -822,10 +861,10 @@ body {
 
 /* ============================================================
    Modo app: aberto pelo icone da tela inicial (classe posta pelo
-   script do layout). O cartao inteiro precisa caber na tela, entao
-   capa e cartao ficam compactos. No navegador nada disso vale.
-   Fica fora da camada de componentes para ganhar tambem das classes
-   do Tailwind (p-3, mt-3...) postas nos mesmos elementos.
+   script do layout). A tela principal ocupa a altura toda, com o
+   cartao esticando ate o pe. No navegador nada disso vale.
+   Fica fora das camadas para ganhar tambem das classes do
+   Tailwind (p-3, mt-3...) postas nos mesmos elementos.
    ============================================================ */
 
 /* Faixa do relogio na cor da capa: a barra do iPhone e translucida e, sem
@@ -835,7 +874,7 @@ body {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 70;
-  height: env(safe-area-inset-top, 0px);
+  height: var(--seguro-topo);
   background: #32353c;
 }
 
@@ -845,23 +884,43 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-.modo-app .capa { padding: 0.85rem 0 5.75rem; }
-.modo-app .capa__icone { display: none; } /* o icone do app ja e o coracao */
-
-.modo-app .capa h1 {
-  margin-bottom: 0.3rem;
-  font-size: 1.2rem;
+/* ---------- tela principal: altura toda ---------- */
+.modo-app .tela-cartoes {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - var(--seguro-topo) - var(--seguro-base));
+  padding-bottom: 0.4rem;
 }
 
-.modo-app .capa__grupo { font-size: 1.6rem; }
-.modo-app .capa__instituicao { font-size: 0.74rem; }
-
-.modo-app .capa__nota {
-  margin-top: 0.55rem;
-  font-size: 0.78rem;
+.modo-app .tela-cartoes__painel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
 }
 
-/* A data por extenso basta: a numerica faria a linha quebrar em tela de 375px. */
+/* ---------- capa ---------- */
+.modo-app .capa--principal { padding: 1.4rem 0 5.25rem; }
+.modo-app .capa--principal .capa__icone { display: none; } /* o icone do app ja e o coracao */
+
+.modo-app .capa--principal h1 {
+  margin-bottom: 0.6rem;
+  font-size: 1.45rem;
+}
+
+.modo-app .capa--principal .capa__grupo {
+  margin-bottom: 0.2rem;
+  font-size: 2rem;
+}
+
+.modo-app .capa--principal .capa__instituicao { font-size: 0.8rem; }
+
+.modo-app .capa--principal .capa__nota {
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+}
+
+/* A data por extenso basta: a numerica faria a linha quebrar no celular. */
 .modo-app .capa__nota-numero { display: none; }
 
 /* Sair/Gerenciar e o filtro vao para os cantos, sem ocupar linha propria. */
@@ -877,7 +936,7 @@ body {
 
 .modo-app .controles-capa {
   position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
+  top: calc(var(--seguro-topo) + 0.75rem);
   left: 1rem;
   min-height: 0;
   margin: 0;
@@ -886,56 +945,87 @@ body {
 /* Pequeno o bastante para nao encostar no nome do grupo em tela de 375px. */
 .modo-app .controles-capa .filtro { padding: 0.3rem 0.55rem; font-size: 0.7rem; }
 
-.modo-app .faixa-cartoes { margin-top: -4.5rem; }
+/* ---------- cartoes: esticam ate o pe da tela ---------- */
+.modo-app .tela-cartoes__painel > .faixa-cartoes { margin-top: -4.25rem; }
 
-.modo-app .login-cartao { margin-top: -4.5rem; }
+.modo-app .carrossel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
 
-/* Cartao mais baixo: menos capa colorida e menos respiro por dentro. */
-.modo-app .cartao__capa { height: 7.5rem; }
+/* A tira cresce ate o fim da tela (ou mais, se o cartao for maior) e os
+   slides, que ja esticam na altura da tira, levam o cartao junto. */
+.modo-app .carrossel .swiper {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  padding-bottom: 1.9rem;
+  margin-bottom: 0;
+}
 
-/* Selo em pilula horizontal ("10 VISITAS"): baixo o bastante para nao
-   encostar no nome, mesmo quando ele quebra em duas linhas. */
-.modo-app .cartao__selo {
-  top: 0.65rem;
-  left: 0.7rem;
+.modo-app .carrossel .swiper-wrapper {
+  flex: 1 0 auto;
+  height: auto;
+}
+
+.modo-app .carrossel { --swiper-pagination-bottom: 0.4rem; }
+
+/* No celular o dedo desliza: as setas saem e as bolinhas ficam logo abaixo. */
+.modo-app .carrossel-setas { display: none; }
+
+/* O topo colorido acompanha a altura do celular, igual em todos os cartoes;
+   o que sobra fica no corpo, com os botoes sempre no pe do cartao. O selo
+   sai de cima do nome e entra no fluxo, acima dele: os dois nunca se
+   encostam, e um nome em duas linhas so faz o topo crescer. */
+.modo-app .carrossel .cartao__capa {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.6rem;
+  height: auto;
+  min-height: clamp(7rem, 100dvh - 44rem, 12rem);
+  padding: 0.7rem 0.75rem 0.85rem;
+}
+
+/* Selo em pilula horizontal ("10 VISITAS"). */
+.modo-app .carrossel .cartao__selo {
+  position: relative;
+  top: auto;
+  left: auto;
+  align-self: flex-start;
   display: flex;
   align-items: baseline;
   gap: 0.3rem;
   min-width: 0;
-  padding: 0.3rem 0.55rem;
-}
-.modo-app .cartao__selo strong { font-size: 1.1rem; }
-.modo-app .cartao__selo .cartao__selo-topo { margin-bottom: 0; align-self: center; }
-.modo-app .cartao__sobre { bottom: 0.7rem; }
-.modo-app .cartao__sobre h2 { font-size: 1.12rem; }
-
-.modo-app .cartao__corpo { padding: 0.9rem 1.1rem 1rem; }
-.modo-app .cartao__dados li { padding: 0.14rem 0; font-size: 0.86rem; }
-.modo-app .bloco-doacao { margin-top: 0.6rem; padding: 0.6rem 0.75rem; }
-.modo-app .bloco-alerta.pulsa { margin-bottom: 0.6rem; padding: 0.6rem 0.75rem; }
-.modo-app .cartao__gente { margin-top: 0.65rem; padding-top: 0.6rem; }
-.modo-app .cartao__gente-rotulo { margin-bottom: 0.35rem; }
-.modo-app .cartao__dica { margin-top: 0.6rem; }
-.modo-app .cartao__pe { padding-top: 0.6rem; }
-
-/* Tela baixa (iPhone mini, SE e afins): menos capa colorida, e saem a linha
-   da instituicao e a dica do cartao, que sao as partes dispensaveis. */
-@media (max-height: 740px) {
-  .modo-app .capa__instituicao,
-  .modo-app .cartao__dica { display: none; }
-  .modo-app .cartao__capa { height: 7rem; }
-  .modo-app .cartao__sobre h2 { font-size: 1rem; } /* nome longo em 2 linhas cabe sob o selo */
-  .modo-app .capa { padding-bottom: 5.25rem; }
+  padding: 0.3rem 0.6rem;
 }
 
-/* Mais baixa ainda (iPhone SE): sai tambem a linha da proxima visita, que o
-   proprio cartao ja mostra. */
-@media (max-height: 680px) {
-  .modo-app .capa__nota { display: none; }
+.modo-app .carrossel .cartao__selo strong { font-size: 1.15rem; }
+.modo-app .carrossel .cartao__selo .cartao__selo-topo { margin-bottom: 0; align-self: center; }
+
+.modo-app .carrossel .cartao__sobre {
+  position: relative;
+  inset: auto;
+  padding-inline: 0.35rem;
 }
 
-/* Carrossel no modo app: sem as
-   setas, que no celular o dedo desliza, e com as bolinhas logo abaixo. */
-.modo-app .carrossel-setas { display: none; }
-.modo-app .carrossel { --swiper-pagination-bottom: 0.4rem; }
-.modo-app .carrossel .swiper { padding-bottom: 1.9rem; margin-bottom: 0; }
+.modo-app .carrossel .cartao__corpo { padding: 1.05rem 1.2rem 1.1rem; }
+.modo-app .carrossel .cartao__dados li { padding: 0.18rem 0; }
+.modo-app .carrossel .bloco-doacao { margin-top: 0.7rem; }
+.modo-app .carrossel .bloco-alerta.pulsa { margin-bottom: 0.7rem; }
+.modo-app .carrossel .cartao__gente { margin-top: 0.75rem; padding-top: 0.7rem; }
+.modo-app .carrossel .cartao__pe { padding-top: 0.8rem; }
+
+/* ---------- tela baixa (iPhone SE e afins) ---------- */
+/* Saem a linha da instituicao, a da proxima visita (o cartao ja mostra a
+   data) e a dica do cartao; os titulos encolhem um pouco. */
+@media (max-height: 700px) {
+  .modo-app .capa--principal { padding: 1rem 0 5rem; }
+  .modo-app .capa--principal h1 { font-size: 1.25rem; margin-bottom: 0; }
+  .modo-app .capa--principal .capa__grupo { font-size: 1.7rem; }
+  .modo-app .capa--principal .capa__instituicao,
+  .modo-app .capa--principal .capa__nota,
+  .modo-app .carrossel .cartao__dica { display: none; }
+  .modo-app .carrossel .cartao__sobre h2 { font-size: 1.02rem; }
+}

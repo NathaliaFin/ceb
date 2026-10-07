@@ -14,7 +14,7 @@ export default function Cabecalho({ papel, hoje, proximaVisita }) {
   const dias = diasAte(proximaVisita, hoje);
 
   return (
-    <header className="capa">
+    <header className="capa capa--principal">
       <div className="px-4 max-w-6xl mx-auto">
         <div className="capa__acoes flex items-center gap-2 justify-end mb-6">
           {papel === 'admin' && (
