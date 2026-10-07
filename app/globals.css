@@ -890,11 +890,16 @@ body:has(.tela-login) { background-color: #585d66; }
 }
 
 /* ---------- tela principal: altura toda ---------- */
+/* Vai ate o pe da tela, por dentro da faixa da barra de gestos: so as
+   bolinhas ficam acima dela (ver .carrossel). Sem isso sobrava uma faixa
+   clara embaixo do cartao. */
+.modo-app body:has(.tela-cartoes) { padding-bottom: 0; }
+
 .modo-app .tela-cartoes {
   display: flex;
   flex-direction: column;
-  min-height: calc(var(--altura-tela) - var(--seguro-topo) - var(--seguro-base));
-  padding-bottom: 0.4rem;
+  min-height: calc(var(--altura-tela) - var(--seguro-topo));
+  padding-bottom: 0; /* anula o pb-10 da pagina, que e do layout de computador */
 }
 
 .modo-app .tela-cartoes__painel {
@@ -972,7 +977,7 @@ body:has(.tela-login) { background-color: #585d66; }
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
-  padding-bottom: 1.9rem;
+  padding-bottom: calc(var(--swiper-pagination-bottom) + 1.5rem);
   margin-bottom: 0;
 }
 
@@ -981,7 +986,9 @@ body:has(.tela-login) { background-color: #585d66; }
   height: auto;
 }
 
-.modo-app .carrossel { --swiper-pagination-bottom: 0.4rem; }
+/* Bolinhas logo acima da barra de gestos do iPhone (que ocupa so o pe da
+   faixa reservada a ela); sem a barra, rente ao cartao. */
+.modo-app .carrossel { --swiper-pagination-bottom: max(0.4rem, calc(var(--seguro-base) - 0.9rem)); }
 
 /* No celular o dedo desliza: as setas saem e as bolinhas ficam logo abaixo. */
 .modo-app .carrossel-setas { display: none; }
