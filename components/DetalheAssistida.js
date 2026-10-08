@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { corDe, iniciais } from '@/lib/cores';
 import {
-  VISITAS_DO_CICLO, etapaDoCiclo, formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem,
+  formatarData, formatarDataPorExtenso, numeroDaVisita, primeiraTriagem,
 } from '@/lib/datas';
 import { linkTelefone, linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import { emergenciasAbertas, emergenciasConcluidas } from '@/lib/emergencias';
@@ -109,11 +109,6 @@ export default function DetalheAssistida({
                 {!desligada && (
                   <p className="text-tinta-suave mt-1">
                     Próxima: {formatarDataPorExtenso(proximaVisita)}
-                  </p>
-                )}
-                {!desligada && etapaDoCiclo(visitas) === 'falta-uma' && (
-                  <p className="mt-1.5 font-semibold" style={{ color: '#b9650a' }}>
-                    Falta 1 para completar as {VISITAS_DO_CICLO} visitas.
                   </p>
                 )}
               </>
