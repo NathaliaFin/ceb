@@ -106,8 +106,6 @@ export default function CardAssistida({
             </>
           ) : (
             <>
-              {etapa === 'falta-uma' && <span className="cartao__selo-topo">Falta 1</span>}
-              {etapa === 'ciclo-completo' && <span className="cartao__selo-topo">Ciclo completo</span>}
               <strong>{visitas}</strong>
               <span>{visitas === 1 ? 'visita' : 'visitas'}</span>
             </>

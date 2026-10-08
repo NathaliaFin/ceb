@@ -616,30 +616,38 @@ body:has(.tela-login) { background-color: #585d66; }
   text-transform: uppercase;
 }
 
-/* Reta final do ciclo de 7 visitas. O selo deixa de ser branco e vira bloco
-   cheio, para saltar aos olhos mesmo de longe. Nao pisca: piscar ja e o sinal
-   da necessidade emergencial, e os dois avisos nao podem se confundir. */
-.cartao__selo .cartao__selo-topo {
-  margin-bottom: 0.25rem;
-  padding: 0.15rem 0.4rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.24);
-  font-size: 0.55rem;
-  letter-spacing: 0.1em;
-  opacity: 1;
-  white-space: nowrap;
-}
-
+/* Da 6a visita em diante o quadradinho continua branco, so ganha uma luz
+   ambar suave saindo por tras dele, que respira devagar. E discreta de
+   proposito, e nao se confunde com o vermelho pulsando da necessidade
+   emergencial. */
 .cartao__selo--falta-uma,
 .cartao__selo--ciclo-completo {
-  background: #b9650a; /* ambar escuro: o branco por cima continua legivel */
-  color: #fff;
   box-shadow:
-    0 0 0 3px rgb(255 255 255 / 0.9),
-    0 0 0 7px rgb(232 150 30 / 0.55),
-    0 6px 18px rgb(11 16 48 / 0.35);
+    0 0 10px 3px rgb(255 196 92 / 0.85),
+    0 0 26px 9px rgb(255 168 48 / 0.45),
+    0 4px 14px rgb(11 16 48 / 0.28);
+  animation: luz-do-selo 3.2s ease-in-out infinite;
 }
 
+@keyframes luz-do-selo {
+  0%, 100% {
+    box-shadow:
+      0 0 10px 3px rgb(255 196 92 / 0.85),
+      0 0 26px 9px rgb(255 168 48 / 0.45),
+      0 4px 14px rgb(11 16 48 / 0.28);
+  }
+  50% {
+    box-shadow:
+      0 0 6px 1px rgb(255 196 92 / 0.6),
+      0 0 16px 5px rgb(255 168 48 / 0.25),
+      0 4px 14px rgb(11 16 48 / 0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cartao__selo--falta-uma,
+  .cartao__selo--ciclo-completo { animation: none; }
+}
 
 .cartao__corpo {
   display: flex;
