@@ -10,6 +10,9 @@ const CACHE_PAGINAS = `ceb-paginas-${VERSAO}`;
 const CACHE_ARQUIVOS = `ceb-arquivos-${VERSAO}`;
 // Cada deploy gera arquivos com nome novo; o limite impede o acumulo.
 const LIMITE_ARQUIVOS = 200;
+// Com sinal fraco a rede pode demorar um minuto sem chegar a falhar, e o app
+// ficava parado nesse tempo. Passado este limite, havendo copia, ela aparece.
+const ESPERA_MAXIMA_MS = 3500;
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -34,27 +37,52 @@ self.addEventListener('fetch', (evento) => {
   if (url.origin !== self.location.origin) return;
 
   if (pedido.mode === 'navigate') {
-    evento.respondWith(pagina(pedido));
+    evento.respondWith(pagina(evento));
   } else if (url.pathname.startsWith('/_next/static/')) {
     evento.respondWith(arquivoFixo(pedido));
   }
   // O resto (dados das navegacoes internas, icones) segue direto para a rede.
 });
 
-async function pagina(pedido) {
-  try {
-    const resposta = await fetch(pedido);
+async function pagina(evento) {
+  const pedido = evento.request;
+  const cache = await caches.open(CACHE_PAGINAS);
+
+  let guardando = Promise.resolve();
+  const daRede = fetch(pedido).then((resposta) => {
     const destino = new URL(resposta.url || pedido.url);
     // Nao guarda o login nem o que veio de redirecionamento (sessao vencida).
     if (resposta.ok && !resposta.redirected && destino.pathname !== '/login') {
-      const copia = resposta.clone();
-      caches.open(CACHE_PAGINAS).then((c) => c.put(pedido, copia));
+      guardando = cache.put(pedido, resposta.clone());
     }
     return resposta;
-  } catch {
-    const cache = await caches.open(CACHE_PAGINAS);
-    return (await cache.match(pedido, { ignoreSearch: true })) || semConexao();
+  });
+  // Mantem o service worker vivo ate a rede responder e a copia ser trocada,
+  // mesmo depois de a tela ja ter recebido a copia antiga.
+  evento.waitUntil(daRede.then(() => guardando, () => {}));
+
+  const guardado = await cache.match(pedido, { ignoreSearch: true });
+
+  // Sem copia (primeiro acesso a esta tela): so resta esperar a rede.
+  if (!guardado) {
+    try {
+      return await daRede;
+    } catch {
+      return semConexao();
+    }
   }
+
+  // Com copia: a rede tem ate ESPERA_MAXIMA_MS. Se nao responder (ou falhar),
+  // a copia aparece na hora; a rede segue em segundo plano e atualiza a copia,
+  // e a propria tela busca os dados novos ao perceber que e uma copia antiga
+  // (ver ModoAplicativo).
+  const primeiro = await Promise.race([
+    daRede.then((resposta) => ({ resposta }), () => ({ falhou: true })),
+    new Promise((resolver) => setTimeout(() => resolver({ demorou: true }), ESPERA_MAXIMA_MS)),
+  ]);
+  if (primeiro.resposta) return primeiro.resposta;
+
+  return guardado;
 }
 
 // Os arquivos de /_next/static tem o conteudo no nome: nunca mudam, entao a

@@ -42,7 +42,10 @@ export default async function PaginaInicial() {
   return (
     // overflow-x-clip: a folga do carrossel para a sombra passa da borda da
     // tela em tablet, e nao pode virar rolagem lateral.
-    <main className="tela-cartoes pb-10 overflow-x-clip">
+    // data-gerada-em: a hora em que o servidor montou a tela. Se ela abrir
+    // como copia guardada (sinal fraco), o ModoAplicativo percebe pela idade e
+    // busca os dados novos.
+    <main className="tela-cartoes pb-10 overflow-x-clip" data-gerada-em={Date.now()}>
       <Cabecalho papel={papel} hoje={hoje} proximaVisita={proxima} />
 
       {/* Os cartoes encavalam a capa escura — e dai que vem a profundidade. */}

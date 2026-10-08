@@ -45,6 +45,14 @@ export default function ModoAplicativo() {
   // (e no app nao ha botao de recarregar). Ao voltar para a frente, ou quando
   // a internet volta, os cartoes sao buscados de novo. So na tela dos
   // cartoes: nas de cadastro nao se mexe no que esta sendo digitado.
+  // Tela aberta a partir da copia guardada (o service worker a mostra quando o
+  // sinal demora): ao perceber pela idade, busca os dados novos sem travar.
+  useEffect(() => {
+    if (caminho !== '/' || !navigator.onLine) return;
+    const geradaEm = Number(document.querySelector('[data-gerada-em]')?.getAttribute('data-gerada-em'));
+    if (geradaEm && Date.now() - geradaEm > 20_000) router.refresh();
+  }, [caminho, router]);
+
   useEffect(() => {
     if (caminho !== '/') return undefined;
     function atualizar() {
