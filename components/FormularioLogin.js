@@ -7,8 +7,8 @@ import { IconeCadeado } from './Icones';
 // Azul claro: destaca o cartao de entrada sem competir com a capa escura.
 const COR_DO_CARTAO = '#4a9fd6';
 
-export default function FormularioLogin() {
-  const [estado, acao, pendente] = useActionState(entrar, { erro: null });
+export default function FormularioLogin({ grupo, acaoDeEntrar = entrar, titulo = 'Acesso Voluntário' }) {
+  const [estado, acao, pendente] = useActionState(acaoDeEntrar, { erro: null });
 
   return (
     <div className="login-cartao">
@@ -17,12 +17,14 @@ export default function FormularioLogin() {
         className="cartao cartao--capa entrada"
         style={{ '--cor': COR_DO_CARTAO, animationDelay: '90ms' }}
       >
+        {/* Em qual grupo entrar (no painel, nenhum). */}
+        {grupo && <input type="hidden" name="grupo" value={grupo} />}
         <div className="cartao__capa">
           <span className="cartao__selo" aria-hidden="true">
             <IconeCadeado tamanho={22} />
           </span>
           <div className="cartao__sobre">
-            <h2>Acesso Voluntário</h2>
+            <h2>{titulo}</h2>
           </div>
         </div>
 

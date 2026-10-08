@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { exigirSessao } from '@/lib/auth';
+import { exigirGrupo } from '@/lib/auth';
 import { listarExcecoesCalendario, listarFamiliasAtendidas, mapaDeExcecoes } from '@/lib/consultas';
 import { formatarData, hojeIso, proximaVisita } from '@/lib/datas';
 import CardAssistida from '@/components/CardAssistida';
@@ -12,19 +12,23 @@ export const dynamic = 'force-dynamic';
  * Familias desligadas do programa, ja atendidas. Ficam em cinza, com a data do
  * desligamento e o botao de reativar (raro, mas acontece).
  */
-export default async function PaginaFamiliasAtendidas() {
-  const papel = await exigirSessao();
-  const podeEditar = papel === 'admin';
+export default async function PaginaFamiliasAtendidas({ params }) {
+  const { grupo: slug } = await params;
+  const { grupo } = await exigirGrupo(slug);
+  const podeEditar = true;
   const hoje = hojeIso();
 
-  const [atendidas, excecoes] = await Promise.all([listarFamiliasAtendidas(), listarExcecoesCalendario()]);
+  const [atendidas, excecoes] = await Promise.all([
+    listarFamiliasAtendidas(grupo.id),
+    listarExcecoesCalendario(grupo.id),
+  ]);
   const calendario = mapaDeExcecoes(excecoes);
   const proxima = proximaVisita(hoje, calendario);
 
   return (
     <main className="px-4 py-6 max-w-6xl mx-auto">
       <div className="flex items-center gap-3 mb-2">
-        <Link href="/" className="botao-secundario inline-flex items-center gap-1 px-3 py-2 text-xs shrink-0">
+        <Link href={`/${grupo.slug}`} className="botao-secundario inline-flex items-center gap-1 px-3 py-2 text-xs shrink-0">
           <span className="rotate-90 inline-flex">
             <IconeSeta tamanho={14} />
           </span>

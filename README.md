@@ -1,8 +1,8 @@
-# CEB — Cartões das assistidas
+# Visita DPS — Cartões das famílias
 
-Aplicação web para o projeto de voluntariado social. Cada família atendida tem um
-cartão com endereço, família, contato e contagem de visitas, pensado para o
-voluntário abrir no celular durante a visita.
+Aplicação web para os grupos de visita da Diretoria de Promoção Social. Cada
+família atendida tem um cartão com endereço, família, contato e contagem de
+visitas, pensado para o voluntário abrir no celular durante a visita.
 
 - **Stack:** Next.js (App Router) + Postgres
 - **Hospedagem:** Railway — aplicação e banco no mesmo projeto
@@ -10,31 +10,40 @@ voluntário abrir no celular durante a visita.
 
 ---
 
-## 1. Como as pessoas entram
+## 1. Grupos e acesso
 
-A tela de entrada pede só a senha. Há duas, definidas em variáveis de ambiente,
-e **as duas dão acesso completo**: ver os cartões, cadastrar e editar famílias,
-calendário e necessidades.
+Cada grupo (Paranoá04, Riacho Fundo...) é uma **caixinha** separada: as próprias
+famílias, o próprio calendário, a própria senha, o próprio app no celular e os
+próprios e-mails de lembrete. Nada de um grupo aparece ou é alterado a partir de
+outro — isso é conferido no servidor em cada página e em cada ação.
 
-| Senha | Quem usa |
+| Endereço | O que é |
 |---|---|
-| `SENHA_VOLUNTARIO` | o grupo de voluntários (senha compartilhada) |
-| `SENHA_ADMIN` | a administradora |
+| `/` | página principal, pública: a lista dos grupos |
+| `/<grupo>` | os cartões do grupo (ex.: `/paranoa04`); pede a senha do grupo |
+| `/<grupo>/entrar` | entrada do grupo |
+| `/<grupo>/gerenciar` | cadastros e calendário do grupo |
+| `/<grupo>/atendidas` | famílias desligadas do grupo |
+| `/painel` | área da administradora: criar e editar grupos |
 
-A senha é comparada exatamente como digitada. Quem entra vê o botão
-**Gerenciar**. A sessão dura 30 dias, para ninguém ter que digitar senha a cada
-visita.
+**Senhas.** Quem tem a senha de um grupo vê, cadastra e edita as famílias
+daquele grupo, e só dele. A senha de cada grupo é definida no painel (guardada
+cifrada no banco). A da administradora é a variável `SENHA_ADMIN`: abre o painel
+e todos os grupos. O Paranoá04, enquanto não tiver senha definida no painel,
+continua entrando com a variável `SENHA_VOLUNTARIO`, como antes dos grupos.
 
-Para trocar uma senha, altere a variável no Railway e reimplante. Todo mundo
-continua logado — as sessões antigas só caem se você trocar `SESSION_SECRET`.
+A sessão dura 30 dias. Sessões de antes dos grupos continuam valendo, mas só
+para o Paranoá04. Os endereços antigos (`/login`, `/admin`, `/atendidas`)
+redirecionam para os novos.
 
 ---
 
 ### Lembrete por e-mail do registro das visitas
 
 No 10º dia depois de cada visita (o prazo do almoxarifado é o 14º), se alguma
-família ainda estiver com a caixa "Visita de <mês> registrada" desmarcada, o
-sistema manda **um** e-mail ao grupo ("Olá, pessoal! Passando para lembrar que
+família de um grupo ainda estiver com a caixa "Visita de <mês> registrada"
+desmarcada, o sistema manda **um** e-mail aos e-mails daquele grupo (cadastrados
+no painel) ("Olá, pessoal! Passando para lembrar que
 as visitas realizadas no mês de <mês> precisam ser registradas..." — o texto
 está em `lib/lembrete.js`). Sai a partir das 8h, uma
 única vez por visita (fica anotado no banco), e não sai se tudo já estiver
@@ -47,10 +56,11 @@ configurado por variáveis no Railway:
 |---|---|
 | `BREVO_API_KEY` | chave de API do Brevo (SMTP e API → Chaves de API) |
 | `LEMBRETE_REMETENTE` | e-mail do grupo, já confirmado em Remetentes no Brevo |
-| `LEMBRETE_DESTINATARIOS` | e-mails separados por vírgula; recebem em cópia oculta |
+| `LEMBRETE_DESTINATARIOS` | só para o Paranoá04, enquanto ele não tiver e-mails no painel |
 | `LEMBRETE_NOME` | opcional, nome do remetente (padrão "Visita DPS") |
 
-Sem as três primeiras, nada é enviado. A checagem roda dentro do próprio
+Sem a chave e o remetente, nada é enviado. Os e-mails de cada grupo ficam no
+painel e recebem em cópia oculta. A checagem roda dentro do próprio
 servidor, de hora em hora (`instrumentation.js` → `lib/lembrete.js`).
 
 ---

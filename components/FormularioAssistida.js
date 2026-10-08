@@ -36,7 +36,7 @@ function linhaDeFamiliar(familiar) {
   };
 }
 
-export default function FormularioAssistida({ assistida }) {
+export default function FormularioAssistida({ assistida, grupo }) {
   const [estado, acao, pendente] = useActionState(acaoSalvarAssistida, { erro: null });
 
   const [cor, setCor] = useState(assistida?.cor ?? 'rosa');
@@ -69,6 +69,7 @@ export default function FormularioAssistida({ assistida }) {
 
   return (
     <form action={acao} className="space-y-5">
+      <input type="hidden" name="grupo" value={grupo.slug} />
       {assistida?.id && <input type="hidden" name="id" value={assistida.id} />}
 
       {estado?.erro && (

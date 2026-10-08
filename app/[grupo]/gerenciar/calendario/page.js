@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { exigirAdmin } from '@/lib/auth';
+import { exigirGrupo } from '@/lib/auth';
 import { listarAssistidas, listarExcecoesCalendario, mapaDeExcecoes } from '@/lib/consultas';
 import {
   formatarData, formatarDataPorExtenso, hojeIso, mesesDepois, mesesDeVisita, primeiraTriagem,
@@ -14,13 +14,14 @@ const NOMES_MESES = [
   'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',
 ];
 
-export default async function PaginaCalendario() {
-  await exigirAdmin();
+export default async function PaginaCalendario({ params }) {
+  const { grupo: slug } = await params;
+  const { grupo } = await exigirGrupo(slug);
 
   const hoje = hojeIso();
   const [assistidas, excecoes] = await Promise.all([
-    listarAssistidas({ incluirInativas: true }),
-    listarExcecoesCalendario(),
+    listarAssistidas(grupo.id, { incluirInativas: true }),
+    listarExcecoesCalendario(grupo.id),
   ]);
 
   const mapa = mapaDeExcecoes(excecoes);
@@ -35,7 +36,7 @@ export default async function PaginaCalendario() {
     <main className="px-4 py-6 max-w-2xl mx-auto">
       <div className="flex items-center gap-3 mb-5">
         <Link
-          href="/admin"
+          href={`/${grupo.slug}/gerenciar`}
           className="botao-secundario inline-flex items-center gap-1 px-3 py-2 text-xs shrink-0"
         >
           <span className="rotate-90 inline-flex">
@@ -48,8 +49,9 @@ export default async function PaginaCalendario() {
 
       <p className="text-sm text-tinta-suave leading-relaxed mb-5">
         A visita cai no <strong>4º sábado</strong>, menos em <strong>dezembro</strong>, que é no 3º.
-        A contagem de todos os cartões sai daqui. Quando um mês fugir da regra, corrija abaixo: vale
-        para <strong>todas</strong> as famílias de uma vez, e os números se corrigem sozinhos.
+        A contagem de todos os cartões do {grupo.nome} sai daqui. Quando um mês fugir da regra, corrija
+        abaixo: vale para <strong>todas</strong> as famílias do grupo de uma vez, e os números se
+        corrigem sozinhos.
       </p>
 
       <ul className="space-y-2">
@@ -98,6 +100,7 @@ export default async function PaginaCalendario() {
 
                 {item.alterado && (
                   <form action={acaoRemoverExcecaoCalendario} className="shrink-0">
+                    <input type="hidden" name="grupo" value={grupo.slug} />
                     <input type="hidden" name="mes" value={item.chave} />
                     <button type="submit" className="botao-secundario px-3 py-2 text-xs whitespace-nowrap">
                       Voltar ao padrão
@@ -111,6 +114,7 @@ export default async function PaginaCalendario() {
                 // alinhadas de um mes para o outro.
                 <div className="grid sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-borda">
                   <form action={acaoSalvarExcecaoCalendario} className="flex items-center gap-2">
+                    <input type="hidden" name="grupo" value={grupo.slug} />
                     <input type="hidden" name="mes" value={item.chave} />
                     <input type="hidden" name="tipo" value="data" />
                     <input
@@ -128,6 +132,7 @@ export default async function PaginaCalendario() {
                   </form>
 
                   <form action={acaoSalvarExcecaoCalendario} className="flex items-center gap-2">
+                    <input type="hidden" name="grupo" value={grupo.slug} />
                     <input type="hidden" name="mes" value={item.chave} />
                     <input type="hidden" name="tipo" value="sem" />
                     <input

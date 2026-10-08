@@ -478,6 +478,37 @@ body:has(.tela-login) { background-color: #585d66; }
   );
 }
 
+/* Pagina principal: a mesma tela cheia do login, com os grupos no lugar do
+   cartao de entrada. */
+.tela-inicio { justify-content: flex-start; padding-top: 3.5rem; }
+
+.inicio-grupos {
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.inicio-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.1rem 1.2rem 1rem;
+  border-top: 5px solid var(--cor);
+}
+
+.inicio-grupo__nome { font-size: 1.15rem; font-weight: 800; color: var(--tinta); }
+
+.inicio-grupo__info,
+.inicio-grupo__entrar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.inicio-grupo__entrar { margin-top: 0.35rem; font-weight: 700; color: var(--cor); }
+
 /* A marca usa a tipografia da capa, mas sem o fundo proprio dela. */
 .tela-login .capa {
   padding: 0;

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { exigirAdmin } from '@/lib/auth';
+import { exigirGrupo } from '@/lib/auth';
 import { listarExcecoesCalendario, mapaDeExcecoes, obterAssistida } from '@/lib/consultas';
 import {
   formatarData, hojeIso, numeroDaVisita, primeiraTriagem, proximaVisita,
@@ -12,19 +12,20 @@ import { IconeCalendario, IconeCheck, IconeSeta } from '@/components/Icones';
 export const dynamic = 'force-dynamic';
 
 export default async function PaginaEditarAssistida({ params, searchParams }) {
-  await exigirAdmin();
+  const { grupo: slug, id } = await params;
+  const { grupo } = await exigirGrupo(slug);
 
-  const { id } = await params;
   const { salvo } = await searchParams;
 
   const identificador = Number(id);
   if (!Number.isInteger(identificador)) notFound();
 
-  const assistida = await obterAssistida(identificador);
+  // So encontra se a familia for deste grupo.
+  const assistida = await obterAssistida(identificador, grupo.id);
   if (!assistida) notFound();
 
   const hoje = hojeIso();
-  const calendario = mapaDeExcecoes(await listarExcecoesCalendario());
+  const calendario = mapaDeExcecoes(await listarExcecoesCalendario(grupo.id));
   const proxima = proximaVisita(hoje, calendario);
   const triagem = primeiraTriagem(assistida.triagens);
   const quantasTriagens = assistida.triagens?.length ?? 0;
@@ -33,7 +34,7 @@ export default async function PaginaEditarAssistida({ params, searchParams }) {
     <main className="px-4 py-6 max-w-2xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Link
-          href="/admin"
+          href={`/${grupo.slug}/gerenciar`}
           className="botao-secundario inline-flex items-center gap-1 px-3 py-2 text-xs shrink-0"
         >
           <span className="rotate-90 inline-flex">
@@ -81,7 +82,7 @@ export default async function PaginaEditarAssistida({ params, searchParams }) {
         </div>
       </section>
 
-      <FormularioAssistida assistida={assistida} />
+      <FormularioAssistida assistida={assistida} grupo={grupo} />
 
       <section className="mt-5 pb-4">
         <BotaoExcluirAssistida id={assistida.id} nome={assistida.nome_completo} />

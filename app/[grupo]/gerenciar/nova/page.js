@@ -1,18 +1,19 @@
 import Link from 'next/link';
-import { exigirAdmin } from '@/lib/auth';
+import { exigirGrupo } from '@/lib/auth';
 import FormularioAssistida from '@/components/FormularioAssistida';
 import { IconeSeta } from '@/components/Icones';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PaginaNovaAssistida() {
-  await exigirAdmin();
+export default async function PaginaNovaAssistida({ params }) {
+  const { grupo: slug } = await params;
+  const { grupo } = await exigirGrupo(slug);
 
   return (
     <main className="px-4 py-6 max-w-2xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Link
-          href="/admin"
+          href={`/${grupo.slug}/gerenciar`}
           className="botao-secundario inline-flex items-center gap-1 px-3 py-2 text-xs shrink-0"
         >
           <span className="rotate-90 inline-flex">
@@ -23,7 +24,7 @@ export default async function PaginaNovaAssistida() {
         <h1 className="text-lg font-bold">Nova assistida</h1>
       </div>
 
-      <FormularioAssistida assistida={null} />
+      <FormularioAssistida assistida={null} grupo={grupo} />
     </main>
   );
 }

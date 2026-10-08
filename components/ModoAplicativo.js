@@ -19,6 +19,11 @@ function acompanharConexao(avisar) {
  * Fica de fora no `next dev`: la os arquivos mudam a cada salvamento e a copia
  * guardada so atrapalharia.
  */
+// "/paranoa04": a tela dos cartoes de um grupo (um so pedaco no endereco).
+const ehTelaDosCartoes = (caminho) => /^\/[^/]+$/.test(caminho) && caminho !== '/painel';
+// Telas sem sessao de grupo: entrar, a pagina principal (para onde o "Sair" leva).
+const ehTelaSemSessao = (caminho) => caminho === '/' || caminho.endsWith('/entrar');
+
 export default function ModoAplicativo() {
   const caminho = usePathname();
   const router = useRouter();
@@ -30,10 +35,10 @@ export default function ModoAplicativo() {
     navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
   }, []);
 
-  // Na tela de login nao ha sessao: as copias com os dados das familias saem
-  // do celular. Cobre o "Sair" e a sessao vencida.
+  // Nas telas sem sessao (entrar, pagina principal) as copias com os dados
+  // das familias saem do celular. Cobre o "Sair" e a sessao vencida.
   useEffect(() => {
-    if (caminho !== '/login' || !('caches' in window)) return;
+    if (!ehTelaSemSessao(caminho) || !('caches' in window)) return;
     caches
       .keys()
       .then((nomes) => Promise.all(nomes.filter((n) => n.startsWith('ceb-paginas')).map((n) => caches.delete(n))))
@@ -48,13 +53,13 @@ export default function ModoAplicativo() {
   // Tela aberta a partir da copia guardada (o service worker a mostra quando o
   // sinal demora): ao perceber pela idade, busca os dados novos sem travar.
   useEffect(() => {
-    if (caminho !== '/' || !navigator.onLine) return;
+    if (!ehTelaDosCartoes(caminho) || !navigator.onLine) return;
     const geradaEm = Number(document.querySelector('[data-gerada-em]')?.getAttribute('data-gerada-em'));
     if (geradaEm && Date.now() - geradaEm > 20_000) router.refresh();
   }, [caminho, router]);
 
   useEffect(() => {
-    if (caminho !== '/') return undefined;
+    if (!ehTelaDosCartoes(caminho)) return undefined;
     function atualizar() {
       if (document.visibilityState === 'visible' && navigator.onLine) router.refresh();
     }

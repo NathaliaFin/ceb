@@ -1,14 +1,17 @@
 import './globals.css';
 import ModoAplicativo from '@/components/ModoAplicativo';
 
+// Cada grupo troca titulo, manifesto e nome do app no layout dele
+// (app/[grupo]/layout.js); estes sao os da pagina principal.
 export const metadata = {
-  title: 'Paranoá04 - Visitas',
-  description: 'Informações das famílias atendidas pelo projeto de voluntariado',
+  title: 'Visita DPS',
+  description: 'Grupos de visita da Diretoria de Promoção Social',
   robots: { index: false, follow: false },
+  manifest: '/manifest.webmanifest',
   // Instalado no iPhone ("Adicionar a Tela de Inicio"): nome sob o icone e
   // abertura em tela cheia. Com a barra translucida a pagina passa por baixo
   // do relogio; o .modo-app pinta essa faixa na cor da capa.
-  appleWebApp: { capable: true, title: 'Paranoá04', statusBarStyle: 'black-translucent' },
+  appleWebApp: { capable: true, title: 'Visita DPS', statusBarStyle: 'black-translucent' },
 };
 
 export const viewport = {

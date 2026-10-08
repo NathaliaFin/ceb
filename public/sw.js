@@ -51,8 +51,10 @@ async function pagina(evento) {
   let guardando = Promise.resolve();
   const daRede = fetch(pedido).then((resposta) => {
     const destino = new URL(resposta.url || pedido.url);
-    // Nao guarda o login nem o que veio de redirecionamento (sessao vencida).
-    if (resposta.ok && !resposta.redirected && destino.pathname !== '/login') {
+    // Nao guarda as telas de entrar, o painel nem o que veio de redirecionamento
+    // (sessao vencida).
+    const semCopia = destino.pathname.endsWith('/entrar') || destino.pathname.startsWith('/painel');
+    if (resposta.ok && !resposta.redirected && !semCopia) {
       guardando = cache.put(pedido, resposta.clone());
     }
     return resposta;

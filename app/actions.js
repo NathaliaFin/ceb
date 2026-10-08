@@ -5,9 +5,14 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import {
-  criarSessao, encerrarSessao, estaBloqueado, exigirAdmin,
-  limparFalhas, papelDaSenha, registrarFalha,
+  criarSessaoDeAdministradora, criarSessaoDoGrupo, ehSenhaDaAdministradora, encerrarSessao,
+  estaBloqueado, exigirAdministradora, gerarHashDaSenha, limparFalhas, podeAcessar,
+  registrarFalha, senhaDoGrupoConfere, sessaoAtual,
 } from '@/lib/auth';
+import {
+  atualizarGrupo, criarGrupo, enderecoValido, grupoDaAssistida, grupoDaEmergencia,
+  obterGrupo, obterGrupoPorSlug, sugerirEndereco,
+} from '@/lib/grupos';
 import {
   atualizarAssistida, concluirEmergencia, criarAssistida, desligarAssistida,
   excluirAssistida, excluirEmergencia, listarExcecoesCalendario, mapaDeExcecoes,
@@ -24,27 +29,77 @@ async function identificarCliente() {
   return cabecalhos.get('x-forwarded-for')?.split(',')[0]?.trim() || 'desconhecido';
 }
 
+// ---------------------------------------------------------------- acesso
+
+/**
+ * Entrar num grupo: com a senha do grupo, ou com a da administradora (que abre
+ * todos). O grupo vem do formulario ("grupo" = endereco, ex.: paranoa04).
+ */
 export async function entrar(_estadoAnterior, formData) {
   const cliente = await identificarCliente();
-
   if (estaBloqueado(cliente)) {
     return { erro: 'Muitas tentativas seguidas. Espere 15 minutos e tente de novo.' };
   }
 
-  const papel = papelDaSenha(formData.get('senha'));
-  if (!papel) {
+  const grupo = await obterGrupoPorSlug(formData.get('grupo'));
+  const senha = formData.get('senha');
+  if (grupo && ehSenhaDaAdministradora(senha)) {
+    await criarSessaoDeAdministradora();
+  } else if (grupo && senhaDoGrupoConfere(grupo, senha)) {
+    await criarSessaoDoGrupo(grupo);
+  } else {
     registrarFalha(cliente);
     return { erro: 'Senha incorreta.' };
   }
 
   limparFalhas(cliente);
-  await criarSessao(papel);
-  redirect('/');
+  redirect(`/${grupo.slug}`);
+}
+
+/** Entrar no painel: so a senha da administradora. */
+export async function entrarNoPainel(_estadoAnterior, formData) {
+  const cliente = await identificarCliente();
+  if (estaBloqueado(cliente)) {
+    return { erro: 'Muitas tentativas seguidas. Espere 15 minutos e tente de novo.' };
+  }
+  if (!ehSenhaDaAdministradora(formData.get('senha'))) {
+    registrarFalha(cliente);
+    return { erro: 'Senha incorreta.' };
+  }
+  limparFalhas(cliente);
+  await criarSessaoDeAdministradora();
+  redirect('/painel');
 }
 
 export async function sair() {
   await encerrarSessao();
-  redirect('/login');
+  redirect('/');
+}
+
+/** O grupo, se a sessao tiver acesso a ele; senao nulo (a acao nao faz nada). */
+async function grupoComAcesso(grupo) {
+  if (!grupo) return null;
+  return podeAcessar(await sessaoAtual(), grupo) ? grupo : null;
+}
+
+async function grupoDoFormulario(formData) {
+  return grupoComAcesso(await obterGrupoPorSlug(formData.get('grupo')));
+}
+
+async function grupoDaFamilia(id) {
+  const numero = Number(id);
+  return Number.isInteger(numero) ? grupoComAcesso(await grupoDaAssistida(numero)) : null;
+}
+
+async function grupoDaNecessidade(id) {
+  const numero = Number(id);
+  return Number.isInteger(numero) ? grupoComAcesso(await grupoDaEmergencia(numero)) : null;
+}
+
+/** Atualiza todas as telas do grupo (cartoes, atendidas, gerenciar...). */
+function atualizarTelasDoGrupo(grupo) {
+  revalidatePath(`/${grupo.slug}`, 'layout');
+  revalidatePath('/');
 }
 
 /**
@@ -148,7 +203,8 @@ function textoOuNulo(valor) {
 }
 
 export async function acaoSalvarAssistida(_estadoAnterior, formData) {
-  await exigirAdmin();
+  const grupo = await grupoDoFormulario(formData);
+  if (!grupo) return { erro: 'Sem acesso a este grupo. Entre de novo.' };
 
   const nome = String(formData.get('nome_completo') ?? '').trim();
   if (nome.length < 2) return { erro: 'Informe o nome completo da assistida.' };
@@ -180,8 +236,12 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
 
   const idInformado = Number(formData.get('id'));
   const editando = Number.isInteger(idInformado) && idInformado > 0;
+  // Editando: a familia precisa ser deste mesmo grupo.
+  if (editando && (await grupoDaAssistida(idInformado))?.id !== grupo.id) {
+    return { erro: 'Esta família não é deste grupo.' };
+  }
 
-  const id = editando ? idInformado : await criarAssistida(dados);
+  const id = editando ? idInformado : await criarAssistida(grupo.id, dados);
   if (editando) await atualizarAssistida(id, dados);
   await substituirFamiliares(id, lerFamiliares(formData));
   await substituirTriagens(id, triagens);
@@ -191,30 +251,18 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
   const novaEmergencia = textoOuNulo(formData.get('nova_emergencia'));
   if (novaEmergencia) await registrarEmergencia(id, novaEmergencia, hojeIso());
 
-  revalidatePath('/');
-  revalidatePath('/admin');
-  revalidatePath('/atendidas');
-  redirect(`/admin/assistida/${id}?salvo=1`);
+  atualizarTelasDoGrupo(grupo);
+  redirect(`/${grupo.slug}/gerenciar/${id}?salvo=1`);
 }
 
 export async function acaoExcluirAssistida(formData) {
-  await exigirAdmin();
-
   const id = Number(formData.get('id'));
-  if (!Number.isInteger(id)) return;
+  const grupo = await grupoDaFamilia(id);
+  if (!grupo) return;
 
   await excluirAssistida(id);
-  revalidatePath('/');
-  revalidatePath('/admin');
-  revalidatePath('/atendidas');
-  redirect('/admin');
-}
-
-function atualizarTelasDaFamilia(assistidaId) {
-  revalidatePath('/');
-  revalidatePath('/admin');
-  revalidatePath('/atendidas');
-  revalidatePath(`/admin/assistida/${assistidaId}`);
+  atualizarTelasDoGrupo(grupo);
+  redirect(`/${grupo.slug}/gerenciar`);
 }
 
 /**
@@ -223,16 +271,15 @@ function atualizarTelasDaFamilia(assistidaId) {
  * pelo fuso de Brasilia — nao pelo relogio do celular de quem tocou.
  */
 export async function acaoMarcarRegistroVisita(id, registrada) {
-  await exigirAdmin();
-  const assistidaId = Number(id);
-  if (!Number.isInteger(assistidaId)) return;
+  const grupo = await grupoDaFamilia(id);
+  if (!grupo) return;
 
-  const calendario = mapaDeExcecoes(await listarExcecoesCalendario());
+  const calendario = mapaDeExcecoes(await listarExcecoesCalendario(grupo.id));
   const visita = ultimaVisitaFeita(hojeIso(), calendario);
   if (!visita) return;
 
-  await marcarRegistroVisita(assistidaId, visita.slice(0, 7), Boolean(registrada));
-  revalidatePath('/');
+  await marcarRegistroVisita(Number(id), visita.slice(0, 7), Boolean(registrada));
+  revalidatePath(`/${grupo.slug}`);
 }
 
 /**
@@ -241,22 +288,22 @@ export async function acaoMarcarRegistroVisita(id, registrada) {
  * botao da ficha.
  */
 export async function acaoDesligarAssistida(id) {
-  await exigirAdmin();
+  const grupo = await grupoDaFamilia(id);
+  if (!grupo) return;
   const assistidaId = Number(id);
-  if (!Number.isInteger(assistidaId)) return;
 
   await desligarAssistida(assistidaId, hojeIso());
-  atualizarTelasDaFamilia(assistidaId);
+  atualizarTelasDoGrupo(grupo);
 }
 
 /** Traz de volta para os cartoes uma familia desligada. */
 export async function acaoReativarAssistida(id) {
-  await exigirAdmin();
+  const grupo = await grupoDaFamilia(id);
+  if (!grupo) return;
   const assistidaId = Number(id);
-  if (!Number.isInteger(assistidaId)) return;
 
   await reativarAssistida(assistidaId);
-  atualizarTelasDaFamilia(assistidaId);
+  atualizarTelasDoGrupo(grupo);
 }
 
 /**
@@ -265,32 +312,32 @@ export async function acaoReativarAssistida(id) {
  * perder o que estiver sendo editado nele.
  */
 export async function acaoConcluirEmergencia(id) {
-  await exigirAdmin();
+  const grupo = await grupoDaNecessidade(id);
+  if (!grupo) return;
   const emergencia = Number(id);
-  if (!Number.isInteger(emergencia)) return;
 
-  const assistidaId = await concluirEmergencia(emergencia, hojeIso());
-  if (assistidaId) atualizarTelasDaFamilia(assistidaId);
+  await concluirEmergencia(emergencia, hojeIso());
+  atualizarTelasDoGrupo(grupo);
 }
 
 /** Desfaz uma conclusao feita por engano: a necessidade volta ao cartao. */
 export async function acaoReabrirEmergencia(id) {
-  await exigirAdmin();
+  const grupo = await grupoDaNecessidade(id);
+  if (!grupo) return;
   const emergencia = Number(id);
-  if (!Number.isInteger(emergencia)) return;
 
-  const assistidaId = await reabrirEmergencia(emergencia);
-  if (assistidaId) atualizarTelasDaFamilia(assistidaId);
+  await reabrirEmergencia(emergencia);
+  atualizarTelasDoGrupo(grupo);
 }
 
 /** Apaga uma necessidade de vez (registrada por engano, por exemplo). */
 export async function acaoExcluirEmergencia(id) {
-  await exigirAdmin();
+  const grupo = await grupoDaNecessidade(id);
+  if (!grupo) return;
   const emergencia = Number(id);
-  if (!Number.isInteger(emergencia)) return;
 
-  const assistidaId = await excluirEmergencia(emergencia);
-  if (assistidaId) atualizarTelasDaFamilia(assistidaId);
+  await excluirEmergencia(emergencia);
+  atualizarTelasDoGrupo(grupo);
 }
 
 /**
@@ -298,7 +345,8 @@ export async function acaoExcluirEmergencia(id) {
  * dia que nao o padrao (dezembro, por exemplo, costuma cair no 3o sabado).
  */
 export async function acaoSalvarExcecaoCalendario(formData) {
-  await exigirAdmin();
+  const grupo = await grupoDoFormulario(formData);
+  if (!grupo) return;
 
   const mes = String(formData.get('mes') ?? '').trim();
   if (!/^\d{4}-\d{2}$/.test(mes)) return;
@@ -307,28 +355,79 @@ export async function acaoSalvarExcecaoCalendario(formData) {
   const motivo = String(formData.get('motivo') ?? '').trim();
 
   if (tipo === 'sem') {
-    await salvarExcecaoCalendario(mes, null, motivo);
+    await salvarExcecaoCalendario(grupo.id, mes, null, motivo);
   } else {
     const data = String(formData.get('data') ?? '').trim();
     // Data em branco ou fora do mes informado nao vira excecao.
     if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || !data.startsWith(mes)) return;
-    await salvarExcecaoCalendario(mes, data, motivo);
+    await salvarExcecaoCalendario(grupo.id, mes, data, motivo);
   }
 
-  revalidatePath('/');
-  revalidatePath('/admin');
-  revalidatePath('/admin/calendario');
+  atualizarTelasDoGrupo(grupo);
 }
 
 /** Devolve o mes ao dia padrao do calendario. */
 export async function acaoRemoverExcecaoCalendario(formData) {
-  await exigirAdmin();
+  const grupo = await grupoDoFormulario(formData);
+  if (!grupo) return;
 
   const mes = String(formData.get('mes') ?? '').trim();
   if (!/^\d{4}-\d{2}$/.test(mes)) return;
 
-  await removerExcecaoCalendario(mes);
+  await removerExcecaoCalendario(grupo.id, mes);
+  atualizarTelasDoGrupo(grupo);
+}
+
+// ---------------------------------------------------------------- painel
+
+/**
+ * Cria ou edita um grupo (so a administradora). A senha e obrigatoria ao criar;
+ * ao editar, em branco mantem a atual.
+ */
+export async function acaoSalvarGrupo(_estadoAnterior, formData) {
+  await exigirAdministradora();
+
+  const id = Number(formData.get('id'));
+  const editando = Number.isInteger(id) && id > 0;
+  const nome = String(formData.get('nome') ?? '').trim();
+  const slug = sugerirEndereco(formData.get('slug') || nome);
+  const senha = String(formData.get('senha') ?? '');
+  const cor = String(formData.get('cor') ?? 'rosa');
+  const destinatarios = String(formData.get('destinatarios') ?? '')
+    .split(/[,;\s]+/)
+    .map((e) => e.trim())
+    .filter((e) => e.includes('@'))
+    .join(', ');
+
+  if (nome.length < 2) return { erro: 'Informe o nome do grupo.' };
+  if (!enderecoValido(slug)) return { erro: 'Endereço inválido. Use letras, números e hífen.' };
+  if (!editando && senha.length < 4) return { erro: 'Defina uma senha com pelo menos 4 caracteres.' };
+  if (editando && senha.length > 0 && senha.length < 4) {
+    return { erro: 'A senha precisa de pelo menos 4 caracteres.' };
+  }
+
+  const outro = await obterGrupoPorSlug(slug);
+  if (outro && outro.id !== id) return { erro: `O endereço /${slug} já é de outro grupo.` };
+
+  const dados = {
+    slug,
+    nome,
+    cor: CHAVES_CORES.includes(cor) ? cor : 'rosa',
+    senhaHash: senha ? gerarHashDaSenha(senha) : null,
+    destinatarios: destinatarios || null,
+    ativo: formData.get('ativo') === 'on',
+  };
+
+  if (editando) {
+    const antes = await obterGrupo(id);
+    if (!antes) return { erro: 'Grupo não encontrado.' };
+    await atualizarGrupo(id, dados);
+    revalidatePath(`/${antes.slug}`, 'layout');
+  } else {
+    await criarGrupo(dados);
+  }
+
   revalidatePath('/');
-  revalidatePath('/admin');
-  revalidatePath('/admin/calendario');
+  revalidatePath('/painel');
+  redirect('/painel?salvo=1');
 }

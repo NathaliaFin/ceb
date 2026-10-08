@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { exigirAdmin } from '@/lib/auth';
+import { exigirGrupo } from '@/lib/auth';
 import { listarAssistidas, listarExcecoesCalendario, mapaDeExcecoes } from '@/lib/consultas';
 import { corDe, iniciais } from '@/lib/cores';
 import { formatarData, hojeIso, numeroDaVisita, primeiraTriagem } from '@/lib/datas';
@@ -8,11 +8,12 @@ import { IconeCalendario, IconeLapis, IconeMais, IconeSeta } from '@/components/
 
 export const dynamic = 'force-dynamic';
 
-export default async function PaginaAdmin() {
-  await exigirAdmin();
+export default async function PaginaGerenciar({ params }) {
+  const { grupo: slug } = await params;
+  const { grupo } = await exigirGrupo(slug);
   const [assistidas, excecoes] = await Promise.all([
-    listarAssistidas({ incluirInativas: true }),
-    listarExcecoesCalendario(),
+    listarAssistidas(grupo.id, { incluirInativas: true }),
+    listarExcecoesCalendario(grupo.id),
   ]);
   const hoje = hojeIso();
   const calendario = mapaDeExcecoes(excecoes);
@@ -21,7 +22,7 @@ export default async function PaginaAdmin() {
     <main className="px-4 py-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Link
-          href="/"
+          href={`/${grupo.slug}`}
           className="botao-secundario inline-flex items-center gap-1 px-3 py-2 text-xs shrink-0"
         >
           <span className="rotate-90 inline-flex">
@@ -31,7 +32,7 @@ export default async function PaginaAdmin() {
         </Link>
         <h1 className="text-lg font-bold flex-1 min-w-0">Gerenciar cadastros</h1>
         <Link
-          href="/admin/assistida/nova"
+          href={`/${grupo.slug}/gerenciar/nova`}
           className="botao-primario inline-flex items-center gap-1.5 px-3 py-2 text-xs shrink-0"
         >
           <IconeMais tamanho={14} />
@@ -40,7 +41,7 @@ export default async function PaginaAdmin() {
       </div>
 
       <Link
-        href="/admin/calendario"
+        href={`/${grupo.slug}/gerenciar/calendario`}
         className="cartao flex items-center gap-3 p-4 mb-5"
         style={{ '--cor': '#1584c0' }}
       >
@@ -73,7 +74,7 @@ export default async function PaginaAdmin() {
             return (
               <li key={assistida.id}>
                 <Link
-                  href={`/admin/assistida/${assistida.id}`}
+                  href={`/${grupo.slug}/gerenciar/${assistida.id}`}
                   className={`cartao entrada flex items-center gap-3 p-4 ${
                     assistida.ativa ? '' : 'cartao-inativo'
                   }`}

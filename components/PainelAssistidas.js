@@ -11,7 +11,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-export default function PainelAssistidas({ assistidas, hoje, proximaVisita, calendario = {}, podeEditar }) {
+export default function PainelAssistidas({ assistidas, hoje, proximaVisita, calendario = {}, grupo, podeEditar }) {
   // Unico filtro que sobrou: liga e desliga. A emergencia nao precisa de
   // filtro, ja aparece em destaque na frente do cartao.
   const [soSemTriagem, setSoSemTriagem] = useState(false);
@@ -34,7 +34,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, cale
         </p>
         {podeEditar && (
           <Link
-            href="/admin/assistida/nova"
+            href={`/${grupo.slug}/gerenciar/nova`}
             className="botao-primario inline-flex items-center gap-1.5 px-4 py-2.5 mt-5 text-sm"
           >
             <IconeMais tamanho={16} />
