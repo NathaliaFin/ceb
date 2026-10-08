@@ -1,4 +1,4 @@
-import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao, etapaDoCiclo } from '../lib/datas.js';
+import { ultimaVisitaFeita, situacaoDoPrazo, somarDias, quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao, etapaDoCiclo } from '../lib/datas.js';
 import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa, extrairLink } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
@@ -95,6 +95,19 @@ conferir('6 visitas: falta 1', etapaDoCiclo(6), 'falta-uma');
 conferir('7 visitas: ciclo completo, o aviso continua', etapaDoCiclo(7), 'ciclo-completo');
 conferir('Carmen com 9: o aviso continua, nada se encerra', etapaDoCiclo(9), 'ciclo-completo');
 conferir('triagem 28/03/2026, sem julho, em 06/10 tem 6 e falta 1', etapaDoCiclo(numeroDaVisita('2026-03-28', '2026-10-06', SEM_JULHO)), 'falta-uma');
+
+console.log('--- caixa "Visita de <mes> registrada" ---');
+conferir('08/10: ainda pergunta pela de setembro (26/09)', ultimaVisitaFeita('2026-10-08'), '2026-09-26');
+conferir('23/10: continua setembro', ultimaVisitaFeita('2026-10-23'), '2026-09-26');
+conferir('24/10, dia da visita: passa a ser outubro', ultimaVisitaFeita('2026-10-24'), '2026-10-24');
+conferir('05/11, registro atrasado ainda e de outubro', ultimaVisitaFeita('2026-11-05'), '2026-10-24');
+conferir('dezembro no 3o sabado (19/12)', ultimaVisitaFeita('2026-12-20'), '2026-12-19');
+conferir('mes sem visita e pulado', ultimaVisitaFeita('2026-08-10', { '2026-07': null }), '2026-06-27');
+conferir('somar 14 dias atravessa o mes', somarDias('2026-10-24', 14), '2026-11-07');
+conferir('prazo folgado (dia 10 apos a visita)', situacaoDoPrazo('2026-10-24', '2026-11-03'), null);
+conferir('faltam 3 dias: atencao', situacaoDoPrazo('2026-10-24', '2026-11-04'), 'perto');
+conferir('ultimo dia do prazo: atencao', situacaoDoPrazo('2026-10-24', '2026-11-07'), 'perto');
+conferir('dia seguinte ao prazo: vencido', situacaoDoPrazo('2026-10-24', '2026-11-08'), 'vencido');
 
 console.log('--- a triagem que conta e a primeira ---');
 conferir('lista vazia', primeiraTriagem([]), null);

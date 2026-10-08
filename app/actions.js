@@ -10,12 +10,13 @@ import {
 } from '@/lib/auth';
 import {
   atualizarAssistida, concluirEmergencia, criarAssistida, desligarAssistida,
-  excluirAssistida, excluirEmergencia, marcarRegistroVisita, reabrirEmergencia, reativarAssistida,
+  excluirAssistida, excluirEmergencia, listarExcecoesCalendario, mapaDeExcecoes,
+  marcarRegistroVisita, reabrirEmergencia, reativarAssistida,
   registrarEmergencia, removerExcecaoCalendario, salvarExcecaoCalendario,
   substituirFamiliares, substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
-import { hojeIso } from '@/lib/datas';
+import { hojeIso, ultimaVisitaFeita } from '@/lib/datas';
 import { ehLinkCurtoDeMapa, extrairCoordenadas, extrairLink } from '@/lib/links';
 
 async function identificarCliente() {
@@ -217,16 +218,20 @@ function atualizarTelasDaFamilia(assistidaId) {
 }
 
 /**
- * Marca (ou desmarca) "Visita de <mes> registrada" no cartao. O mes e sempre o
- * corrente, calculado aqui no servidor pelo fuso de Brasilia — nao pelo
- * relogio do celular de quem tocou.
+ * Marca (ou desmarca) "Visita de <mes> registrada" no cartao. O mes e o da
+ * ultima visita que ja aconteceu, calculado aqui no servidor pelo calendario e
+ * pelo fuso de Brasilia — nao pelo relogio do celular de quem tocou.
  */
 export async function acaoMarcarRegistroVisita(id, registrada) {
   await exigirAdmin();
   const assistidaId = Number(id);
   if (!Number.isInteger(assistidaId)) return;
 
-  await marcarRegistroVisita(assistidaId, hojeIso().slice(0, 7), Boolean(registrada));
+  const calendario = mapaDeExcecoes(await listarExcecoesCalendario());
+  const visita = ultimaVisitaFeita(hojeIso(), calendario);
+  if (!visita) return;
+
+  await marcarRegistroVisita(assistidaId, visita.slice(0, 7), Boolean(registrada));
   revalidatePath('/');
 }
 

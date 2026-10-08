@@ -173,7 +173,9 @@ export default function CardAssistida({
           )}
         </ul>
 
-        {!desligada && <CaixaRegistroVisita assistida={assistida} hoje={hoje} />}
+        {!desligada && (
+          <CaixaRegistroVisita assistida={assistida} hoje={hoje} calendario={calendario} triagem={triagem} />
+        )}
 
         {/* Aparece sempre, mesmo sem nada cadastrado: e informacao que o
             voluntario procura no cartao, e a ausencia tambem diz algo. */}

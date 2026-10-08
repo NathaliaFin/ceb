@@ -701,6 +701,17 @@ body:has(.tela-login) { background-color: #585d66; }
   cursor: pointer;
 }
 
+.registro-visita-bloco { margin-top: 0.7rem; }
+.registro-visita-bloco .registro-visita { margin-top: 0; }
+
+/* Prazo do almoxarifado perto de vencer (ou vencido): pequeno e em vermelho. */
+.registro-visita__aviso {
+  margin: 0.3rem 0 0 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--alerta);
+}
+
 .registro-visita--feito {
   border-style: solid;
   border-color: color-mix(in oklab, #1f9d55 45%, var(--borda));
