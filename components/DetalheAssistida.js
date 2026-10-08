@@ -117,6 +117,21 @@ export default function DetalheAssistida({
             )}
           </Secao>
 
+          {/* O que o sistema da DPS mostra, como veio, e de quando e a leitura. */}
+          {assistida.dps && !desligada && (
+            <Secao icone={<IconeCheck tamanho={13} />} titulo="Registro na DPS">
+              <p>{assistida.dps.situacao}</p>
+              {assistida.dps.consultadoEm && (
+                <p className="text-xs text-tinta-suave mt-1">
+                  Consultado em{' '}
+                  {new Date(assistida.dps.consultadoEm).toLocaleString('pt-BR', {
+                    timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+                  })}
+                </p>
+              )}
+            </Secao>
+          )}
+
           <Secao icone={<IconeCheck tamanho={13} />} titulo="Triagens">
             {triagens.length === 0 ? (
               <Vazio>Nenhuma triagem registrada.</Vazio>

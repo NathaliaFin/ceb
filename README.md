@@ -30,6 +30,23 @@ continua logado — as sessões antigas só caem se você trocar `SESSION_SECRET
 
 ---
 
+### Registro das visitas na DPS
+
+Com as variáveis `DPS_USUARIO` e `DPS_SENHA` (o login de alguém do grupo no
+sistema da DPS, dpsfamilia.com.br), o servidor lê o relatório de visitas do
+grupo — 4º Sábado / Paranoá04, códigos `DPS_GRUPO=3` e `DPS_SUBGRUPO=2` — e o
+cartão de cada família mostra "Visita de setembro registrada" ou "Visita de
+outubro ainda não registrada". A situação "Pendente de início de registro da
+Visita do mês de Outubro" quer dizer que setembro já foi registrado.
+
+A família é ligada à linha da DPS pelo nome, sem diferenciar acento e
+maiúscula: se um nome estiver escrito diferente nos dois sistemas, o cartão
+dela simplesmente não mostra o registro. A leitura roda em segundo plano, no
+máximo uma vez por hora, e só lê — nada é alterado na DPS. Sem as variáveis, a
+função fica desligada. Se a senha da DPS mudar, atualize `DPS_SENHA`.
+
+---
+
 ## 2. Rodando na sua máquina
 
 ```bash
