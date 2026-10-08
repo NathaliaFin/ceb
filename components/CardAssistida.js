@@ -8,6 +8,7 @@ import {
 import { linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import { emergenciasAbertas } from '@/lib/emergencias';
 import BlocoEmergencias from './BlocoEmergencias';
+import CaixaRegistroVisita from './CaixaRegistroVisita';
 import DetalheAssistida from './DetalheAssistida';
 import BotaoComoChegar from './BotaoComoChegar';
 import {
@@ -171,6 +172,8 @@ export default function CardAssistida({
             </li>
           )}
         </ul>
+
+        {!desligada && <CaixaRegistroVisita assistida={assistida} hoje={hoje} />}
 
         {/* Aparece sempre, mesmo sem nada cadastrado: e informacao que o
             voluntario procura no cartao, e a ausencia tambem diz algo. */}

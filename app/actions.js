@@ -10,7 +10,7 @@ import {
 } from '@/lib/auth';
 import {
   atualizarAssistida, concluirEmergencia, criarAssistida, desligarAssistida,
-  excluirAssistida, excluirEmergencia, reabrirEmergencia, reativarAssistida,
+  excluirAssistida, excluirEmergencia, marcarRegistroVisita, reabrirEmergencia, reativarAssistida,
   registrarEmergencia, removerExcecaoCalendario, salvarExcecaoCalendario,
   substituirFamiliares, substituirTriagens,
 } from '@/lib/consultas';
@@ -214,6 +214,20 @@ function atualizarTelasDaFamilia(assistidaId) {
   revalidatePath('/admin');
   revalidatePath('/atendidas');
   revalidatePath(`/admin/assistida/${assistidaId}`);
+}
+
+/**
+ * Marca (ou desmarca) "Visita de <mes> registrada" no cartao. O mes e sempre o
+ * corrente, calculado aqui no servidor pelo fuso de Brasilia — nao pelo
+ * relogio do celular de quem tocou.
+ */
+export async function acaoMarcarRegistroVisita(id, registrada) {
+  await exigirAdmin();
+  const assistidaId = Number(id);
+  if (!Number.isInteger(assistidaId)) return;
+
+  await marcarRegistroVisita(assistidaId, hojeIso().slice(0, 7), Boolean(registrada));
+  revalidatePath('/');
 }
 
 /**

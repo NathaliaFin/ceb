@@ -677,6 +677,37 @@ body:has(.tela-login) { background-color: #585d66; }
 
 .cartao__dados svg { color: var(--cor); flex: none; margin-top: 0.15rem; }
 
+/* "Visita de outubro registrada": caixa de marcar na frente do cartao. */
+.registro-visita {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px dashed var(--borda);
+  border-radius: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.registro-visita input {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+  accent-color: #1f9d55;
+  cursor: pointer;
+}
+
+.registro-visita--feito {
+  border-style: solid;
+  border-color: color-mix(in oklab, #1f9d55 45%, var(--borda));
+  background: color-mix(in oklab, #1f9d55 9%, var(--superficie));
+  color: var(--tinta);
+}
+
 /* Familia, com avatares sobrepostos. */
 .cartao__gente {
   margin-top: 0.9rem;
