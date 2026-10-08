@@ -488,15 +488,38 @@ body:has(.tela-login) { background-color: #585d66; }
   margin: 0 auto;
 }
 
+/* O cartao do grupo inteiro na cor dele, com o mesmo brilho e trama do topo
+   dos cartoes das familias. */
 .inicio-grupo {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.35rem;
-  padding: 1.1rem 1.2rem 1rem;
-  border-top: 5px solid var(--cor);
+  min-height: 8.5rem;
+  padding: 1.2rem 1.25rem 1.1rem;
+  border: none;
+  background: var(--cor);
+  color: #fff;
 }
 
-.inicio-grupo__nome { font-size: 1.15rem; font-weight: 800; color: var(--tinta); }
+.inicio-grupo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 95% at 18% 0%, rgb(255 255 255 / 0.3), transparent 62%),
+    repeating-linear-gradient(135deg, rgb(255 255 255 / 0.08) 0 10px, transparent 10px 20px),
+    linear-gradient(to top, rgb(12 8 4 / 0.35), transparent 70%);
+  pointer-events: none;
+}
+
+.inicio-grupo > * { position: relative; z-index: 1; }
+
+.inicio-grupo__nome {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-shadow: 0 1px 10px rgb(0 0 0 / 0.25);
+}
 
 .inicio-grupo__info,
 .inicio-grupo__entrar {
@@ -504,10 +527,19 @@ body:has(.tela-login) { background-color: #585d66; }
   align-items: center;
   gap: 0.35rem;
   font-size: 0.8rem;
-  color: var(--tinta-suave);
 }
 
-.inicio-grupo__entrar { margin-top: 0.35rem; font-weight: 700; color: var(--cor); }
+.inicio-grupo__info { color: rgb(255 255 255 / 0.88); }
+
+.inicio-grupo__entrar {
+  margin-top: auto;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--cor);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgb(11 16 48 / 0.25);
+}
 
 /* A marca usa a tipografia da capa, mas sem o fundo proprio dela. */
 .tela-login .capa {
