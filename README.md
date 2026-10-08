@@ -58,6 +58,7 @@ configurado por variáveis no Railway:
 | `LEMBRETE_REMETENTE` | e-mail do grupo, já confirmado em Remetentes no Brevo |
 | `LEMBRETE_DESTINATARIOS` | só para o Paranoá04, enquanto ele não tiver e-mails no painel |
 | `LEMBRETE_NOME` | opcional, nome do remetente (padrão "Visita DPS") |
+| `LEMBRETE_RESPONDER_PARA` | opcional, quem recebe as respostas (padrão: o remetente). Com remetente do domínio, use o Gmail do grupo |
 
 Sem a chave e o remetente, nada é enviado. Os e-mails de cada grupo ficam no
 painel e recebem em cópia oculta. A checagem roda dentro do próprio
