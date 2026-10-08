@@ -86,7 +86,7 @@ export default async function PaginaAdmin() {
                     <p className="font-semibold text-sm leading-snug break-words">
                       {assistida.nome_completo}
                       {!assistida.ativa && (
-                        <span className="text-xs text-tinta-suave font-normal"> · inativa</span>
+                        <span className="text-xs text-tinta-suave font-normal"> · atendida</span>
                       )}
                     </p>
                     <p className="text-xs text-tinta-suave mt-0.5">

@@ -92,8 +92,8 @@ conferir('sem triagem nao conta', numeroDaVisita(null, '2026-10-24'), 0);
 console.log('--- reta final do ciclo de 7 visitas ---');
 conferir('5 visitas e normal', etapaDoCiclo(5), 'normal');
 conferir('6 visitas: falta 1', etapaDoCiclo(6), 'falta-uma');
-conferir('7 visitas: o aviso era so no 6, volta ao normal', etapaDoCiclo(7), 'normal');
-conferir('Carmen com 9 segue normal, nada se encerra', etapaDoCiclo(9), 'normal');
+conferir('7 visitas: ciclo completo, o aviso continua', etapaDoCiclo(7), 'ciclo-completo');
+conferir('Carmen com 9: o aviso continua, nada se encerra', etapaDoCiclo(9), 'ciclo-completo');
 conferir('triagem 28/03/2026, sem julho, em 06/10 tem 6 e falta 1', etapaDoCiclo(numeroDaVisita('2026-03-28', '2026-10-06', SEM_JULHO)), 'falta-uma');
 
 console.log('--- a triagem que conta e a primeira ---');

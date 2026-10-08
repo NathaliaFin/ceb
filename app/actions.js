@@ -9,9 +9,10 @@ import {
   limparFalhas, papelDaSenha, registrarFalha,
 } from '@/lib/auth';
 import {
-  atualizarAssistida, concluirEmergencia, criarAssistida, excluirAssistida,
-  excluirEmergencia, reabrirEmergencia, registrarEmergencia, removerExcecaoCalendario,
-  salvarExcecaoCalendario, substituirFamiliares, substituirTriagens,
+  atualizarAssistida, concluirEmergencia, criarAssistida, desligarAssistida,
+  excluirAssistida, excluirEmergencia, reabrirEmergencia, reativarAssistida,
+  registrarEmergencia, removerExcecaoCalendario, salvarExcecaoCalendario,
+  substituirFamiliares, substituirTriagens,
 } from '@/lib/consultas';
 import { CHAVES_CORES } from '@/lib/cores';
 import { hojeIso } from '@/lib/datas';
@@ -191,6 +192,7 @@ export async function acaoSalvarAssistida(_estadoAnterior, formData) {
 
   revalidatePath('/');
   revalidatePath('/admin');
+  revalidatePath('/atendidas');
   redirect(`/admin/assistida/${id}?salvo=1`);
 }
 
@@ -203,13 +205,39 @@ export async function acaoExcluirAssistida(formData) {
   await excluirAssistida(id);
   revalidatePath('/');
   revalidatePath('/admin');
+  revalidatePath('/atendidas');
   redirect('/admin');
 }
 
 function atualizarTelasDaFamilia(assistidaId) {
   revalidatePath('/');
   revalidatePath('/admin');
+  revalidatePath('/atendidas');
   revalidatePath(`/admin/assistida/${assistidaId}`);
+}
+
+/**
+ * Desliga a familia do programa (ja foi atendida como devia): sai dos cartoes
+ * e vai para "Familias atendidas", com a data de hoje. Chamada direto pelo
+ * botao da ficha.
+ */
+export async function acaoDesligarAssistida(id) {
+  await exigirAdmin();
+  const assistidaId = Number(id);
+  if (!Number.isInteger(assistidaId)) return;
+
+  await desligarAssistida(assistidaId, hojeIso());
+  atualizarTelasDaFamilia(assistidaId);
+}
+
+/** Traz de volta para os cartoes uma familia desligada. */
+export async function acaoReativarAssistida(id) {
+  await exigirAdmin();
+  const assistidaId = Number(id);
+  if (!Number.isInteger(assistidaId)) return;
+
+  await reativarAssistida(assistidaId);
+  atualizarTelasDaFamilia(assistidaId);
 }
 
 /**

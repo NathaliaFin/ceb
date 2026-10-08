@@ -360,7 +360,7 @@ export default function FormularioAssistida({ assistida }) {
           <span>
             Família ativa no projeto{' '}
             <span className="text-xs text-tinta-suave font-normal">
-              (desmarque para esconder o cartão sem apagar o histórico)
+              (desmarque para desligar: a família sai dos cartões e vai para Famílias atendidas)
             </span>
           </span>
         </label>

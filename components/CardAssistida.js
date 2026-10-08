@@ -54,7 +54,9 @@ function textoDasTriagens(triagens) {
   return `${triagens.length} triagens · ${datas.join(', ')} e ${ultima}`;
 }
 
-export default function CardAssistida({ assistida, hoje, proximaVisita, calendario = {}, indice = 0 }) {
+export default function CardAssistida({
+  assistida, hoje, proximaVisita, calendario = {}, indice = 0, podeEditar = false,
+}) {
   const [fichaAberta, setFichaAberta] = useState(false);
 
   const cor = corDe(assistida.cor);
@@ -63,11 +65,15 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
 
   // A contagem sai do calendario, a partir da PRIMEIRA triagem, que ja conta
   // como visita. As demais triagens ficam registradas, mas nao mudam o numero.
+  // Familia desligada: a contagem para no dia do desligamento, sem o aviso do
+  // ciclo e sem "proxima visita" — ela nao recebe mais visita.
+  const desligada = assistida.ativa === false;
+  const referencia = desligada && assistida.desligada_em ? assistida.desligada_em : hoje;
   const triagens = assistida.triagens ?? [];
   const triagem = primeiraTriagem(triagens);
-  const visitas = numeroDaVisita(triagem, hoje, calendario);
-  const triagemNoFuturo = Boolean(triagem) && triagem > hoje;
-  const etapa = triagem && !triagemNoFuturo ? etapaDoCiclo(visitas) : 'normal';
+  const visitas = numeroDaVisita(triagem, referencia, calendario);
+  const triagemNoFuturo = Boolean(triagem) && triagem > referencia;
+  const etapa = triagem && !triagemNoFuturo && !desligada ? etapaDoCiclo(visitas) : 'normal';
 
   const familiares = assistida.familiares ?? [];
 
@@ -101,6 +107,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
           ) : (
             <>
               {etapa === 'falta-uma' && <span className="cartao__selo-topo">Falta 1</span>}
+              {etapa === 'ciclo-completo' && <span className="cartao__selo-topo">Ciclo completo</span>}
               <strong>{visitas}</strong>
               <span>{visitas === 1 ? 'visita' : 'visitas'}</span>
             </>
@@ -127,7 +134,17 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
           <li>
             <IconeCalendario tamanho={16} />
             <span>
-              {ehDiaDeVisita ? (
+              {desligada ? (
+                <>
+                  Desligada do programa
+                  {assistida.desligada_em && (
+                    <>
+                      {' em '}
+                      <strong className="font-semibold text-tinta">{formatarData(assistida.desligada_em)}</strong>
+                    </>
+                  )}
+                </>
+              ) : ehDiaDeVisita ? (
                 <strong className="font-semibold text-tinta">Hoje é dia de visita</strong>
               ) : (
                 <>
@@ -209,6 +226,7 @@ export default function CardAssistida({ assistida, hoje, proximaVisita, calendar
           hoje={hoje}
           proximaVisita={proximaVisita}
           calendario={calendario}
+          podeEditar={podeEditar}
           aoFechar={() => setFichaAberta(false)}
         />
       )}

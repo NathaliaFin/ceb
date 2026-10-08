@@ -10,6 +10,7 @@ import { linkTelefone, linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import { emergenciasAbertas, emergenciasConcluidas } from '@/lib/emergencias';
 import BlocoEmergencias from './BlocoEmergencias';
 import BotaoComoChegar from './BotaoComoChegar';
+import BotaoDesligamento from './BotaoDesligamento';
 import {
   IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
   IconeNota, IconePessoas, IconePino, IconePresente,
@@ -32,7 +33,9 @@ function Secao({ icone, titulo, children }) {
   );
 }
 
-export default function DetalheAssistida({ assistida, hoje, proximaVisita, calendario = {}, aoFechar }) {
+export default function DetalheAssistida({
+  assistida, hoje, proximaVisita, calendario = {}, podeEditar = false, aoFechar,
+}) {
   // A ficha e levada para o fim do <body>. Sem isso ela nasce dentro do cartao,
   // que vive num contentor com transform (o carrossel) — e ali o position:fixed
   // passa a valer em relacao ao cartao, nao a tela, e o overflow dele corta a
@@ -57,7 +60,10 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
   const cor = corDe(assistida.cor);
   const triagens = assistida.triagens ?? [];
   const triagem = primeiraTriagem(triagens);
-  const visitas = numeroDaVisita(triagem, hoje, calendario);
+  // Desligada: a contagem para no dia do desligamento (ver CardAssistida).
+  const desligada = assistida.ativa === false;
+  const referencia = desligada && assistida.desligada_em ? assistida.desligada_em : hoje;
+  const visitas = numeroDaVisita(triagem, referencia, calendario);
   const familiares = assistida.familiares ?? [];
   const temCoordenadas = assistida.latitude !== null && assistida.latitude !== undefined;
 
@@ -97,15 +103,22 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
             {triagem ? (
               <>
                 <p>
-                  <strong>{visitas}</strong> {visitas === 1 ? 'visita' : 'visitas'} até hoje,
-                  contando a triagem como a primeira.
+                  <strong>{visitas}</strong> {visitas === 1 ? 'visita' : 'visitas'}{' '}
+                  {desligada ? 'até o desligamento' : 'até hoje'}, contando a triagem como a primeira.
                 </p>
-                <p className="text-tinta-suave mt-1">
-                  Próxima: {formatarDataPorExtenso(proximaVisita)}
-                </p>
-                {etapaDoCiclo(visitas) === 'falta-uma' && (
+                {!desligada && (
+                  <p className="text-tinta-suave mt-1">
+                    Próxima: {formatarDataPorExtenso(proximaVisita)}
+                  </p>
+                )}
+                {!desligada && etapaDoCiclo(visitas) === 'falta-uma' && (
                   <p className="mt-1.5 font-semibold" style={{ color: '#b9650a' }}>
                     Falta 1 para completar as {VISITAS_DO_CICLO} visitas.
+                  </p>
+                )}
+                {!desligada && etapaDoCiclo(visitas) === 'ciclo-completo' && (
+                  <p className="mt-1.5 font-semibold" style={{ color: '#b9650a' }}>
+                    Já completou as {VISITAS_DO_CICLO} visitas do ciclo.
                   </p>
                 )}
               </>
@@ -233,6 +246,30 @@ export default function DetalheAssistida({ assistida, hoje, proximaVisita, calen
                 ))}
               </ul>
             </Secao>
+          )}
+
+          {/* Desligar fica so aqui dentro, nunca na frente do cartao: e uma
+              decisao rara e nao pode acontecer por um toque sem querer. */}
+          {podeEditar && (
+            <section className="pt-4 mt-1 border-t border-borda">
+              {assistida.ativa ? (
+                <>
+                  <BotaoDesligamento assistida={assistida} modo="desligar" aoConcluir={aoFechar} className="w-full" />
+                  <p className="text-xs text-tinta-suave mt-2 text-center leading-snug">
+                    Para quando a família já foi atendida como devia. Ela vai para Famílias atendidas
+                    e pode ser reativada depois.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-tinta-suave mb-2 text-center">
+                    Família desligada do programa
+                    {assistida.desligada_em ? ` em ${formatarData(assistida.desligada_em)}` : ''}.
+                  </p>
+                  <BotaoDesligamento assistida={assistida} modo="reativar" aoConcluir={aoFechar} className="w-full" />
+                </>
+              )}
+            </section>
           )}
         </div>
       </div>

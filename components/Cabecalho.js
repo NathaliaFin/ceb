@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { sair } from '@/app/actions';
 import { diasAte, formatarData, formatarDataPorExtenso } from '@/lib/datas';
-import { IconeLapis, IconeSair } from './Icones';
+import { IconeArquivo, IconeLapis, IconeSair } from './Icones';
 import MarcaCapa from './MarcaCapa';
 
 function textoDaProximaVisita(dias) {
@@ -17,6 +17,14 @@ export default function Cabecalho({ papel, hoje, proximaVisita }) {
     <header className="capa capa--principal">
       <div className="px-4 max-w-6xl mx-auto">
         <div className="capa__acoes flex items-center gap-2 justify-end mb-6">
+          <Link
+            href="/atendidas"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-white/90 border border-white/25 hover:bg-white/10 transition-colors"
+            title="Famílias atendidas"
+          >
+            <IconeArquivo tamanho={14} />
+            <span className="hidden sm:inline">Atendidas</span>
+          </Link>
           {papel === 'admin' && (
             <Link
               href="/admin"

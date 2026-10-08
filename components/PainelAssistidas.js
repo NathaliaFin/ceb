@@ -99,6 +99,7 @@ export default function PainelAssistidas({ assistidas, hoje, proximaVisita, cale
                   proximaVisita={proximaVisita}
                   calendario={calendario}
                   indice={indice}
+                  podeEditar={podeEditar}
                 />
               </SwiperSlide>
             ))}
