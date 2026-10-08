@@ -30,6 +30,30 @@ continua logado — as sessões antigas só caem se você trocar `SESSION_SECRET
 
 ---
 
+### Lembrete por e-mail do registro das visitas
+
+No 10º dia depois de cada visita (o prazo do almoxarifado é o 14º), se alguma
+família ainda estiver com a caixa "Visita de <mês> registrada" desmarcada, o
+sistema manda **um** e-mail: "Lembre-se de registrar as suas visitas do mês de
+<mês>. O prazo do almoxarifado está se esgotando." Sai a partir das 8h, uma
+única vez por visita (fica anotado no banco), e não sai se tudo já estiver
+registrado.
+
+O envio é pelo [Brevo](https://www.brevo.com) — o Railway bloqueia SMTP — e é
+configurado por variáveis no Railway:
+
+| Variável | O que é |
+|---|---|
+| `BREVO_API_KEY` | chave de API do Brevo (SMTP e API → Chaves de API) |
+| `LEMBRETE_REMETENTE` | e-mail do grupo, já confirmado em Remetentes no Brevo |
+| `LEMBRETE_DESTINATARIOS` | e-mails separados por vírgula; recebem em cópia oculta |
+| `LEMBRETE_NOME` | opcional, nome do remetente (padrão "Paranoá04") |
+
+Sem as três primeiras, nada é enviado. A checagem roda dentro do próprio
+servidor, de hora em hora (`instrumentation.js` → `lib/lembrete.js`).
+
+---
+
 ## 2. Rodando na sua máquina
 
 ```bash

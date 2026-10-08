@@ -1,4 +1,4 @@
-import { ultimaVisitaFeita, situacaoDoPrazo, somarDias, quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao, etapaDoCiclo } from '../lib/datas.js';
+import { visitaParaLembrar, ultimaVisitaFeita, situacaoDoPrazo, somarDias, quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao, etapaDoCiclo } from '../lib/datas.js';
 import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa, extrairLink } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
 
@@ -108,6 +108,13 @@ conferir('prazo folgado (dia 10 apos a visita)', situacaoDoPrazo('2026-10-24', '
 conferir('faltam 3 dias: atencao', situacaoDoPrazo('2026-10-24', '2026-11-04'), 'perto');
 conferir('ultimo dia do prazo: atencao', situacaoDoPrazo('2026-10-24', '2026-11-07'), 'perto');
 conferir('dia seguinte ao prazo: vencido', situacaoDoPrazo('2026-10-24', '2026-11-08'), 'vencido');
+
+console.log('--- lembrete por e-mail no 10o dia ---');
+conferir('9o dia (02/11): ainda nao', visitaParaLembrar('2026-11-02'), null);
+conferir('10o dia (03/11): lembra a visita de 24/10', visitaParaLembrar('2026-11-03'), '2026-10-24');
+conferir('14o dia (07/11): ainda vale, se o 10o falhou', visitaParaLembrar('2026-11-07'), '2026-10-24');
+conferir('15o dia (08/11): prazo acabou, nao envia', visitaParaLembrar('2026-11-08'), null);
+conferir('dezembro (visita 19/12): lembra em 29/12', visitaParaLembrar('2026-12-29'), '2026-12-19');
 
 console.log('--- a triagem que conta e a primeira ---');
 conferir('lista vazia', primeiraTriagem([]), null);
