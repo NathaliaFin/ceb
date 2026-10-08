@@ -47,7 +47,7 @@ configurado por variáveis no Railway:
 | `BREVO_API_KEY` | chave de API do Brevo (SMTP e API → Chaves de API) |
 | `LEMBRETE_REMETENTE` | e-mail do grupo, já confirmado em Remetentes no Brevo |
 | `LEMBRETE_DESTINATARIOS` | e-mails separados por vírgula; recebem em cópia oculta |
-| `LEMBRETE_NOME` | opcional, nome do remetente (padrão "Paranoá04") |
+| `LEMBRETE_NOME` | opcional, nome do remetente (padrão "Visita DPS") |
 
 Sem as três primeiras, nada é enviado. A checagem roda dentro do próprio
 servidor, de hora em hora (`instrumentation.js` → `lib/lembrete.js`).
