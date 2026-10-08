@@ -116,11 +116,6 @@ export default function DetalheAssistida({
                     Falta 1 para completar as {VISITAS_DO_CICLO} visitas.
                   </p>
                 )}
-                {!desligada && etapaDoCiclo(visitas) === 'ciclo-completo' && (
-                  <p className="mt-1.5 font-semibold" style={{ color: '#b9650a' }}>
-                    Já completou as {VISITAS_DO_CICLO} visitas do ciclo.
-                  </p>
-                )}
               </>
             ) : (
               <Vazio>Nenhuma triagem registrada, então ainda não há contagem.</Vazio>
