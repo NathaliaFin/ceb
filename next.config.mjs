@@ -2,9 +2,17 @@
 const nextConfig = {
   serverExternalPackages: ['pg'],
 
-  // Enderecos de antes dos grupos: tudo era do Paranoa04.
   async redirects() {
     return [
+      // O endereco oficial e sem "www": https://visitadps.com.br/ (a pagina
+      // principal com os grupos). Quem digitar com www cai nele, no mesmo caminho.
+      {
+        source: '/:caminho*',
+        has: [{ type: 'host', value: 'www.visitadps.com.br' }],
+        destination: 'https://visitadps.com.br/:caminho*',
+        permanent: true,
+      },
+      // Enderecos de antes dos grupos: tudo era do Paranoa04.
       { source: '/login', destination: '/', permanent: false },
       { source: '/atendidas', destination: '/paranoa04/atendidas', permanent: false },
       { source: '/admin', destination: '/paranoa04/gerenciar', permanent: false },
