@@ -37,7 +37,7 @@ export default function BotaoDesligamento({ assistida, modo, aoConcluir, classNa
       className={`${desligar ? 'botao-desligar' : 'botao-primario'} inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm ${className}`}
     >
       {desligar ? <IconeArquivo tamanho={16} /> : <IconeVoltarSeta tamanho={16} />}
-      {pendente ? 'Aguarde…' : desligar ? 'Desligar família do programa' : 'Reativar família'}
+      {pendente ? 'Aguarde…' : desligar ? 'Desligar família' : 'Reativar família'}
     </button>
   );
 }
