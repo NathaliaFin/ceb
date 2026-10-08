@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { exigirAdministradora } from '@/lib/auth';
 import { obterGrupo } from '@/lib/grupos';
 import FormularioGrupo from '@/components/FormularioGrupo';
+import BotaoLembreteDeTeste from '@/components/BotaoLembreteDeTeste';
 import { IconeSeta } from '@/components/Icones';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,7 @@ export default async function PaginaEditarGrupo({ params }) {
         <h1 className="text-lg font-bold">{grupo.nome}</h1>
       </div>
       <FormularioGrupo grupo={grupo} />
+      <BotaoLembreteDeTeste grupoId={grupo.id} />
     </main>
   );
 }

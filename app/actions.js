@@ -23,6 +23,7 @@ import {
 import { CHAVES_CORES } from '@/lib/cores';
 import { hojeIso, ultimaVisitaFeita } from '@/lib/datas';
 import { ehLinkCurtoDeMapa, extrairCoordenadas, extrairLink } from '@/lib/links';
+import { enviarLembreteDeTeste } from '@/lib/lembrete';
 
 async function identificarCliente() {
   const cabecalhos = await headers();
@@ -384,6 +385,14 @@ export async function acaoRemoverExcecaoCalendario(formData) {
  * Cria ou edita um grupo (so a administradora). A senha e obrigatoria ao criar;
  * ao editar, em branco mantem a atual.
  */
+/** Painel: manda agora um lembrete de teste para os e-mails do grupo. */
+export async function acaoEnviarLembreteDeTeste(_estadoAnterior, formData) {
+  await exigirAdministradora();
+  const grupo = await obterGrupo(Number(formData.get('id')));
+  if (!grupo) return { ok: false, mensagem: 'Grupo não encontrado.' };
+  return enviarLembreteDeTeste(grupo);
+}
+
 export async function acaoSalvarGrupo(_estadoAnterior, formData) {
   await exigirAdministradora();
 
