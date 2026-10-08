@@ -13,19 +13,17 @@ voluntário abrir no celular durante a visita.
 ## 1. Como as pessoas entram
 
 A tela de entrada pede só a senha. Há duas, definidas em variáveis de ambiente,
-e o sistema reconhece quem entrou por qual delas foi digitada:
+e **as duas dão acesso completo**: ver os cartões, cadastrar e editar famílias,
+calendário e necessidades.
 
-| Senha | Quem usa | O que pode fazer |
-|---|---|---|
-| `SENHA_VOLUNTARIO` | voluntários | ver os cartões |
-| `SENHA_ADMIN` | administradora | tudo, incluindo cadastrar e editar famílias |
+| Senha | Quem usa |
+|---|---|
+| `SENHA_VOLUNTARIO` | o grupo de voluntários (senha compartilhada) |
+| `SENHA_ADMIN` | a administradora |
 
-As duas precisam ser diferentes: se forem iguais, o acesso de admin fica
-desligado até a variável ser corrigida. A senha é comparada exatamente como
-digitada.
-
-Quem entra com a senha de admin vê o botão **Gerenciar**. A sessão dura 30 dias,
-para o voluntário não ter que digitar senha a cada visita.
+A senha é comparada exatamente como digitada. Quem entra vê o botão
+**Gerenciar**. A sessão dura 30 dias, para ninguém ter que digitar senha a cada
+visita.
 
 Para trocar uma senha, altere a variável no Railway e reimplante. Todo mundo
 continua logado — as sessões antigas só caem se você trocar `SESSION_SECRET`.
