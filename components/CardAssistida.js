@@ -7,12 +7,11 @@ import {
 } from '@/lib/datas';
 import { linkWhatsapp, telefoneFormatado } from '@/lib/links';
 import { emergenciasAbertas } from '@/lib/emergencias';
-import { registroDaVisita } from '@/lib/registroDps';
 import BlocoEmergencias from './BlocoEmergencias';
 import DetalheAssistida from './DetalheAssistida';
 import BotaoComoChegar from './BotaoComoChegar';
 import {
-  IconeAlerta, IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
+  IconeCalendario, IconeCasa, IconeCheck, IconeConversa,
   IconePresente,
 } from './Icones';
 
@@ -77,8 +76,6 @@ export default function CardAssistida({
   const etapa = triagem && !triagemNoFuturo && !desligada ? etapaDoCiclo(visitas) : 'normal';
 
   const familiares = assistida.familiares ?? [];
-  // Registro da visita no sistema da DPS (obrigacao do grupo). Sem dado, nada.
-  const registro = desligada ? null : registroDaVisita(assistida.dps?.situacao, hoje, calendario);
 
   return (
     <article
@@ -166,17 +163,6 @@ export default function CardAssistida({
                 : textoDasTriagens(triagens)}
             </span>
           </li>
-
-          {registro && (
-            <li className={registro.registrada ? 'dado-ok' : 'dado-pendente'}>
-              {registro.registrada ? <IconeCheck tamanho={16} /> : <IconeAlerta tamanho={16} />}
-              <span>
-                {registro.registrada
-                  ? `Visita de ${registro.mes} registrada`
-                  : `Visita de ${registro.mes} ainda não registrada`}
-              </span>
-            </li>
-          )}
 
           {assistida.telefone && (
             <li>

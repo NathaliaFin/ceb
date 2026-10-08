@@ -1,8 +1,6 @@
 import { exigirSessao } from '@/lib/auth';
 import { listarAssistidas, listarExcecoesCalendario, mapaDeExcecoes } from '@/lib/consultas';
 import { hojeIso, proximaVisita } from '@/lib/datas';
-import { situacoesDaDps } from '@/lib/dps';
-import { normalizarNome } from '@/lib/registroDps';
 import Cabecalho from '@/components/Cabecalho';
 import PainelAssistidas from '@/components/PainelAssistidas';
 
@@ -28,15 +26,7 @@ export default async function PaginaInicial() {
   let assistidas;
   let excecoes;
   try {
-    let dps;
-    [assistidas, excecoes, dps] = await Promise.all([
-      listarAssistidas(),
-      listarExcecoesCalendario(),
-      // A DPS nunca derruba a tela: sem ela, os cartoes so nao mostram o registro.
-      situacoesDaDps().catch(() => new Map()),
-    ]);
-    // Liga cada familia a linha dela no relatorio da DPS, pelo nome.
-    assistidas = assistidas.map((a) => ({ ...a, dps: dps.get(normalizarNome(a.nome_completo)) ?? null }));
+    [assistidas, excecoes] = await Promise.all([listarAssistidas(), listarExcecoesCalendario()]);
   } catch (erro) {
     return (
       <main className="px-4 py-6 max-w-6xl mx-auto">

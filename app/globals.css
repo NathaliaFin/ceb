@@ -677,12 +677,6 @@ body:has(.tela-login) { background-color: #585d66; }
 
 .cartao__dados svg { color: var(--cor); flex: none; margin-top: 0.15rem; }
 
-/* Registro da visita na DPS: verde quando feito, alerta quando falta. */
-.cartao__dados .dado-ok svg { color: #1f9d55; }
-.cartao__dados .dado-ok span { color: var(--tinta); }
-.cartao__dados .dado-pendente,
-.cartao__dados .dado-pendente svg { color: var(--alerta); }
-
 /* Familia, com avatares sobrepostos. */
 .cartao__gente {
   margin-top: 0.9rem;

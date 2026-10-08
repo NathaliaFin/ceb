@@ -1,7 +1,6 @@
 import { quartoSabado, proximaVisita, diasAte, formatarData, formatarDataPorExtenso, ordinal, ehDiaDeVisita, numeroDaVisita, visitaAnterior, primeiraTriagem, terceiroSabado, diaDeVisitaPadrao, etapaDoCiclo } from '../lib/datas.js';
 import { linkWhatsapp, linkWaze, linkGoogleMaps, telefoneFormatado, extrairCoordenadas, ehLinkCurtoDeMapa, extrairLink } from '../lib/links.js';
 import { iniciais } from '../lib/cores.js';
-import { mesPendenteNaDps, mesDaUltimaVisita, registroDaVisita, normalizarNome } from '../lib/registroDps.js';
 
 let falhas = 0;
 function conferir(rotulo, obtido, esperado) {
@@ -96,22 +95,6 @@ conferir('6 visitas: falta 1', etapaDoCiclo(6), 'falta-uma');
 conferir('7 visitas: ciclo completo, o aviso continua', etapaDoCiclo(7), 'ciclo-completo');
 conferir('Carmen com 9: o aviso continua, nada se encerra', etapaDoCiclo(9), 'ciclo-completo');
 conferir('triagem 28/03/2026, sem julho, em 06/10 tem 6 e falta 1', etapaDoCiclo(numeroDaVisita('2026-03-28', '2026-10-06', SEM_JULHO)), 'falta-uma');
-
-console.log('--- registro da visita na DPS ---');
-const FRASE_OUT = 'Pendente de início de registro da Visita do mês de Outubro/2026';
-conferir('le o mes pendente', mesPendenteNaDps(FRASE_OUT), { ano: 2026, mes: 10 });
-conferir('marco com cedilha', mesPendenteNaDps('Pendente de início de registro da Visita do mês de Março/2027'), { ano: 2027, mes: 3 });
-conferir('frase desconhecida nao vira nada', mesPendenteNaDps('Relatório em revisão'), null);
-conferir('ultima visita em 08/10 e a de setembro', mesDaUltimaVisita('2026-10-08'), { ano: 2026, mes: 9 });
-conferir('no dia da visita ja conta o proprio mes', mesDaUltimaVisita('2026-10-24'), { ano: 2026, mes: 10 });
-conferir('pula mes sem visita', mesDaUltimaVisita('2026-08-10', { '2026-07': null }), { ano: 2026, mes: 6 });
-conferir('08/10, pendente outubro: setembro registrada', registroDaVisita(FRASE_OUT, '2026-10-08'), { registrada: true, mes: 'setembro' });
-conferir('25/10, ainda pendente outubro: outubro nao registrada', registroDaVisita(FRASE_OUT, '2026-10-25'), { registrada: false, mes: 'outubro' });
-conferir('25/10, ja pendente novembro: outubro registrada', registroDaVisita('Pendente de início de registro da Visita do mês de Novembro/2026', '2026-10-25'), { registrada: true, mes: 'outubro' });
-conferir('08/10, pendente setembro: setembro nao registrada', registroDaVisita('Pendente de início de registro da Visita do mês de Setembro/2026', '2026-10-08'), { registrada: false, mes: 'setembro' });
-conferir('virada de ano: pendente janeiro cobre dezembro', registroDaVisita('Pendente de início de registro da Visita do mês de Janeiro/2027', '2027-01-05'), { registrada: true, mes: 'dezembro' });
-conferir('sem dado da DPS', registroDaVisita(undefined, '2026-10-08'), null);
-conferir('nomes ligam sem acento e caixa', normalizarNome('  Carmen Silva FÔLHA ') === normalizarNome('carmen silva fôlha'), true);
 
 console.log('--- a triagem que conta e a primeira ---');
 conferir('lista vazia', primeiraTriagem([]), null);
