@@ -533,6 +533,7 @@ body:has(.tela-login) { background-color: #585d66; }
 
 .inicio-grupo__entrar {
   margin-top: auto;
+  align-self: flex-end; /* o botao fica no canto direito do cartao */
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
   background: #fff;
