@@ -258,13 +258,7 @@ export default function DetalheAssistida({
           {podeEditar && (
             <section className="pt-4 mt-1 border-t border-borda">
               {assistida.ativa ? (
-                <>
-                  <BotaoDesligamento assistida={assistida} modo="desligar" aoConcluir={aoFechar} className="w-full" />
-                  <p className="text-xs text-tinta-suave mt-2 text-center leading-snug">
-                    Para quando a família já foi atendida como devia. Ela vai para Famílias atendidas
-                    e pode ser reativada depois.
-                  </p>
-                </>
+                <BotaoDesligamento assistida={assistida} modo="desligar" aoConcluir={aoFechar} className="w-full" />
               ) : (
                 <>
                   <p className="text-sm text-tinta-suave mb-2 text-center">
