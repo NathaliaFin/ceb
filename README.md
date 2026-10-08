@@ -34,8 +34,9 @@ continua logado — as sessões antigas só caem se você trocar `SESSION_SECRET
 
 No 10º dia depois de cada visita (o prazo do almoxarifado é o 14º), se alguma
 família ainda estiver com a caixa "Visita de <mês> registrada" desmarcada, o
-sistema manda **um** e-mail: "Lembre-se de registrar as suas visitas do mês de
-<mês>. O prazo do almoxarifado está se esgotando." Sai a partir das 8h, uma
+sistema manda **um** e-mail ao grupo ("Olá, pessoal! Passando para lembrar que
+as visitas realizadas no mês de <mês> precisam ser registradas..." — o texto
+está em `lib/lembrete.js`). Sai a partir das 8h, uma
 única vez por visita (fica anotado no banco), e não sai se tudo já estiver
 registrado.
 
