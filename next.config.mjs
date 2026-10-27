@@ -1,3 +1,18 @@
+import crypto from 'node:crypto';
+
+// O Next sorteia uma chave nova a cada build e, com ela, muda o endereco
+// interno de cada acao (salvar, desligar...). O app instalado no celular fica
+// aberto por dias e o service worker serve a copia guardada quando o sinal
+// demora: depois de um deploy, o "Salvar" dessas telas chamava uma acao que o
+// servidor ja nao reconhecia, e nada era salvo. Tirando a chave do
+// SESSION_SECRET, ela fica a mesma de um deploy para o outro.
+if (!process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY && process.env.SESSION_SECRET) {
+  process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY = crypto
+    .createHash('sha256')
+    .update(`acoes:${process.env.SESSION_SECRET}`)
+    .digest('base64');
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   serverExternalPackages: ['pg'],

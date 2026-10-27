@@ -1,6 +1,7 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { startTransition, useActionState, useState } from 'react';
+import { unstable_isUnrecognizedActionError as ehAcaoDesconhecida } from 'next/navigation';
 import { acaoSalvarAssistida } from '@/app/actions';
 import { CHAVES_CORES, PALETA, iniciais } from '@/lib/cores';
 import EmergenciasNoCadastro from './EmergenciasNoCadastro';
@@ -36,8 +37,32 @@ function linhaDeFamiliar(familiar) {
   };
 }
 
+/**
+ * Tela aberta desde antes de uma atualizacao do sistema: o servidor nao
+ * reconhece mais a acao. Em vez da tela de erro, que apagava tudo o que foi
+ * digitado, avisa ao lado do botao. Outros erros (e o redirecionamento depois
+ * de salvar, que tambem chega como erro) seguem o caminho normal.
+ */
+async function salvar(estadoAnterior, formData) {
+  try {
+    return await acaoSalvarAssistida(estadoAnterior, formData);
+  } catch (erro) {
+    if (!ehAcaoDesconhecida(erro)) throw erro;
+    return { erro: 'O sistema foi atualizado enquanto esta tela estava aberta.', desatualizada: true };
+  }
+}
+
 export default function FormularioAssistida({ assistida, grupo }) {
-  const [estado, acao, pendente] = useActionState(acaoSalvarAssistida, { erro: null });
+  const [estado, acao, pendente] = useActionState(salvar, { erro: null });
+
+  // Envia sem o <form action>: com ele, o React devolve todos os campos ao
+  // valor salvo quando o servidor responde, e um erro (link do mapa nao
+  // reconhecido, por exemplo) apagava o que a pessoa tinha acabado de digitar.
+  function enviar(evento) {
+    evento.preventDefault();
+    const dados = new FormData(evento.currentTarget);
+    startTransition(() => acao(dados));
+  }
 
   const [cor, setCor] = useState(assistida?.cor ?? 'rosa');
   const [nome, setNome] = useState(assistida?.nome_completo ?? '');
@@ -68,15 +93,9 @@ export default function FormularioAssistida({ assistida, grupo }) {
   }
 
   return (
-    <form action={acao} className="space-y-5">
+    <form onSubmit={enviar} className="space-y-5">
       <input type="hidden" name="grupo" value={grupo.slug} />
       {assistida?.id && <input type="hidden" name="id" value={assistida.id} />}
-
-      {estado?.erro && (
-        <p className="bloco-alerta rounded-xl px-4 py-3 text-sm font-medium" role="alert">
-          {estado.erro}
-        </p>
-      )}
 
       <section className="cartao p-5 space-y-4" style={{ '--cor': PALETA[cor].base }}>
         <div className="flex items-center gap-3">
@@ -367,8 +386,29 @@ export default function FormularioAssistida({ assistida, grupo }) {
         </label>
       </section>
 
-      <div className="flex gap-3 sticky bottom-4">
-        <button type="submit" disabled={pendente} className="botao-primario flex-1 py-3">
+      {/* O aviso fica junto do botao: no topo do formulario, quem esta la
+          embaixo tocando em Salvar nao via e achava que nada tinha acontecido. */}
+      <div className="sticky bottom-4 space-y-2">
+        {estado?.erro && (
+          <div className="bloco-alerta rounded-xl px-4 py-3 text-sm font-medium" role="alert">
+            <p>{estado.erro}</p>
+            {estado.desatualizada && (
+              <>
+                <p className="text-xs font-normal mt-1 leading-snug">
+                  Nada foi salvo. Recarregue a tela e faça as alterações de novo.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="botao-secundario w-full py-2 mt-2 text-sm"
+                >
+                  Recarregar a tela
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        <button type="submit" disabled={pendente} className="botao-primario w-full py-3">
           {pendente ? 'Salvando…' : 'Salvar'}
         </button>
       </div>
