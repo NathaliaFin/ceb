@@ -116,7 +116,11 @@ body:has(.tela-login) { background-color: #585d66; }
   }
 }
 
-.cartao:active { transform: translateY(-1px); }
+/* So nos cartoes que se tocam (familia, grupo). No formulario, que tambem usa
+   .cartao, a secao pulava a cada toque num campo, e o iPhone pode deixar de
+   abrir o teclado quando o campo se mexe no meio do toque. */
+a.cartao:active,
+.cartao--clicavel:active { transform: translateY(-1px); }
 
 /* faixa colorida no topo do cartao */
 .cartao::before {
@@ -1076,6 +1080,9 @@ body:has(.tela-login) { background-color: #585d66; }
 /* Sair/Gerenciar e o filtro vao para os cantos, sem ocupar linha propria. */
 .modo-app .capa__acoes {
   position: absolute;
+  /* Acima do coracao e do nome do grupo: a animacao de entrada deles os pinta
+     por cima, e o toque no lapis (Gerenciar) caia neles em vez do botao. */
+  z-index: 1;
   top: 0.75rem;
   right: 1rem;
   margin: 0;
